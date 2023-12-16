@@ -1,26 +1,14 @@
-import { Column, Model, Table } from 'sequelize-typescript';
 import { DataTypes, NOW, UUID, UUIDV4 } from 'sequelize';
+import { Column, Model, Table } from 'sequelize-typescript';
 
 @Table
 export class Journal extends Model<Journal> {
   @Column({
-    type: UUID,
-    defaultValue: UUIDV4,
     allowNull: false,
-    primaryKey: true,
+    defaultValue: NOW,
+    type: DataTypes.DATE,
   })
-  journalId: string;
-
-  @Column({
-    type: UUID,
-    allowNull: false,
-  })
-  userId: string;
-
-  @Column({
-    type: UUID,
-  })
-  tradeId: string;
+  date: Date;
 
   @Column({
     type: DataTypes.TEXT,
@@ -28,9 +16,21 @@ export class Journal extends Model<Journal> {
   journalEntry: string;
 
   @Column({
-    type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: NOW,
+    defaultValue: UUIDV4,
+    primaryKey: true,
+    type: UUID,
   })
-  date: Date;
+  journalId: string;
+
+  @Column({
+    type: UUID,
+  })
+  tradeId: string;
+
+  @Column({
+    allowNull: false,
+    type: UUID,
+  })
+  userId: string;
 }

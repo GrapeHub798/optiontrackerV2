@@ -4,11 +4,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../metadata/metadata.constants';
 import * as process from 'process';
+
+import { IS_PUBLIC_KEY } from '../metadata/metadata.constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,6 +17,11 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
     private reflector: Reflector,
   ) {}
+
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -45,10 +51,5 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException(e.message);
     }
     return true;
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }

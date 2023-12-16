@@ -1,13 +1,14 @@
 import {
-  BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './user.model';
-import { UserWithJWTModel } from './userWithJWT.model';
-import { UserLogin } from './userLogin.model';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/sequelize';
+
+import { User } from './user.model';
+import { UserLogin } from './userLogin.model';
+import { UserWithJWTModel } from './userWithJWT.model';
 
 @Injectable()
 export class UserService {
@@ -17,18 +18,11 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async create(userData: UserLogin): Promise<UserWithJWTModel> {
-    try {
-      const user = new User(userData);
-      const newUser = await user.save();
-      const payload = { userId: user.userId };
-      const token = await this.jwtService.signAsync(payload);
-      return new UserWithJWTModel(newUser, token);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+  private async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
+    const payload = { userId: user.userId };
+    const token = await this.jwtService.signAsync(payload);
+    return new UserWithJWTModel(user, token);
   }
-
   async login(loginData: UserLogin): Promise<UserWithJWTModel> {
     try {
       const foundUser = await this.userModel.findOne({
@@ -37,19 +31,29 @@ export class UserService {
         },
       });
       if (!foundUser) {
-        throw new NotFoundException('Unable to find user');
+        return Promise.reject(new NotFoundException('Unable to find user'));
       }
 
       //try to match the password
       if (!foundUser.validatePassword(loginData.password)) {
-        throw new NotFoundException('Incorrect username or password');
+        return Promise.reject(
+          new NotFoundException('Incorrect username or password'),
+        );
       }
-      const payload = { userId: foundUser.userId };
-      const token = await this.jwtService.signAsync(payload);
 
-      return new UserWithJWTModel(foundUser, token);
+      return this.generateUserWithJWT(foundUser);
     } catch (e) {
-      throw new BadRequestException(e.message);
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
+  async register(userData: UserLogin): Promise<UserWithJWTModel> {
+    try {
+      const user = new User(userData);
+      const newUser = await user.save();
+      return this.generateUserWithJWT(newUser);
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
 }

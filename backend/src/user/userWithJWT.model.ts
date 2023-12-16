@@ -1,9 +1,9 @@
 import { User } from './user.model';
 
 export class UserWithJWTModel {
-  userId: string;
   email: string;
   jwt: string;
+  userId: string;
 
   constructor(user?: User, jwtToken?: string) {
     this.userId = user?.userId || null;

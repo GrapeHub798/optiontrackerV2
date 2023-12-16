@@ -1,21 +1,13 @@
-import { Table, Column, Model, BeforeCreate } from 'sequelize-typescript';
-import { DataTypes, UUID, UUIDV4 } from 'sequelize';
 import * as bcrypt from 'bcrypt';
+import { DataTypes, UUID, UUIDV4 } from 'sequelize';
+import { BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
 
 @Table
 export class User extends Model<User> {
   @Column({
-    type: UUID,
-    defaultValue: UUIDV4,
     allowNull: false,
-    primaryKey: true,
-  })
-  userId: string;
-
-  @Column({
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: { name: 'User', msg: 'Email address already in use!' },
+    unique: { msg: 'Email address already in use!', name: 'User' },
     validate: {
       isEmail: { msg: 'That is an invalid email address' },
     },
@@ -25,13 +17,21 @@ export class User extends Model<User> {
   @Column
   password: string;
 
-  validatePassword(password: string): boolean {
-    return bcrypt.compareSync(password, this.password);
-  }
+  @Column({
+    allowNull: false,
+    defaultValue: UUIDV4,
+    primaryKey: true,
+    type: UUID,
+  })
+  userId: string;
 
   @BeforeCreate
   static hashPassword(instance: User) {
     const salt = bcrypt.genSaltSync();
     instance.password = bcrypt.hashSync(instance.password, salt);
+  }
+
+  validatePassword(password: string): boolean {
+    return bcrypt.compareSync(password, this.password);
   }
 }

@@ -1,5 +1,5 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class UserLogin {
   @IsNotEmpty()

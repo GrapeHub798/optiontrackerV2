@@ -1,9 +1,9 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserWithJWTModel } from './userWithJWT.model';
-import { UserLogin } from './userLogin.model';
-import { Public } from '../metadata/metadata.constants';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
+import { Public } from '../metadata/metadata.constants';
+import { UserService } from './user.service';
+import { UserLogin } from './userLogin.model';
+import { UserWithJWTModel } from './userWithJWT.model';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -12,7 +12,7 @@ export class UserController {
   @Public()
   @HttpCode(HttpStatus.OK)
   create(@Body() userData: UserLogin): Promise<UserWithJWTModel> {
-    return this.userService.create(userData);
+    return this.userService.register(userData);
   }
 
   @Post('/login')

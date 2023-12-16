@@ -10,3 +10,4 @@
 
 /backend/.env
 /frontend/.env
+/backend/src/database/config.ts

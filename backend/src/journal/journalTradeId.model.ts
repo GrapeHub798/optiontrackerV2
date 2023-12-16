@@ -1,7 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class JournalEntry {
+export class JournalTradeId {
   @IsNotEmpty()
-  entry: string;
-  tradeId?: string;
+  tradeId: string;
 }

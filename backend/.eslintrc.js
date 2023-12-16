@@ -9,6 +9,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    "plugin:perfectionist/recommended-alphabetical"
   ],
   root: true,
   env: {
