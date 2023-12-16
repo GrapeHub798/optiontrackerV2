@@ -69,7 +69,6 @@ export class StocksService {
         });
       return refreshComplete.asObservable();
     } catch (e) {
-      console.log(e);
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
