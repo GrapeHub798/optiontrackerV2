@@ -9,7 +9,7 @@ import {
 
 import { AuthGuard } from '../guards/auth.guard';
 import { ExchangeCode } from './exchangeCode.model';
-import { Stock } from './stocks.model';
+import { Stock } from './stock.model';
 import { StocksService } from './stocks.service';
 
 @Controller('stocks')

@@ -4,7 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { EodhdModule } from '../eodhdapi/eodhd.module';
 import { ExchangesModule } from '../exchanges/exchanges.module';
 import { StocksController } from './stocks.controller';
-import { Stock } from './stocks.model';
+import { Stock } from './stock.model';
 import { StocksService } from './stocks.service';
 
 @Module({

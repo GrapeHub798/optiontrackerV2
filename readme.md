@@ -81,7 +81,7 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 
 | Table     | Stocks  |
 |-----------|---------|
-| id        | Int     |
+| id        | int     |
 | country   | varchar |
 | currency  | varchar |
 | exchange  | varchar |
@@ -95,7 +95,8 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 
 Options
 optionId - guid
-stockId - guid
+userId 
+stockCode - string
 strikePrice - double/decimal
 optionPrice - double/decimal
 optionType - int

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '../guards/auth.guard';
-import { Exchange } from './exchanges.model';
+import { Exchange } from './exchange.model';
 import { ExchangesService } from './exchanges.service';
 
 @Controller('exchanges')

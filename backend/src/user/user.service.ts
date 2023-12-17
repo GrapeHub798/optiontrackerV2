@@ -18,7 +18,7 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  private async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
+  async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
     const payload = { userId: user.userId };
     const token = await this.jwtService.signAsync(payload);
     return new UserWithJWTModel(user, token);
@@ -49,8 +49,7 @@ export class UserService {
 
   async register(userData: UserLogin): Promise<UserWithJWTModel> {
     try {
-      const user = new User(userData);
-      const newUser = await user.save();
+      const newUser = await this.userModel.create(userData);
       return this.generateUserWithJWT(newUser);
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));

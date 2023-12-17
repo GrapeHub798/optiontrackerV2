@@ -5,7 +5,7 @@ import * as process from 'process';
 import { map, Observable } from 'rxjs';
 
 import { EodhdHelpers } from '../helpers/eodhdHelpers';
-import { Stock } from '../stocks/stocks.model';
+import { Stock } from '../stocks/stock.model';
 import { EodhdExchange } from './eodhdExchange.model';
 
 const BASE_API_URL = 'https://eodhd.com/api/';

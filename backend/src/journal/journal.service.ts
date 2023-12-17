@@ -18,14 +18,6 @@ export class JournalService {
     private readonly journalModel: typeof Journal,
   ) {}
 
-  private createJournalEntry(journalEntry: JournalEntry, userId: string) {
-    return new Journal({
-      journalEntry: journalEntry.entry,
-      tradeId: journalEntry.tradeId,
-      userId,
-    });
-  }
-
   private async getJournalByUserAndId(journalId: string, userId: string) {
     const journal = await this.journalModel.findOne({
       where: { journalId, userId },
@@ -39,12 +31,11 @@ export class JournalService {
 
   async create(req: any, journalEntry: JournalEntry) {
     try {
-      const newJournalEntry = this.createJournalEntry(
-        journalEntry,
-        UserHelpers.getUserIdFromRequest(req),
-      );
-      await newJournalEntry.save();
-      return newJournalEntry;
+      return this.journalModel.create({
+        journalEntry: journalEntry.entry,
+        tradeId: journalEntry.tradeId,
+        userId: UserHelpers.getUserIdFromRequest(req),
+      });
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

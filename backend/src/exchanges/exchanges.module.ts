@@ -3,7 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 
 import { EodhdModule } from '../eodhdapi/eodhd.module';
 import { ExchangesController } from './exchanges.controller';
-import { Exchange } from './exchanges.model';
+import { Exchange } from './exchange.model';
 import { ExchangesService } from './exchanges.service';
 
 @Module({

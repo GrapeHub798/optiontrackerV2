@@ -3,11 +3,11 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Subject } from 'rxjs';
 
 import { EodhdService } from '../eodhdapi/eodhd.service';
-import { Exchange } from '../exchanges/exchanges.model';
+import { Exchange } from '../exchanges/exchange.model';
 import { ExchangesService } from '../exchanges/exchanges.service';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { ExchangeCode } from './exchangeCode.model';
-import { Stock } from './stocks.model';
+import { Stock } from './stock.model';
 
 @Injectable()
 export class StocksService {

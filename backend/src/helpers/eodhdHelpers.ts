@@ -1,5 +1,5 @@
 import { EodhdStock } from '../eodhdapi/eodhdStock.model';
-import { Stock } from '../stocks/stocks.model';
+import { Stock } from '../stocks/stock.model';
 
 export class EodhdHelpers {
   static transformEodhdStockToStock(eodhdStockArray: EodhdStock[]): Stock[] {

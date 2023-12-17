@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { EodhdService } from '../eodhdapi/eodhd.service';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { ExchangeCode } from '../stocks/exchangeCode.model';
-import { Exchange } from './exchanges.model';
+import { Exchange } from './exchange.model';
 
 @Injectable()
 export class ExchangesService {
