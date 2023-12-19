@@ -31,11 +31,12 @@ export class JournalService {
 
   async create(req: any, journalEntry: JournalEntry) {
     try {
-      return this.journalModel.create({
+      await this.journalModel.create({
         journalEntry: journalEntry.entry,
         tradeId: journalEntry.tradeId,
         userId: UserHelpers.getUserIdFromRequest(req),
       });
+      return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
