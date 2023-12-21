@@ -19,6 +19,8 @@
     * [class-transformer](https://www.npmjs.com/package/class-transformer)
     * [class-validator](https://www.npmjs.com/package/class-validator)
     * [jwt](https://www.npmjs.com/package/jsonwebtoken)
+    * [axios](https://axios-http.com/docs/intro)
+    * [rx-js](https://rxjs.dev/)
 
 To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 
@@ -93,17 +95,40 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 <br/>
 <br/>
 
-Options
-optionId - guid
-userId 
-stockCode - string
-strikePrice - double/decimal
-optionPrice - double/decimal
-optionType - int
-expirationDate - date
+| Table          | Options |
+|----------------|---------|
+| optionId       | guid    |
+| userId         | guid    |
+| stockCode      | string  |
+| strikePrice    | decimal |
+| optionPrice    | decimal |
+| optionType     | int     |
+| expirationDate | date    |
+
+<br/>
+<br/>
+
+| Table             | UserProfile |
+|-------------------|-------------|
+| userProfileId     | guid        |
+| userId            | guid        |
+| preferredExchange | string      |
+| preferredLanguage | string      |
+
+<br/>
+<br/>
+
+| Table           | Broker  |
+|-----------------|---------|
+| brokerId        | guid    |
+| userId          | guid    |
+| brokerName      | string  |
+| brokerOptionFee | decimal |
+| brokerStockFee  | decimal |
 
 ### Useful Links
 
 * [NestJS Documentation](https://docs.nestjs.com/)
 * [NestJS with Sequelize ORM](https://thriveread.com/nestjs-sequelize/)
 * [NestJS Authentication](https://docs.nestjs.com/security/authentication)
+* [Refresh Tokens](https://stackoverflow.com/questions/27726066/jwt-refresh-token-flow)

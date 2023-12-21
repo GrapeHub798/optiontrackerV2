@@ -1,7 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
@@ -68,7 +68,7 @@ export class OptionsService {
         },
       });
       if (!option) {
-        throw new UnauthorizedException('Option not found');
+        throw new NotFoundException('Option not found');
       }
       await option.update(newOption);
       return true;

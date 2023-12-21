@@ -33,7 +33,6 @@ export class Trade extends Model<Trade> {
     primaryKey: true,
     type: UUID,
   })
-  @Column
   tradeId: string;
   @Column
   userId: string;

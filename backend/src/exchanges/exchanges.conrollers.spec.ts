@@ -1,36 +1,26 @@
-import { CanActivate } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Observable } from 'rxjs';
 
-import { AuthGuard } from '../guards/auth.guard';
 import { Exchange } from './exchange.model';
 import { ExchangesController } from './exchanges.controller';
 import { ExchangesService } from './exchanges.service';
 
-class MockExchangesService {
-  getAll() {
-    return new Promise(() => {});
-  }
-}
+jest.mock('./exchanges.service');
+jest.mock('../guards/auth.guard');
 
 describe('ExchangesController', () => {
   let controller: ExchangesController;
   let service: ExchangesService;
 
   beforeEach(async () => {
-    const mock_AuthGuard: CanActivate = { canActivate: jest.fn(() => true) };
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExchangesController],
-      providers: [
-        { provide: ExchangesService, useClass: MockExchangesService },
-      ],
-    })
-      .overrideGuard(AuthGuard)
-      .useValue(mock_AuthGuard)
-      .compile();
+      providers: [ExchangesService],
+    }).compile();
 
     controller = module.get<ExchangesController>(ExchangesController);
     service = module.get<ExchangesService>(ExchangesService);
+    jest.clearAllMocks();
   });
 
   // Test for 'getAll' method of 'ExchangesController'
@@ -40,5 +30,16 @@ describe('ExchangesController', () => {
       .spyOn(service, 'getAll')
       .mockImplementation(() => Promise.resolve(result));
     expect(await controller.getAll()).toBe(result);
+  });
+
+  it('should refresh and return exchanges', async () => {
+    jest
+      .spyOn(service, 'refreshExchanges')
+      .mockResolvedValue(
+        Promise.resolve(true as unknown as Observable<boolean>),
+      );
+
+    expect(await controller.getExchanges()).toBe(true);
+    expect(service.refreshExchanges).toHaveBeenCalledTimes(1);
   });
 });

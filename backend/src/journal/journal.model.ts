@@ -30,6 +30,8 @@ export class Journal extends Model<Journal> {
 
   @Column({
     allowNull: false,
+    defaultValue: UUIDV4,
+    primaryKey: true,
     type: UUID,
   })
   userId: string;
