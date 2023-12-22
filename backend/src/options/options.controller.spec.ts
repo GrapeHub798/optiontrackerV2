@@ -1,8 +1,7 @@
 import { expect, it } from '@jest/globals';
-import { CanActivate, InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { AuthGuard } from '../guards/auth.guard';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
@@ -11,9 +10,12 @@ import { Option } from './option.model';
 import { OptionsController } from './options.controller';
 import { OptionsService } from './options.service';
 
-describe('OptionsController', () => {
-  let optionsController: OptionsController;
-  let optionsService: OptionsService;
+jest.mock('./options.service');
+jest.mock('../guards/auth.guard');
+
+describe('controller', () => {
+  let controller: OptionsController;
+  let service: OptionsService;
 
   // mock request object
   const req = {
@@ -47,161 +49,144 @@ describe('OptionsController', () => {
   };
 
   beforeEach(async () => {
-    const mock_AuthGuard: CanActivate = { canActivate: jest.fn(() => true) };
-
-    const optionsServiceMock = {
-      create: jest.fn(),
-      delete: jest.fn(),
-      deleteMultiple: jest.fn(),
-      edit: jest.fn(),
-      getAll: jest.fn(),
-      getOne: jest.fn(),
-    };
-
-    const moduleRef = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       controllers: [OptionsController],
-      providers: [
-        {
-          provide: OptionsService,
-          useValue: optionsServiceMock,
-        },
-      ],
-    })
-      .overrideGuard(AuthGuard)
-      .useValue(mock_AuthGuard)
-      .compile();
+      providers: [OptionsService],
+    }).compile();
 
-    optionsService = moduleRef.get<OptionsService>(OptionsService);
-    optionsController = moduleRef.get<OptionsController>(OptionsController);
+    service = module.get<OptionsService>(OptionsService);
+    controller = module.get<OptionsController>(OptionsController);
+    jest.clearAllMocks();
   });
 
-  describe('OptionsController - create', () => {
+  describe('Option Controller - create', () => {
     it('should call the create with the correct parameters', async () => {
       const expectedResult = true;
       jest
-        .spyOn(optionsService, 'create')
+        .spyOn(service, 'create')
         .mockResolvedValue(Promise.resolve(expectedResult));
 
-      const result = await optionsController.create(req, newOption);
-      expect(optionsService.create).toHaveBeenCalledWith(req, newOption);
+      const result = await controller.create(req, newOption);
+      expect(service.create).toHaveBeenCalledWith(req, newOption);
       expect(result).toBe(expectedResult);
     });
 
     it('should fail the create', async () => {
       jest
-        .spyOn(optionsService, 'create')
+        .spyOn(service, 'create')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(optionsController.create(req, newOption)).rejects.toThrow(
+      await expect(controller.create(req, newOption)).rejects.toThrow(
         InternalServerErrorException,
       );
+      expect(service.create).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('OptionsController - delete', () => {
+  describe('Option Controller - delete', () => {
     it('should call the delete with the correct parameters', async () => {
       const expectedResult = true;
       jest
-        .spyOn(optionsService, 'delete')
+        .spyOn(service, 'delete')
         .mockResolvedValue(Promise.resolve(expectedResult));
 
-      const result = await optionsController.delete(req, getOneItem);
-      expect(optionsService.delete).toHaveBeenCalledWith(req, getOneItem);
+      const result = await controller.delete(req, getOneItem);
+      expect(service.delete).toHaveBeenCalledWith(req, getOneItem);
       expect(result).toBe(expectedResult);
     });
 
     it('should fail the delete', async () => {
       jest
-        .spyOn(optionsService, 'delete')
+        .spyOn(service, 'delete')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(optionsController.delete(req, getOneItem)).rejects.toThrow(
+      await expect(controller.delete(req, getOneItem)).rejects.toThrow(
         InternalServerErrorException,
       );
+      expect(service.delete).toHaveBeenCalledWith(req, getOneItem);
     });
   });
 
-  describe('OptionsController - deleteMultiple', () => {
+  describe('Option Controller - deleteMultiple', () => {
     it('should call the deleteMultiple with the correct parameters', async () => {
       const expectedResult = true;
       jest
-        .spyOn(optionsService, 'deleteMultiple')
+        .spyOn(service, 'deleteMultiple')
         .mockResolvedValue(Promise.resolve(expectedResult));
-      const results = await optionsController.deleteMultiple(req, itemIds);
-      expect(optionsService.deleteMultiple).toHaveBeenCalledWith(req, itemIds);
+      const results = await controller.deleteMultiple(req, itemIds);
+      expect(service.deleteMultiple).toHaveBeenCalledWith(req, itemIds);
       expect(results).toBe(expectedResult);
     });
 
     it('should fail the deleteMultiple', async () => {
       jest
-        .spyOn(optionsService, 'deleteMultiple')
+        .spyOn(service, 'deleteMultiple')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(
-        optionsController.deleteMultiple(req, itemIds),
-      ).rejects.toThrow(InternalServerErrorException);
+      await expect(controller.deleteMultiple(req, itemIds)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.deleteMultiple).toHaveBeenCalledWith(req, itemIds);
     });
   });
 
-  describe('OptionsController - edit', () => {
+  describe('Option Controller - edit', () => {
     it('should call the edit with the correct parameters', async () => {
       const expectedResult = true;
       jest
-        .spyOn(optionsService, 'edit')
+        .spyOn(service, 'edit')
         .mockResolvedValue(Promise.resolve(expectedResult));
-      const results = await optionsController.edit(req, getOneItem, newOption);
-      expect(optionsService.edit).toHaveBeenCalledWith(
-        req,
-        getOneItem,
-        newOption,
-      );
+      const results = await controller.edit(req, getOneItem, newOption);
+      expect(service.edit).toHaveBeenCalledWith(req, getOneItem, newOption);
       expect(results).toBe(expectedResult);
     });
 
     it('should fail the edit', async () => {
       jest
-        .spyOn(optionsService, 'edit')
+        .spyOn(service, 'edit')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(
-        optionsController.edit(req, getOneItem, newOption),
-      ).rejects.toThrow(InternalServerErrorException);
+      await expect(controller.edit(req, getOneItem, newOption)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.edit).toHaveBeenCalledWith(req, getOneItem, newOption);
     });
   });
 
-  describe('OptionsController - getAll', () => {
+  describe('Option Controller - getAll', () => {
     it('should call the get all with the correct parameters', async () => {
       const expectedResult = [];
       jest
-        .spyOn(optionsService, 'getAll')
+        .spyOn(service, 'getAll')
         .mockResolvedValue(Promise.resolve(expectedResult));
-      const results = await optionsController.getAll(req, getAllPaginated);
-      expect(optionsService.getAll).toHaveBeenCalledWith(req, getAllPaginated);
+      const results = await controller.getAll(req, getAllPaginated);
+      expect(service.getAll).toHaveBeenCalledWith(req, getAllPaginated);
       expect(results).toBe(expectedResult);
     });
 
     it('should fail the get all request', async () => {
       jest
-        .spyOn(optionsService, 'getAll')
+        .spyOn(service, 'getAll')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(
-        optionsController.getAll(req, getAllPaginated),
-      ).rejects.toThrow(InternalServerErrorException);
+      await expect(controller.getAll(req, getAllPaginated)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.getAll).toHaveBeenCalledWith(req, getAllPaginated);
     });
   });
 
-  describe('OptionsController - getOne', () => {
+  describe('Option Controller - getOne', () => {
     it('should call the get one with the correct parameters', async () => {
       const expectedResult: Partial<Option> = {
         expirationDate: new Date(),
@@ -213,23 +198,24 @@ describe('OptionsController', () => {
       };
 
       jest
-        .spyOn(optionsService, 'getOne')
+        .spyOn(service, 'getOne')
         .mockResolvedValue(Promise.resolve(expectedResult as Option));
-      const result = await optionsController.getOne(req, getOneItem);
-      expect(optionsService.getOne).toHaveBeenCalledWith(req, getOneItem);
+      const result = await controller.getOne(req, getOneItem);
+      expect(service.getOne).toHaveBeenCalledWith(req, getOneItem);
       expect(result).toBe(expectedResult);
     });
 
     it('should fail the get one request', async () => {
       jest
-        .spyOn(optionsService, 'getOne')
+        .spyOn(service, 'getOne')
         .mockResolvedValue(
           Promise.reject(new InternalServerErrorException('')),
         );
 
-      await expect(optionsController.getOne(req, getOneItem)).rejects.toThrow(
+      await expect(controller.getOne(req, getOneItem)).rejects.toThrow(
         InternalServerErrorException,
       );
+      expect(service.getOne).toHaveBeenCalledWith(req, getOneItem);
     });
   });
 });

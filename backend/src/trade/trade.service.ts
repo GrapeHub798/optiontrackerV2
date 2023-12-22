@@ -1,11 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
+import { Option } from '../options/option.model';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
@@ -61,15 +59,11 @@ export class TradeService {
 
   async edit(req: any, getOneItem: GetOneItem, newTrade: NewTrade) {
     try {
-      const trade = await this.tradeModel.findOne({
-        where: {
-          tradeId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      if (!trade) {
-        throw new UnauthorizedException('Trade not found');
-      }
+      const trade = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Option,
+        UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
+      );
       await trade.update(newTrade);
       return true;
     } catch (e) {
@@ -94,12 +88,11 @@ export class TradeService {
 
   async getOne(req: any, getOneItem: GetOneItem): Promise<Trade> {
     try {
-      return await this.tradeModel.findOne({
-        where: {
-          tradeId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
+      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Trade,
+        UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
+      );
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

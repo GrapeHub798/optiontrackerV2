@@ -34,6 +34,10 @@ export class Trade extends Model<Trade> {
     type: UUID,
   })
   tradeId: string;
+  @Column({
+    type: DataTypes.DECIMAL(10, 2),
+  })
+  tradeTotal: number;
   @Column
   userId: string;
 }

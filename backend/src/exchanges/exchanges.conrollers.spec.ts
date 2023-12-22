@@ -12,6 +12,12 @@ describe('ExchangesController', () => {
   let controller: ExchangesController;
   let service: ExchangesService;
 
+  const req = {
+    user: {
+      userId: 'testUserId',
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExchangesController],
@@ -30,6 +36,7 @@ describe('ExchangesController', () => {
       .spyOn(service, 'getAll')
       .mockImplementation(() => Promise.resolve(result));
     expect(await controller.getAll()).toBe(result);
+    expect(service.getAll).toHaveBeenCalledTimes(1);
   });
 
   it('should refresh and return exchanges', async () => {

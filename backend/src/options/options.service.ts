@@ -1,10 +1,7 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
@@ -61,15 +58,11 @@ export class OptionsService {
 
   async edit(req: any, getOneItem: GetOneItem, newOption: NewOption) {
     try {
-      const option = await this.optionModel.findOne({
-        where: {
-          optionId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      if (!option) {
-        throw new NotFoundException('Option not found');
-      }
+      const option = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Option,
+        UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
+      );
       await option.update(newOption);
       return true;
     } catch (e) {

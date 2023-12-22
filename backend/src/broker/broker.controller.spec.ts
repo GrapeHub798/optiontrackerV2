@@ -9,7 +9,7 @@ import { NewBroker } from './newbroker.model';
 jest.mock('./broker.service');
 jest.mock('../guards/auth.guard');
 
-describe('Broker Controler', () => {
+describe('Broker Controller', () => {
   let controller: BrokerController;
   let service: BrokerService;
 

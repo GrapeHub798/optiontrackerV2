@@ -1,11 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
+import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
 import { Broker } from './broker.model';
 import { NewBroker } from './newbroker.model';
@@ -43,17 +41,27 @@ export class BrokerService {
     }
   }
 
-  async edit(req: any, getOneItem: GetOneItem, newBroker: NewBroker) {
+  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
     try {
-      const broker = await this.brokerModel.findOne({
+      await this.brokerModel.destroy({
         where: {
-          brokerId: getOneItem.itemId,
+          brokerId: itemIds.itemIds,
           userId: UserHelpers.getUserIdFromRequest(req),
         },
       });
-      if (!broker) {
-        throw new NotFoundException('Broker not found');
-      }
+      return true;
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
+  async edit(req: any, getOneItem: GetOneItem, newBroker: NewBroker) {
+    try {
+      const broker = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Broker,
+        UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
+      );
       await broker.update(newBroker);
       return true;
     } catch (e) {

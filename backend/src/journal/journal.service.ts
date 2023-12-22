@@ -1,14 +1,12 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
+import { DeleteMultiple } from '../universal/getMultiple.model';
+import { GetOneItem } from '../universal/getSingle.model';
 import { Journal } from './journal.model';
 import { JournalEntry } from './journalEntry.model';
-import { JournalId } from './journalId.model';
 import { JournalTradeId } from './journalTradeId.model';
 
 @Injectable()
@@ -17,17 +15,6 @@ export class JournalService {
     @InjectModel(Journal)
     private readonly journalModel: typeof Journal,
   ) {}
-
-  private async getJournalByUserAndId(journalId: string, userId: string) {
-    const journal = await this.journalModel.findOne({
-      where: { journalId, userId },
-    });
-    if (!journal) {
-      return Promise.reject(new NotFoundException('Journal not found'));
-    }
-
-    return journal;
-  }
 
   async create(req: any, journalEntry: JournalEntry) {
     try {
@@ -42,23 +29,40 @@ export class JournalService {
     }
   }
 
-  async delete(req: any, journalId: JournalId) {
+  async delete(req: any, getOneItem: GetOneItem) {
     try {
-      const journal = await this.getJournalByUserAndId(
-        journalId.journalId,
-        UserHelpers.getUserIdFromRequest(req),
-      );
-      await journal.destroy();
+      await this.journalModel.destroy({
+        where: {
+          journalId: getOneItem.itemId,
+          userId: UserHelpers.getUserIdFromRequest(req),
+        },
+      });
       return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
-  async edit(req: any, journalId: JournalId, journalEntry: JournalEntry) {
+
+  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
     try {
-      const journal = await this.getJournalByUserAndId(
-        journalId.journalId,
+      await this.journalModel.destroy({
+        where: {
+          journalId: itemIds.itemIds,
+          userId: UserHelpers.getUserIdFromRequest(req),
+        },
+      });
+      return true;
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
+  async edit(req: any, getOneItem: GetOneItem, journalEntry: JournalEntry) {
+    try {
+      const journal = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Journal,
         UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
       );
       journal.journalEntry = journalEntry.entry;
       journal.tradeId = journalEntry.tradeId;
@@ -85,13 +89,14 @@ export class JournalService {
 
   async linkTrade(
     req: any,
-    journalId: JournalId,
+    getOneItem: GetOneItem,
     journalTradeId: JournalTradeId,
   ) {
     try {
-      const journal = await this.getJournalByUserAndId(
-        journalId.journalId,
+      const journal = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Journal,
         UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
       );
       journal.tradeId = journalTradeId.tradeId;
 
@@ -102,11 +107,12 @@ export class JournalService {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
-  async unlinkTrade(req: any, journalId: JournalId) {
+  async unlinkTrade(req: any, getOneItem: GetOneItem) {
     try {
-      const journal = await this.getJournalByUserAndId(
-        journalId.journalId,
+      const journal = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Journal,
         UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
       );
 
       journal.tradeId = '';

@@ -13,10 +13,11 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '../guards/auth.guard';
+import { DeleteMultiple } from '../universal/getMultiple.model';
+import { GetOneItem } from '../universal/getSingle.model';
 import { Journal } from './journal.model';
 import { JournalService } from './journal.service';
 import { JournalEntry } from './journalEntry.model';
-import { JournalId } from './journalId.model';
 import { JournalTradeId } from './journalTradeId.model';
 
 @Controller('journal')
@@ -31,10 +32,17 @@ export class JournalController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('delete/:journalId')
+  @Delete(':itemId')
   @HttpCode(HttpStatus.OK)
-  delete(@Request() req: any, @Param() journalId: JournalId) {
-    return this.journalService.delete(req, journalId);
+  delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
+    return this.journalService.delete(req, getOneItem);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/multiple')
+  @HttpCode(HttpStatus.OK)
+  deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
+    return this.journalService.deleteMultiple(req, itemIds);
   }
 
   @UseGuards(AuthGuard)
@@ -42,10 +50,10 @@ export class JournalController {
   @HttpCode(HttpStatus.OK)
   edit(
     @Request() req: any,
-    @Param() journalId: JournalId,
+    @Param() getOneItem: GetOneItem,
     @Body() journalEntry: JournalEntry,
   ) {
-    return this.journalService.edit(req, journalId, journalEntry);
+    return this.journalService.edit(req, getOneItem, journalEntry);
   }
 
   @UseGuards(AuthGuard)
@@ -60,16 +68,16 @@ export class JournalController {
   @HttpCode(HttpStatus.OK)
   linkTrade(
     @Request() req: any,
-    @Param() journalId: JournalId,
+    @Param() getOneItem: GetOneItem,
     @Body() journalTradeId: JournalTradeId,
   ) {
-    return this.journalService.linkTrade(req, journalId, journalTradeId);
+    return this.journalService.linkTrade(req, getOneItem, journalTradeId);
   }
 
   @UseGuards(AuthGuard)
   @Patch('unlinkTrade/:journalId')
   @HttpCode(HttpStatus.OK)
-  unlinkTrade(@Request() req: any, @Param() journalId: JournalId) {
-    return this.journalService.unlinkTrade(req, journalId);
+  unlinkTrade(@Request() req: any, @Param() getOneItem: GetOneItem) {
+    return this.journalService.unlinkTrade(req, getOneItem);
   }
 }

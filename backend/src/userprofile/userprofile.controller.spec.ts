@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { NewUserProfile } from './newUserProfile.model';
@@ -29,7 +30,7 @@ describe('User Profile Controler', () => {
     jest.clearAllMocks();
   });
 
-  describe('Create', () => {
+  describe('User Profile Controller - Create', () => {
     it('should create a user profile', async () => {
       const mockProfile: NewUserProfile = {
         preferredExchange: '',
@@ -44,9 +45,27 @@ describe('User Profile Controler', () => {
       expect(service.create).toHaveBeenCalledTimes(1);
       expect(results).toEqual(true);
     });
+
+    it('should fail to create a user profile', async () => {
+      const mockProfile: NewUserProfile = {
+        preferredExchange: '',
+        preferredLanguage: '',
+      };
+
+      jest
+        .spyOn(service, 'create')
+        .mockResolvedValue(
+          Promise.reject(new InternalServerErrorException('')),
+        );
+
+      await expect(controller.create(req, mockProfile)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.create).toHaveBeenCalledTimes(1);
+    });
   });
 
-  describe('Delete', () => {
+  describe('User Profile Controller - Delete', () => {
     it('should delete a user profile', async () => {
       jest
         .spyOn(service, 'delete')
@@ -56,9 +75,22 @@ describe('User Profile Controler', () => {
       expect(service.delete).toHaveBeenCalledTimes(1);
       expect(results).toEqual(true);
     });
+
+    it('should fail to delete a user profile', async () => {
+      jest
+        .spyOn(service, 'delete')
+        .mockResolvedValue(
+          Promise.reject(new InternalServerErrorException('')),
+        );
+
+      await expect(controller.delete(req)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.delete).toHaveBeenCalledTimes(1);
+    });
   });
 
-  describe('Edit', () => {
+  describe('User Profile Controller - Edit', () => {
     it('should edit a user profile', async () => {
       const mockProfile: NewUserProfile = {
         preferredExchange: '',
@@ -73,9 +105,27 @@ describe('User Profile Controler', () => {
       expect(service.edit).toHaveBeenCalledTimes(1);
       expect(results).toEqual(true);
     });
+
+    it('should fail edit a user profile', async () => {
+      const mockProfile: NewUserProfile = {
+        preferredExchange: '',
+        preferredLanguage: '',
+      };
+
+      jest
+        .spyOn(service, 'edit')
+        .mockResolvedValue(
+          Promise.reject(new InternalServerErrorException('')),
+        );
+
+      await expect(controller.edit(req, mockProfile)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.edit).toHaveBeenCalledTimes(1);
+    });
   });
 
-  describe('Get', () => {
+  describe('User Profile Controller - Get', () => {
     it('should get a user profile', async () => {
       const mockResults: Partial<UserProfile> = {
         preferredExchange: '',
@@ -90,6 +140,19 @@ describe('User Profile Controler', () => {
       const results = await controller.get(req);
       expect(service.get).toHaveBeenCalledTimes(1);
       expect(results.userId).toBe('');
+    });
+
+    it('should get a user profile', async () => {
+      jest
+        .spyOn(service, 'get')
+        .mockResolvedValue(
+          Promise.reject(new InternalServerErrorException('')),
+        );
+
+      await expect(controller.get(req)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(service.get).toHaveBeenCalledTimes(1);
     });
   });
 });

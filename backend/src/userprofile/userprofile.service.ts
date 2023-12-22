@@ -1,10 +1,7 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
 import { NewUserProfile } from './newUserProfile.model';
 import { UserProfile } from './userprofile.model';
@@ -43,14 +40,10 @@ export class UserProfileService {
 
   async edit(req: any, newUserProfile: NewUserProfile) {
     try {
-      const profile = await this.userProfileModel.findOne({
-        where: {
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      if (!profile) {
-        throw new NotFoundException('Profile not found');
-      }
+      const profile = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        UserProfile,
+        UserHelpers.getUserIdFromRequest(req),
+      );
       await profile.update(newUserProfile);
       return true;
     } catch (e) {
@@ -60,11 +53,10 @@ export class UserProfileService {
 
   async get(req: any): Promise<UserProfile> {
     try {
-      return await this.userProfileModel.findOne({
-        where: {
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
+      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        UserProfile,
+        UserHelpers.getUserIdFromRequest(req),
+      );
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
