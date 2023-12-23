@@ -2,8 +2,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { DbHelpers } from '../helpers/dbHelpers';
+import { UserHelpers } from '../helpers/userHelpers';
 import { Trade } from './trade.model';
 import { TradeService } from './trade.service';
+
+jest.mock('../helpers/dbHelpers');
+jest.mock('../helpers/userHelpers');
 
 describe('TradeService', () => {
   let service: TradeService;
@@ -16,6 +21,11 @@ describe('TradeService', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
   };
+
+  const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+
+  const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -95,7 +105,12 @@ describe('TradeService', () => {
   describe('edit', () => {
     it('should successfully edit a trade', async () => {
       const mockTradeInstance = { update: jest.fn().mockResolvedValue(true) };
-      mockTradeModel.findOne.mockResolvedValue(mockTradeInstance as any);
+
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve({
+          update: jest.fn(),
+        } as unknown as Trade),
+      );
 
       const result = await service.edit(
         req,
@@ -106,7 +121,9 @@ describe('TradeService', () => {
     });
 
     it('should throw UnauthorizedException if trade not found', async () => {
-      mockTradeModel.findOne.mockResolvedValue(null);
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
+      );
 
       await expect(
         service.edit(req, { itemId: 'tradeId' } as any, {} as any),
@@ -135,15 +152,19 @@ describe('TradeService', () => {
   describe('getOne', () => {
     it('should return a single trade', async () => {
       const mockTrade = {}; // Single trade object
-      mockTradeModel.findOne.mockResolvedValue(mockTrade as any);
+
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(mockTrade as Trade),
+      );
 
       const result = await service.getOne(req, { itemId: 'tradeId' } as any);
       expect(result).toEqual(mockTrade);
     });
 
     it('should throw an error if findOne fails', async () => {
-      mockTradeModel.findOne.mockRejectedValue(new Error('Failed to find one'));
-      ``;
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
+      );
       await expect(
         service.getOne(req, { itemId: 'tradeId' } as any),
       ).rejects.toThrow(InternalServerErrorException);

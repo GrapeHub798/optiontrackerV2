@@ -2,8 +2,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { DbHelpers } from '../helpers/dbHelpers';
+import { UserHelpers } from '../helpers/userHelpers';
 import { Broker } from './broker.model';
 import { BrokerService } from './broker.service';
+
+jest.mock('../helpers/dbHelpers');
+jest.mock('../helpers/userHelpers');
 
 describe('Broker Service', () => {
   let service: BrokerService;
@@ -16,6 +21,20 @@ describe('Broker Service', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
   };
+
+  const mockReturnBrokerModel: Partial<Broker> = {
+    brokerId: '',
+    brokerName: '',
+    brokerOptionFee: 1,
+    brokerStockFee: 1,
+    update: jest.fn(),
+    userId: '',
+  };
+
+  const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+
+  const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,6 +76,10 @@ describe('Broker Service', () => {
       const mockTradeInstance = { update: jest.fn().mockResolvedValue(true) };
       mockBrokerModel.findOne.mockResolvedValue(mockTradeInstance as any);
 
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(mockReturnBrokerModel as Broker),
+      );
+
       const result = await service.edit(
         req,
         { itemId: 'brokerId' } as any,
@@ -66,7 +89,9 @@ describe('Broker Service', () => {
     });
 
     it('should throw UnauthorizedException if trade not found', async () => {
-      mockBrokerModel.findOne.mockResolvedValue(null);
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
+      );
 
       await expect(
         service.edit(req, { itemId: 'tradeId' } as any, {} as any),

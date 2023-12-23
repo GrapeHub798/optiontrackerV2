@@ -6,11 +6,16 @@ import {
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { DbHelpers } from '../helpers/dbHelpers';
+import { UserHelpers } from '../helpers/userHelpers';
+import { GetOneItem } from '../universal/getSingle.model';
 import { Journal } from './journal.model';
 import { JournalService } from './journal.service';
 import { JournalEntry } from './journalEntry.model';
-import { JournalId } from './journalId.model';
 import { JournalTradeId } from './journalTradeId.model';
+
+jest.mock('../helpers/dbHelpers');
+jest.mock('../helpers/userHelpers');
 
 describe('JournalService', () => {
   let service: JournalService;
@@ -22,6 +27,31 @@ describe('JournalService', () => {
     findOne: jest.fn(),
     save: jest.fn(),
   };
+
+  const mockReturnJournalModel: Partial<Journal> = {
+    date: new Date(),
+    journalEntry: '',
+    journalId: '',
+    save: jest.fn(),
+    tradeId: '',
+    update: jest.fn(),
+    userId: '',
+  };
+
+  const req = {
+    user: {
+      userId: 'testUserId',
+    },
+  };
+
+  const mockItem: GetOneItem = {
+    itemId: '',
+  };
+
+  const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+
+  const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -69,26 +99,16 @@ describe('JournalService', () => {
 
   describe('JournalService - delete journal entry', () => {
     it('should delete a journal entry', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
-
       mockJournalModel.findOne.mockResolvedValue({
         destroy: jest.fn().mockResolvedValue(true),
       });
 
-      expect(await service.delete(req, journalId)).toBeTruthy();
+      expect(await service.delete(req, mockItem)).toBeTruthy();
     });
 
     it('should fail to delete a journal entry', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
-
-      mockJournalModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('Journal not found')),
-      );
-      await expect(service.delete(req, journalId)).rejects.toThrow(
+      mockJournalModel.destroy.mockRejectedValue(new Error('Failed to delete'));
+      await expect(service.delete(req, mockItem)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
@@ -96,30 +116,25 @@ describe('JournalService', () => {
 
   describe('JournalService - edit journal entry', () => {
     it('should edit a journal entry', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
       const journalEntry = new JournalEntry();
       journalEntry.entry = 'Test entry';
 
-      mockJournalModel.findOne.mockResolvedValue({
-        save: jest.fn().mockResolvedValue(true),
-      });
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(mockReturnJournalModel as Journal),
+      );
 
-      expect(await service.edit(req, journalId, journalEntry)).toBeTruthy();
+      expect(await service.edit(req, mockItem, journalEntry)).toBeTruthy();
     });
 
     it('should fail to edit a journal entry', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
       const journalEntry = new JournalEntry();
       journalEntry.entry = 'Test entry';
 
-      mockJournalModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('Journal not found')),
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
       );
-      await expect(service.edit(req, journalId, journalEntry)).rejects.toThrow(
+
+      await expect(service.edit(req, mockItem, journalEntry)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
@@ -127,7 +142,6 @@ describe('JournalService', () => {
 
   describe('JournalService - get all journal entries', () => {
     it('should get all journal entries', async () => {
-      const req = { user: { userId: 10 } } as any;
       const journalEntries = [
         { entry: 'Entry 1', journalId: '1' },
         { entry: 'Entry 2', journalId: '2' },
@@ -151,59 +165,46 @@ describe('JournalService', () => {
 
   describe('JournalService - link journal entry', () => {
     it('should link a journal entry to a trade', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
       const journalTradeId = new JournalTradeId();
       journalTradeId.tradeId = '456';
 
-      mockJournalModel.findOne.mockResolvedValue({
-        save: jest.fn().mockResolvedValue(true),
-      });
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(mockReturnJournalModel as Journal),
+      );
 
       expect(
-        await service.linkTrade(req, journalId, journalTradeId),
+        await service.linkTrade(req, mockItem, journalTradeId),
       ).toBeTruthy();
     });
 
     it('should fail to link a journal entry to a trade', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
       const journalTradeId = new JournalTradeId();
       journalTradeId.tradeId = '456';
 
-      mockJournalModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('Journal not found')),
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
       );
+
       await expect(
-        service.linkTrade(req, journalId, journalTradeId),
+        service.linkTrade(req, mockItem, journalTradeId),
       ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
   describe('JournalService - unlink journal entry', () => {
     it('should unlink a journal entry from a trade', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(mockReturnJournalModel as Journal),
+      );
 
-      mockJournalModel.findOne.mockResolvedValue({
-        save: jest.fn().mockResolvedValue(true),
-      });
-
-      expect(await service.unlinkTrade(req, journalId)).toBeTruthy();
+      expect(await service.unlinkTrade(req, mockItem)).toBeTruthy();
     });
 
     it('should fail to unlink a journal entry from a trade', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const journalId = new JournalId();
-      journalId.journalId = '123';
-
-      mockJournalModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('Journal not found')),
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
       );
-      await expect(service.unlinkTrade(req, journalId)).rejects.toThrow(
+      await expect(service.unlinkTrade(req, mockItem)).rejects.toThrow(
         InternalServerErrorException,
       );
     });

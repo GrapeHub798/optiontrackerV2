@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Observable } from 'rxjs';
 
 import { Exchange } from './exchange.model';
 import { ExchangesController } from './exchanges.controller';
@@ -42,9 +41,7 @@ describe('ExchangesController', () => {
   it('should refresh and return exchanges', async () => {
     jest
       .spyOn(service, 'refreshExchanges')
-      .mockResolvedValue(
-        Promise.resolve(true as unknown as Observable<boolean>),
-      );
+      .mockResolvedValue(Promise.resolve(true));
 
     expect(await controller.getExchanges()).toBe(true);
     expect(service.refreshExchanges).toHaveBeenCalledTimes(1);

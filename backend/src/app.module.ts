@@ -3,9 +3,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
+import * as process from 'process';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { BrokerModule } from './broker/broker.module';
 import { EodhdModule } from './eodhdapi/eodhd.module';
 import { ExchangesModule } from './exchanges/exchanges.module';
 import { JournalModule } from './journal/journal.module';
@@ -13,11 +16,14 @@ import { OptionsModule } from './options/options.module';
 import { StocksModule } from './stocks/stocks.module';
 import { TradeModule } from './trade/trade.module';
 import { UserModule } from './user/user.module';
+import { UserprofileModule } from './userprofile/userprofile.module';
 
 @Module({
   controllers: [AppController],
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     SequelizeModule.forRoot({
       autoLoadModels: true,
       database: process.env.DB_DB,
@@ -31,9 +37,12 @@ import { UserModule } from './user/user.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: process.env.JWT_EXPIRATION },
     }),
+    AuthModule,
+    BrokerModule,
     UserModule,
+    UserprofileModule,
     JournalModule,
     ExchangesModule,
     StocksModule,

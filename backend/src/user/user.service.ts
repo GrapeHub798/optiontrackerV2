@@ -6,6 +6,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 
+import { AuthUser } from '../auth/authUser.model';
+import { UserHelpers } from '../helpers/userHelpers';
 import { User } from './user.model';
 import { UserLogin } from './userLogin.model';
 import { UserWithJWTModel } from './userWithJWT.model';
@@ -19,10 +21,34 @@ export class UserService {
   ) {}
 
   async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
-    const payload = { userId: user.userId };
-    const token = await this.jwtService.signAsync(payload);
-    return new UserWithJWTModel(user, token);
+    const token = await UserHelpers.generateJWTToken(
+      this.jwtService,
+      user.userId,
+    );
+    const refreshToken = await UserHelpers.generateRefreshToken(
+      this.jwtService,
+      user.userId,
+      user.email,
+    );
+
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 2);
+    return new UserWithJWTModel(user, token, refreshToken, expirationDate);
   }
+  async getAuthUser(authUser: AuthUser): Promise<boolean> {
+    try {
+      const foundUser = await this.userModel.findOne({
+        where: {
+          email: authUser.userEmail,
+          userId: authUser.userId,
+        },
+      });
+      return Boolean(foundUser);
+    } catch (e) {
+      return false;
+    }
+  }
+
   async login(loginData: UserLogin): Promise<UserWithJWTModel> {
     try {
       const foundUser = await this.userModel.findOne({

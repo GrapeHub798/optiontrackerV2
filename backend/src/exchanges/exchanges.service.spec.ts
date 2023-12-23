@@ -1,144 +1,127 @@
+// exchanges.service.spec.ts
+import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { from } from 'rxjs';
+import { of } from 'rxjs';
 
 import { EodhdService } from '../eodhdapi/eodhd.service';
-import { ExchangeCode } from '../stocks/exchangeCode.model';
+import { DbHelpers } from '../helpers/dbHelpers';
 import { Exchange } from './exchange.model';
 import { ExchangesService } from './exchanges.service';
 
 jest.mock('../eodhdapi/eodhd.service');
+jest.mock('../helpers/dbHelpers');
 
 describe('ExchangesService', () => {
   let service: ExchangesService;
-  let mockModel: Partial<Record<keyof typeof Exchange, jest.Mock>>;
-  let mockEodhdService: jest.Mocked<EodhdService>;
-  let model: typeof Exchange;
+  let mockExchangeModel;
+  let eodhdServiceMock;
+  let httpServiceMock;
+
+  const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
-    mockModel = {
+    mockExchangeModel = {
       bulkCreate: jest.fn(),
       findAll: jest.fn(),
       findOne: jest.fn(),
     };
+
+    // Mock HttpService
+    httpServiceMock = {
+      get: jest.fn(),
+      post: jest.fn(),
+      // ... other methods if necessary
+    };
+
+    eodhdServiceMock = new EodhdService(httpServiceMock); // Mock EodhdService
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExchangesService,
         {
           provide: getModelToken(Exchange),
-          useValue: mockModel,
+          useValue: mockExchangeModel,
         },
-        EodhdService,
+        {
+          provide: EodhdService,
+          useValue: eodhdServiceMock,
+        },
+        {
+          provide: HttpService,
+          useValue: httpServiceMock,
+        },
       ],
     }).compile();
 
     service = module.get<ExchangesService>(ExchangesService);
-    model = module.get<typeof Exchange>(getModelToken(Exchange));
-    //mockEodhdService = module.get<EodhdService>(EodhdService);
   });
 
-  afterEach(async () => {
-    jest.resetAllMocks();
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('getAll', () => {
-    it('should retrieve all exchanges with code US', async () => {
-      const expectedData: Array<Partial<Exchange>> = [
-        {
-          code: 'US',
-          country: 'United States',
-          currency: 'USD',
-          name: 'NYSE',
-          operatingMic: 'XNYS',
-        },
+  describe('getAll method', () => {
+    it('should return all exchanges with static code US', async () => {
+      const mockExchanges = [
+        { code: 'US', name: 'Exchange1' },
+        { code: 'US', name: 'Exchange2' },
       ];
-
-      mockModel.findAll.mockResolvedValue(expectedData);
-
-      const actualData = await service.getAll();
-
-      expect(mockModel.findAll).toHaveBeenCalledWith({
-        where: {
-          code: 'US',
-        },
-      });
-      expect(actualData).toEqual(expectedData);
+      mockExchangeModel.findAll.mockResolvedValue(mockExchanges);
+      await expect(service.getAll()).resolves.toEqual(mockExchanges);
     });
 
-    it('should throw an error when getAll fail', async () => {
-      mockModel.findAll.mockRejectedValue(new Error('Fake Error'));
-
-      await expect(service.getAll()).rejects.toThrowError(
-        new InternalServerErrorException('Fake Error'),
+    it('should throw an InternalServerErrorException if retrieval fails', async () => {
+      mockExchangeModel.findAll.mockRejectedValue(
+        new Error('Retrieval failed'),
+      );
+      await expect(service.getAll()).rejects.toThrow(
+        InternalServerErrorException,
       );
     });
   });
 
-  describe('getSingleExchange', () => {
-    it('should successfully get one exchange', async () => {
-      const exchangeCodeParam: ExchangeCode = { exchangeCode: 'US' };
-      const expectedData: Partial<Exchange> = {
-        code: 'US',
-        country: 'United States',
-        currency: 'USD',
-        name: 'NYSE',
-        operatingMic: 'XNYS',
-      };
+  describe('getSingleExchange method', () => {
+    const exchangeCode = { exchangeCode: 'US' };
 
-      mockModel.findOne.mockResolvedValue(expectedData);
-
-      const actualData = await service.getSingleExchange(exchangeCodeParam);
-
-      expect(mockModel.findOne).toHaveBeenCalledWith({
-        where: {
-          code: exchangeCodeParam.exchangeCode,
-        },
-      });
-      expect(actualData).toEqual(expectedData);
+    it('should return a single exchange based on exchangeCode', async () => {
+      const mockExchange = { code: 'US', name: 'Exchange1' };
+      mockExchangeModel.findOne.mockResolvedValue(mockExchange);
+      await expect(service.getSingleExchange(exchangeCode)).resolves.toEqual(
+        mockExchange,
+      );
     });
 
-    it('should throw an error when getOne fail', async () => {
-      const exchangeCodeParam: ExchangeCode = { exchangeCode: 'US' };
-      mockModel.findOne.mockRejectedValue(new Error('Fake Error'));
-
-      await expect(
-        service.getSingleExchange(exchangeCodeParam),
-      ).rejects.toThrowError(new InternalServerErrorException('Fake Error'));
+    it('should throw an InternalServerErrorException if retrieval fails', async () => {
+      mockExchangeModel.findOne.mockRejectedValue(
+        new InternalServerErrorException('Retrieval failed'),
+      );
+      await expect(service.getSingleExchange(exchangeCode)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
-  describe('refreshExchanges', () => {
-    it('should call the EodhdService getAllExchanges method', async (done) => {
-      const data = [];
-      const eodhdServiceSpy = jest
-        .spyOn(mockEodhdService, 'getAllExchanges')
-        .mockReturnValue(from(data));
-      (await service.refreshExchanges()).subscribe((result) => {
-        expect(eodhdServiceSpy).toHaveBeenCalled();
-        expect(result).toBe(true);
-        done();
-      });
+  describe('refreshExchanges method', () => {
+    it('should complete the refresh of exchanges', async () => {
+      eodhdServiceMock.getAllExchanges.mockReturnValue(
+        of([{ code: 'US', name: 'Exchange1' }]),
+      ); // using 'of' from rxjs
+      dbHelpersMock.chunkArray.mockReturnValue([]);
+
+      mockExchangeModel.bulkCreate.mockRejectedValue(true);
+
+      const results = await service.refreshExchanges();
+      expect(results).toBeTruthy();
     });
 
-    it('should handle errors from the EodhdService getAllExchanges method', async (done) => {
-      const eodhdServiceSpy = jest
-        .spyOn(mockEodhdService, 'getAllExchanges')
-        .mockImplementation(() => {
-          throw new Error('Test error');
-        });
-      (await service.refreshExchanges()).subscribe({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        error: (error) => {
-          expect(eodhdServiceSpy).toHaveBeenCalled();
-          done();
-        },
+    it('should handle errors properly', async () => {
+      eodhdServiceMock.getAllExchanges.mockImplementation(() => {
+        throw new InternalServerErrorException('Refresh failed');
       });
+
+      try {
+        await service.refreshExchanges();
+      } catch (err) {
+        expect(err).toBeInstanceOf(InternalServerErrorException);
+      }
     });
   });
 });

@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Subject } from 'rxjs';
+import { take } from 'rxjs';
 
 import { EodhdService } from '../eodhdapi/eodhd.service';
 import { DbHelpers } from '../helpers/dbHelpers';
@@ -40,31 +40,43 @@ export class ExchangesService {
     }
   }
 
-  async refreshExchanges() {
+  async refreshExchanges(): Promise<boolean> {
     try {
-      const refreshComplete = new Subject<boolean>();
-      this.eodhdService.getAllExchanges().subscribe((data) => {
-        //we will chunk the data in case it's large
-        const chunkSize = Number(process.env.DB_CHUNK_SIZE);
-        const chunks = DbHelpers.chunkArray(data, chunkSize);
-        chunks.forEach((chunk) => {
-          this.exchangeModel.bulkCreate(chunk, {
-            fields: [
-              'code',
-              'country',
-              'countryISO2',
-              'countryISO3',
-              'currency',
-              'name',
-              'operatingMic',
-            ],
-            updateOnDuplicate: ['code'],
+      return new Promise((resolve) => {
+        this.eodhdService
+          .getAllExchanges()
+          .pipe(
+            take(1), //useful if you need the data once and don't want to manually cancel the subscription again
+          )
+          .subscribe({
+            complete: () =>
+              console.info('Successfully Retrieved Exchange info'),
+            error: (e) => {
+              console.log(e);
+              throw new InternalServerErrorException(e.message);
+            },
+            next: (data) => {
+              //we will chunk the data in case it's large
+              const chunkSize = Number(process.env.DB_CHUNK_SIZE);
+              const chunks = DbHelpers.chunkArray(data, chunkSize);
+              chunks.forEach((chunk) => {
+                this.exchangeModel.bulkCreate(chunk, {
+                  fields: [
+                    'code',
+                    'country',
+                    'countryISO2',
+                    'countryISO3',
+                    'currency',
+                    'name',
+                    'operatingMic',
+                  ],
+                  updateOnDuplicate: ['code'],
+                });
+              });
+              resolve(true);
+            },
           });
-        });
-        refreshComplete.next(true);
-        refreshComplete.complete();
       });
-      return refreshComplete.asObservable();
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

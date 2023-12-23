@@ -87,12 +87,11 @@ export class OptionsService {
 
   async getOne(req: any, getOneItem: GetOneItem): Promise<Option> {
     try {
-      return await this.optionModel.findOne({
-        where: {
-          optionId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
+      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Option,
+        UserHelpers.getUserIdFromRequest(req),
+        getOneItem.itemId,
+      );
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

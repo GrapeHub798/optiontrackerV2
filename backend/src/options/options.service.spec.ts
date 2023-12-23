@@ -6,6 +6,8 @@ import {
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { DbHelpers } from '../helpers/dbHelpers';
+import { UserHelpers } from '../helpers/userHelpers';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
@@ -13,8 +15,24 @@ import { NewOption } from './newOption.model';
 import { Option } from './option.model';
 import { OptionsService } from './options.service';
 
+jest.mock('../helpers/dbHelpers');
+jest.mock('../helpers/userHelpers');
+
 describe('OptionsService', () => {
   let service: OptionsService;
+
+  const req = { user: { userId: 10 } } as any;
+
+  const newOption: NewOption = {
+    expirationDate: new Date(),
+    optionType: 1,
+    strikePrice: 200,
+    ticker: 'AAPL',
+  };
+
+  const getOneItem: GetOneItem = {
+    itemId: 'item1',
+  };
 
   const mockOptionModel = {
     create: jest.fn(),
@@ -22,6 +40,11 @@ describe('OptionsService', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
   };
+
+  const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+
+  const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -43,14 +66,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - create', () => {
     it('should create an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const newOption: NewOption = {
-        expirationDate: new Date(),
-        optionType: 1,
-        strikePrice: 200,
-        ticker: 'AAPL',
-      };
-
       mockOptionModel.create.mockResolvedValue(true);
 
       const result = await service.create(req, newOption);
@@ -58,14 +73,6 @@ describe('OptionsService', () => {
     });
 
     it('should fail to create an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const newOption: NewOption = {
-        expirationDate: new Date(),
-        optionType: 1,
-        strikePrice: 200,
-        ticker: 'AAPL',
-      };
-
       mockOptionModel.create.mockResolvedValue(
         Promise.reject(new InternalServerErrorException('')),
       );
@@ -78,11 +85,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - delete', () => {
     it('should delete an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item1',
-      };
-
       mockOptionModel.destroy.mockResolvedValue(true);
 
       const result = await service.delete(req, getOneItem);
@@ -90,11 +92,6 @@ describe('OptionsService', () => {
     });
 
     it('should fail to delete an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item1',
-      };
-
       mockOptionModel.destroy.mockResolvedValue(
         Promise.reject(new InternalServerErrorException('')),
       );
@@ -107,7 +104,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - multiple delete', () => {
     it('should delete multiple options', async () => {
-      const req = { user: { userId: 10 } } as any;
       const deleteMultiple: DeleteMultiple = {
         itemIds: ['item1', 'item2'],
       };
@@ -119,7 +115,6 @@ describe('OptionsService', () => {
     });
 
     it('should fail to delete an option', async () => {
-      const req = { user: { userId: 10 } } as any;
       const deleteMultiple: DeleteMultiple = {
         itemIds: ['item1', 'item2'],
       };
@@ -136,17 +131,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - edit', () => {
     it('should edit an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item3',
-      };
-      const newOption: NewOption = {
-        expirationDate: new Date(),
-        optionType: 1,
-        strikePrice: 200,
-        ticker: 'AAPL',
-      };
-
       const foundOption: Partial<Option> = {
         expirationDate: new Date(),
         optionType: 1,
@@ -155,24 +139,15 @@ describe('OptionsService', () => {
         update: () => Promise.resolve(this),
       };
 
-      mockOptionModel.findOne.mockResolvedValue(foundOption);
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(foundOption as Option),
+      );
 
       const result = await service.edit(req, getOneItem, newOption);
       expect(result).toBeTruthy();
     });
 
     it('should fail to edit an option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item3',
-      };
-      const newOption: NewOption = {
-        expirationDate: new Date(),
-        optionType: 1,
-        strikePrice: 200,
-        ticker: 'AAPL',
-      };
-
       const foundOption: Partial<Option> = {
         expirationDate: new Date(),
         optionType: 1,
@@ -181,7 +156,9 @@ describe('OptionsService', () => {
         update: () => Promise.reject(new InternalServerErrorException('')),
       };
 
-      mockOptionModel.findOne.mockResolvedValue(foundOption);
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(foundOption as Option),
+      );
 
       await expect(service.edit(req, getOneItem, newOption)).rejects.toThrow(
         InternalServerErrorException,
@@ -189,19 +166,8 @@ describe('OptionsService', () => {
     });
 
     it('should throw an error for non-existent option to edit', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item3',
-      };
-      const newOption: NewOption = {
-        expirationDate: new Date(),
-        optionType: 1,
-        strikePrice: 200,
-        ticker: 'AAPL',
-      };
-
-      mockOptionModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('')),
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
       );
 
       await expect(service.edit(req, getOneItem, newOption)).rejects.toThrow(
@@ -212,7 +178,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - getAll', () => {
     it('should find all options', async () => {
-      const req = { user: { userId: 10 } } as any;
       const getAllPaginated: GetAllPaginated = {
         limit: 10,
         page: 1,
@@ -240,7 +205,6 @@ describe('OptionsService', () => {
     });
 
     it('should fail to find all options', async () => {
-      const req = { user: { userId: 10 } } as any;
       const getAllPaginated: GetAllPaginated = {
         limit: 10,
         page: 1,
@@ -258,11 +222,6 @@ describe('OptionsService', () => {
 
   describe('OptionsService - getOne', () => {
     it('should find one option', async () => {
-      const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item1',
-      };
-
       const results: Partial<Option>[] = [
         {
           expirationDate: new Date(),
@@ -272,7 +231,9 @@ describe('OptionsService', () => {
         },
       ];
 
-      mockOptionModel.findOne.mockResolvedValue(results);
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.resolve(results as unknown as Option),
+      );
 
       const option = await service.getOne(req, getOneItem);
       expect(option).toBeDefined();
@@ -282,12 +243,8 @@ describe('OptionsService', () => {
 
     it('should fail to find one option', async () => {
       const req = { user: { userId: 10 } } as any;
-      const getOneItem: GetOneItem = {
-        itemId: 'item1',
-      };
-
-      mockOptionModel.findOne.mockResolvedValue(
-        Promise.reject(new NotFoundException('')),
+      dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
+        Promise.reject(new Error('Primary key not found for the given model.')),
       );
 
       await expect(service.getOne(req, getOneItem)).rejects.toThrow(

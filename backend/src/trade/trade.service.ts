@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/sequelize';
 
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
-import { Option } from '../options/option.model';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
@@ -12,15 +11,23 @@ import { Trade } from './trade.model';
 
 @Injectable()
 export class TradeService {
+  private calculateTotal = (newTrade: NewTrade) => {
+    const totalBuyPrice = newTrade.buyPrice * newTrade.quantity;
+    const totalSellPrice = newTrade.sellPrice * newTrade.quantity;
+
+    return totalSellPrice - totalBuyPrice;
+  };
   constructor(
     @InjectModel(Trade)
     private readonly tradeModel: typeof Trade,
   ) {}
-
   async create(req: any, newTrade: NewTrade) {
     try {
+      //do the total calculation
+
       await this.tradeModel.create({
         ...newTrade,
+        tradeTotal: this.calculateTotal(newTrade),
         userId: UserHelpers.getUserIdFromRequest(req),
       });
       return true;
@@ -60,11 +67,14 @@ export class TradeService {
   async edit(req: any, getOneItem: GetOneItem, newTrade: NewTrade) {
     try {
       const trade = await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        Option,
+        Trade,
         UserHelpers.getUserIdFromRequest(req),
         getOneItem.itemId,
       );
-      await trade.update(newTrade);
+      await trade.update({
+        ...newTrade,
+        tradeTotal: this.calculateTotal(newTrade),
+      });
       return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));

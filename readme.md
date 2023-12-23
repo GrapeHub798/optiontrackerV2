@@ -2,14 +2,17 @@
 
 ### Frontend
 
-* React
-    * Redux Toolkit
-    * Bootstrap
-    * Font Awesome
+* [React](https://react.dev/)
+    * [Redux Toolkit](https://redux-toolkit.js.org/)
+    * [React Bootstrap](https://react-bootstrap.netlify.app/)
+    * [Font Awesome](https://fontawesome.com/v5/docs/web/use-with/react)
+    * [React Redux](https://react-redux.js.org/)
+    * [React Router Dom](https://reactrouter.com/en/main)
+    * [React Hook Form](https://react-hook-form.com)
 
 ### Backend
 
-* NestJS
+* [NestJS](https://nestjs.com/)
     * [sequelize](https://sequelize.org/)
     * [mysql2](https://www.npmjs.com/package/mysql2)
     * [dotenv](https://www.npmjs.com/package/dotenv)
@@ -126,9 +129,13 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 | brokerOptionFee | decimal |
 | brokerStockFee  | decimal |
 
+<br/>
+<br/>
+
 ### Useful Links
 
 * [NestJS Documentation](https://docs.nestjs.com/)
 * [NestJS with Sequelize ORM](https://thriveread.com/nestjs-sequelize/)
 * [NestJS Authentication](https://docs.nestjs.com/security/authentication)
 * [Refresh Tokens](https://stackoverflow.com/questions/27726066/jwt-refresh-token-flow)
+* [Redux Auth Example](https://jasonwatmore.com/post/2022/06/15/react-18-redux-jwt-authentication-example-tutorial)

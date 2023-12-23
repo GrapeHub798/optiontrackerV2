@@ -3,7 +3,7 @@ import { WhereOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 export class DbHelpers {
-  static chunkArray = (arr, size) => {
+  static chunkArray = (arr: any, size: number) => {
     if (!Array.isArray(arr)) {
       throw new TypeError('First argument must be an array');
     }
