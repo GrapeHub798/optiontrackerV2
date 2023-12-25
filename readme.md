@@ -1,4 +1,4 @@
-# STOCK OPTION APPLICATION
+# Open Source Trade Journal
 
 ### Frontend
 
