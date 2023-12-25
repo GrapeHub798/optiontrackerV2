@@ -1,14 +1,22 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 
-import { authReducer } from './auth.slice';
-import { userReducer } from './user.slice';
+import { exchangesReducer } from "./exchanges.slice";
+//import { brokersReducer } from "./brokers.slice";
+//import { stocksReducer } from "./stocks.slice";
+import { userReducer } from "./user.slice";
 
-export * from './auth.slice';
-export * from './user.slice';
+//export * from "./brokers.slice";
+export * from "./exchanges.slice";
+//export * from "./stocks.slice";
+export * from "./user.slice";
 
 export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        user: userReducer
-    },
+  reducer: {
+    user: userReducer,
+    exchanges: exchangesReducer,
+    //brokers: brokersReducer,
+    //stocks: stocksReducer,
+  },
 });
+
+export default store;

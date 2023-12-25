@@ -1,0 +1,64 @@
+import "./userprofile.css";
+
+import { faLanguage, faLock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
+import { Card, Col, Container, Row } from "react-bootstrap";
+
+import ChangePasswordModal from "./modals/changepassword.modal";
+import ChangePreferencesModal from "./modals/changepreferences.modal";
+
+const UserProfile = () => {
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+
+  const lockIcon = <FontAwesomeIcon icon={faLock} size="6x" />;
+  const languageIcon = <FontAwesomeIcon icon={faLanguage} size={"6x"} />;
+
+  return (
+    <Container>
+      <h1>User Profile</h1>
+      <Row>
+        <Col md={{ span: 4, offset: 2 }} className="mt-4">
+          <Card
+            className="pointer-class profile-cards"
+            onClick={() => setShowPasswordModal(true)}
+          >
+            <Card.Header className="text-center">{lockIcon}</Card.Header>
+            <Card.Body>
+              <Card.Title className="text-center">Change Password</Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={{ span: 4 }} className="mt-4">
+          <Card
+            className="pointer-class profile-cards"
+            onClick={() => setShowPreferencesModal(true)}
+          >
+            <Card.Header className="text-center">{languageIcon}</Card.Header>
+            <Card.Body>
+              <Card.Title className="text-center">
+                Change Exchange/Language
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {showPasswordModal && (
+        <ChangePasswordModal
+          show={showPasswordModal}
+          onHide={() => setShowPasswordModal(false)}
+        />
+      )}
+      {showPreferencesModal && (
+        <ChangePreferencesModal
+          show={showPreferencesModal}
+          onHide={() => setShowPreferencesModal(false)}
+        />
+      )}
+    </Container>
+  );
+};
+
+export default UserProfile;

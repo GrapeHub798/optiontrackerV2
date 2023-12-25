@@ -1,0 +1,14 @@
+figcaption {
+    background-color: #222;
+    color: #fff;
+    font: italic smaller sans-serif;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.feature-image {
+    height: 200px; /* Adjust the height as needed */
+    object-fit: cover; /* This ensures the image covers the area without stretching */
+}
