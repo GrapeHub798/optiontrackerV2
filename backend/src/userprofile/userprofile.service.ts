@@ -40,11 +40,10 @@ export class UserProfileService {
 
   async edit(req: any, newUserProfile: NewUserProfile) {
     try {
-      const profile = await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        UserProfile,
-        UserHelpers.getUserIdFromRequest(req),
-      );
-      await profile.update(newUserProfile);
+      await this.userProfileModel.upsert({
+        ...newUserProfile,
+        userId: UserHelpers.getUserIdFromRequest(req),
+      });
       return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));

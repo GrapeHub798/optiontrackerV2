@@ -62,7 +62,7 @@ export const Login = () => {
   };
 
   return (
-    <Container fluid>
+    <Container>
       <Row>
         <Col md={{ span: 6, offset: 3 }} className="mt-5">
           <Form onSubmit={handleSubmit(onSubmit)}>

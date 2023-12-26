@@ -7,7 +7,9 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 
 import { AuthUser } from '../auth/authUser.model';
+import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
+import { ChangePassword } from './changePassword.model';
 import { User } from './user.model';
 import { UserLogin } from './userLogin.model';
 import { UserWithJWTModel } from './userWithJWT.model';
@@ -20,6 +22,29 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
+  async changePassword(
+    req: any,
+    changePassword: ChangePassword,
+  ): Promise<boolean> {
+    try {
+      const foundUser = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        User,
+        UserHelpers.getUserIdFromRequest(req),
+      );
+      //try to match the password
+      if (!foundUser.validatePassword(changePassword.oldPassword)) {
+        return Promise.reject(
+          new NotFoundException('Incorrect username or password'),
+        );
+      }
+
+      foundUser.password = changePassword.newPassword;
+      await foundUser.save();
+      return true;
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
   async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
     const token = await UserHelpers.generateJWTToken(
       this.jwtService,
@@ -35,6 +60,7 @@ export class UserService {
     expirationDate.setHours(expirationDate.getHours() + 2);
     return new UserWithJWTModel(user, token, refreshToken, expirationDate);
   }
+
   async getAuthUser(authUser: AuthUser): Promise<boolean> {
     try {
       const foundUser = await this.userModel.findOne({

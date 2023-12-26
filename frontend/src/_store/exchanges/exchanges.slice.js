@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getExchangesAction } from "./exchanges.sliceImpl";
+import { getExchangesAction } from "./exchanges.actions";
 
 const name = "exchanges";
 const initialState = createInitialState();
@@ -59,5 +59,3 @@ function createExtraReducers() {
     }
   };
 }
-
-export default exchangesReducer;

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { userActions } from "../_store";
+import { APP_URL_PATHS } from "../shared/sharedConstants";
 
 export const Navigation = () => {
   const dispatch = useDispatch();
@@ -18,20 +19,17 @@ export const Navigation = () => {
   };
 
   return (
-    <Navbar className="bg-body-tertiary">
+    <Navbar className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
       <Container>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand as={Link} to={APP_URL_PATHS.HOME}>
           <h3>OS Trade Journal</h3>
-          <h6 className="text-muted sub-brand">
-            Unveil Your Path to Financial Success
-          </h6>
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-start">
           <Navbar.Text className="ms-5">
             {authUser?.userId && (
               <Nav className="me-auto">
-                <Nav.Link as={Link} to="/dashboard" href="#">
+                <Nav.Link as={Link} to={APP_URL_PATHS.DASHBOARD} href="#">
                   Dashboard
                 </Nav.Link>
               </Nav>
@@ -42,7 +40,8 @@ export const Navigation = () => {
           {authUser?.userId && (
             <>
               <Navbar.Text className="me-2">
-                Signed in as: <Link to="/userprofile">{authUser.email}</Link>
+                Signed in as:{" "}
+                <Link to={APP_URL_PATHS.USERPROFILE}>{authUser.email}</Link>
               </Navbar.Text>
               <Navbar.Text>
                 <span className="pointer-class" onClick={logout}>
@@ -54,10 +53,10 @@ export const Navigation = () => {
           {!authUser && (
             <>
               <Navbar.Text className="me-2">
-                <Link to="/login">Login</Link>
+                <Link to={APP_URL_PATHS.LOGIN}>Login</Link>
               </Navbar.Text>
               <Navbar.Text>
-                <Link to="/register">Register</Link>
+                <Link to={APP_URL_PATHS.REGISTER}>Register</Link>
               </Navbar.Text>
             </>
           )}

@@ -18,7 +18,12 @@ export const getBearerToken = async () => {
 
   //try once more
   const updatedUser = getUserState();
-  return getJWTFromUser(updatedUser?.user);
+  const updatedJWT = getJWTFromUser(updatedUser?.user);
+  if (!updatedJWT) {
+    store.dispatch(userActions.logout());
+    throw new Error("Un-Authorized User");
+  }
+  return updatedJWT;
 };
 
 const getJWTFromUser = (user) => {

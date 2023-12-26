@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { history } from "../_helpers/history";
+import { history } from "../../_helpers/history";
+import { APP_URL_PATHS } from "../../shared/sharedConstants";
 import {
+  changePasswordAction,
   loginAction,
   refreshTokensAction,
   registerAction,
-} from "./user.sliceImpl";
+} from "./user.actions";
 
 // create slice
 
@@ -36,18 +38,25 @@ function createInitialState() {
     // initialize state from local storage to enable user to stay logged in
     user: defaultUser,
     error: null,
+    success: false,
   };
 }
 
 function createReducers() {
   return {
     logout,
+    resetStatus,
   };
+
+  function resetStatus(state) {
+    state.success = false;
+    state.error = null;
+  }
 
   function logout(state) {
     state.user = null;
     localStorage.removeItem("user");
-    history.navigate("/");
+    history.navigate(APP_URL_PATHS.HOME);
   }
 }
 
@@ -59,7 +68,22 @@ function createExtraActions() {
     login: loginAction(baseUrl),
     register: registerAction(baseUrl),
     refreshTokens: refreshTokensAction(refreshUrl),
+    changePassword: changePasswordAction(baseUrl),
   };
+}
+
+function userPendingReducer(state) {
+  state.error = null;
+}
+
+function userRejectedReducer(state, action) {
+  state.error = action.payload;
+}
+
+function loginRegisterFulfilledReducer(state, action) {
+  const user = action.payload;
+  localStorage.setItem("user", JSON.stringify(user));
+  state.user = user;
 }
 
 function createExtraReducers() {
@@ -67,61 +91,46 @@ function createExtraReducers() {
     loginReducer();
     registerReducer();
     refreshTokensReducer();
+    changePasswordReducer();
 
+    function changePasswordReducer() {
+      const { pending, fulfilled, rejected } = extraActions.changePassword;
+      builder
+        .addCase(pending, userPendingReducer)
+        .addCase(fulfilled, (state) => {
+          state.success = true;
+        })
+        .addCase(rejected, userRejectedReducer);
+    }
     function refreshTokensReducer() {
       const { pending, fulfilled, rejected } = extraActions.refreshTokens;
       builder
-        .addCase(pending, (state) => {
-          state.error = null;
-        })
+        .addCase(pending, userPendingReducer)
         .addCase(fulfilled, (state, action) => {
-          debugger;
           const updatedUser = {
             ...state.user,
             ...action.payload,
           };
 
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem("user", JSON.stringify(updatedUser));
           state.user = updatedUser;
         })
-        .addCase(rejected, (state, action) => {
-          state.error = action.payload;
-        });
+        .addCase(rejected, userRejectedReducer);
     }
     function loginReducer() {
       const { pending, fulfilled, rejected } = extraActions.login;
       builder
-        .addCase(pending, (state) => {
-          state.error = null;
-        })
-        .addCase(fulfilled, (state, action) => {
-          const user = action.payload;
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem("user", JSON.stringify(user));
-          state.user = user;
-        })
-        .addCase(rejected, (state, action) => {
-          state.error = action.payload;
-        });
+        .addCase(pending, userPendingReducer)
+        .addCase(fulfilled, loginRegisterFulfilledReducer)
+        .addCase(rejected, userRejectedReducer);
     }
 
     function registerReducer() {
       const { pending, fulfilled, rejected } = extraActions.register;
       builder
-        .addCase(pending, (state) => {
-          state.error = null;
-        })
-        .addCase(fulfilled, (state, action) => {
-          const user = action.payload;
-
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem("user", JSON.stringify(user));
-          state.user = user;
-        })
-        .addCase(rejected, (state, action) => {
-          state.error = action.payload;
-        });
+        .addCase(pending, userPendingReducer)
+        .addCase(fulfilled, loginRegisterFulfilledReducer)
+        .addCase(rejected, userRejectedReducer);
     }
   };
 }

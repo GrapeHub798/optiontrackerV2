@@ -8,7 +8,7 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import ChangePasswordModal from "./modals/changepassword.modal";
 import ChangePreferencesModal from "./modals/changepreferences.modal";
 
-const UserProfile = () => {
+export const UserProfile = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showPreferencesModal, setShowPreferencesModal] = useState(false);
 
@@ -60,5 +60,3 @@ const UserProfile = () => {
     </Container>
   );
 };
-
-export default UserProfile;

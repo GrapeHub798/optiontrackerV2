@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getStocksAction } from "./stocks.sliceImpl";
+import { getStocksAction } from "./stocks.actions";
 
 const name = "stocks";
 const initialState = createInitialState();

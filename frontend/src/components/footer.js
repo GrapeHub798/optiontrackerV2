@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Container, Nav, Row } from "react-bootstrap";
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="footer bg-dark text-light py-4">
       <Container>
@@ -34,5 +34,3 @@ const Footer = () => {
     </footer>
   );
 };
-
-export default Footer;

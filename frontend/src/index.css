@@ -12,6 +12,7 @@ code {
     monospace;
 }
 
+/*
 .footer {
   position: fixed;
   left: 0;
@@ -19,6 +20,7 @@ code {
   width: 100%;
   text-align: center;
 }
+*/
 
 .pointer-class {
   cursor: pointer;

@@ -1,6 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import { DataTypes, UUID, UUIDV4 } from 'sequelize';
-import { BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
+import {
+  BeforeCreate,
+  BeforeSave,
+  Column,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 
 @Table
 export class User extends Model<User> {
@@ -24,6 +30,12 @@ export class User extends Model<User> {
     type: UUID,
   })
   userId: string;
+
+  @BeforeSave
+  static hashNewPassword(instance: User) {
+    const salt = bcrypt.genSaltSync();
+    instance.password = bcrypt.hashSync(instance.password, salt);
+  }
 
   @BeforeCreate
   static hashPassword(instance: User) {

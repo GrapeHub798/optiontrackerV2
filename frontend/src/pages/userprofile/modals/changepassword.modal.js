@@ -1,9 +1,15 @@
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
-import React from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
+
+import { displayError } from "../../../_helpers/errorhelper";
+import { userActions } from "../../../_store";
 
 const ChangePasswordModal = ({ show, onHide }) => {
   const validationSchema = Yup.object().shape({
@@ -16,77 +22,148 @@ const ChangePasswordModal = ({ show, onHide }) => {
       .required("Confirm Password is required")
       .min(4, "Password length should be at least 4 characters")
       .max(12, "Password cannot exceed more than 12 characters")
-      .oneOf([Yup.ref("password")], "Passwords do not match"),
+      .oneOf([Yup.ref("newPassword")], "Passwords do not match")
+      .notOneOf([Yup.ref("currentPassword")], "Password must be different"),
   });
   const formOptions = { resolver: yupResolver(validationSchema) };
 
   const { register, handleSubmit, formState } = useForm(formOptions);
-  const { errors, isSubmitting } = formState;
+  const { errors } = formState;
 
-  const onSubmit = (data) => {
-    console.log(data);
-    onHide(); // Close modal after submission
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [backdropValue, setBackdropValue] = useState("false");
+  const [enableKeyboard, setEnableKeyboard] = useState(true);
+
+  const dispatch = useDispatch();
+  const userError = useSelector((x) => x.user.error);
+  const changeSuccess = useSelector((x) => x.user.success);
+
+  useEffect(() => {
+    if (changeSuccess) {
+      setIsSaving(false);
+      setIsSaved(true);
+      setBackdropValue("false");
+      setEnableKeyboard(true);
+      setTimeout(() => hideResetForm(), 2000);
+    }
+  }, [changeSuccess]);
+
+  useEffect(() => {
+    if (userError) {
+      setIsSaving(false);
+    }
+  }, [userError]);
+  const onSubmit = async ({ currentPassword, newPassword }) => {
+    setIsSaving(true);
+    setBackdropValue("static");
+    setEnableKeyboard(false);
+    await dispatch(userActions.resetStatus());
+    await dispatch(
+      userActions.changePassword({
+        oldPassword: currentPassword,
+        newPassword,
+      }),
+    );
+  };
+
+  const cancelModal = () => {
+    if (!isSaving && !isSaved) {
+      onHide();
+    }
+  };
+
+  const hideResetForm = () => {
+    setIsSaved(false);
+    dispatch(userActions.resetStatus());
+    onHide();
   };
 
   return (
-    <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
+    <Modal
+      show={show}
+      onHide={onHide}
+      keyboard={enableKeyboard}
+      backdrop={backdropValue}
+    >
+      <Modal.Header>
         <Modal.Title>Change Password</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group>
-            <Form.Label>Current Password</Form.Label>
-            <Form.Control
-              type="password"
-              {...register("currentPassword")}
-              required
-              className={`form-control ${errors.password ? "is-invalid" : ""}`}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.email?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>New Password</Form.Label>
-            <Form.Control
-              type="password"
-              {...register("newPassword")}
-              required
-              className={`form-control ${
-                errors.newPassword ? "is-invalid" : ""
-              }`}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.newPassword?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Confirm New Password</Form.Label>
-            <Form.Control
-              type="password"
-              {...register("confirmNewPassword")}
-              required
-              className={`form-control ${
-                errors.confirmNewPassword ? "is-invalid" : ""
-              }`}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.confirmNewPassword?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Button
-            className="mt-4"
-            disabled={isSubmitting}
-            variant="primary"
-            type="submit"
-          >
-            {isSubmitting && (
-              <span className="spinner-border spinner-border-sm mr-1"></span>
+        {isSaving && (
+          <div className="text-center">
+            <Spinner animation="border" />
+            <p className="mt-2">Saving preferences...</p>
+          </div>
+        )}
+        {isSaved && (
+          <div className="text-center">
+            <FontAwesomeIcon icon={faCheckCircle} size="3x" color="green" />
+            <p className="mt-2">Preferences Saved Successfully!</p>
+          </div>
+        )}
+        {!isSaving && !isSaved && (
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form.Group>
+              <Form.Label>Current Password</Form.Label>
+              <Form.Control
+                type="password"
+                {...register("currentPassword")}
+                required
+                className={`form-control ${
+                  errors.password ? "is-invalid" : ""
+                }`}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>New Password</Form.Label>
+              <Form.Control
+                type="password"
+                {...register("newPassword")}
+                required
+                className={`form-control ${
+                  errors.newPassword ? "is-invalid" : ""
+                }`}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.newPassword?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Confirm New Password</Form.Label>
+              <Form.Control
+                type="password"
+                {...register("confirmNewPassword")}
+                required
+                className={`form-control ${
+                  errors.confirmNewPassword ? "is-invalid" : ""
+                }`}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.confirmNewPassword?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+            {userError && (
+              <Alert variant="danger" className="my-3" dismissible>
+                {displayError(userError)}
+              </Alert>
             )}
-            Change Password
-          </Button>
-        </Form>
+            <Button className="mt-4" variant="primary" type="submit">
+              Change Password
+            </Button>
+            <Button
+              className="mt-4 ms-4"
+              variant="danger"
+              type="button"
+              onClick={cancelModal}
+            >
+              Cancel
+            </Button>
+          </Form>
+        )}
       </Modal.Body>
     </Modal>
   );
