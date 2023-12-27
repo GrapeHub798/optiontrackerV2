@@ -16,8 +16,8 @@ import { AuthGuard } from '../guards/auth.guard';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
+import { GetAllTrades } from './getAllTrades.model';
 import { NewTrade } from './newTrade.model';
-import { Trade } from './trade.model';
 import { TradeService } from './trade.service';
 
 @Controller('trade')
@@ -39,7 +39,7 @@ export class TradeController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('/multiple')
+  @Post('/multiple')
   @HttpCode(HttpStatus.OK)
   deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
     return this.tradeService.deleteMultiple(req, itemIds);
@@ -62,14 +62,7 @@ export class TradeController {
   getAll(
     @Request() req: any,
     @Param() getAllPaginated: GetAllPaginated,
-  ): Promise<Trade[]> {
+  ): Promise<GetAllTrades> {
     return this.tradeService.getAll(req, getAllPaginated);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get(':itemId')
-  @HttpCode(HttpStatus.OK)
-  getOne(@Request() req: any, @Param() getOneItem: GetOneItem): Promise<Trade> {
-    return this.tradeService.getOne(req, getOneItem);
   }
 }

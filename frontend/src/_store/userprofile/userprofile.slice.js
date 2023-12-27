@@ -35,14 +35,7 @@ function createInitialState() {
 }
 
 function createReducers() {
-  return {
-    resetStatus,
-  };
-
-  function resetStatus(state) {
-    state.success = false;
-    state.error = null;
-  }
+  return {};
 }
 
 function createExtraActions() {
@@ -65,10 +58,12 @@ function defaultFulfilled(state, action) {
 
 function defaultPending(state) {
   state.error = null;
+  state.success = false;
 }
 
 function defaultRejected(state, action) {
   state.error = action.payload;
+  state.success = false;
 }
 function createExtraReducers() {
   return (builder) => {

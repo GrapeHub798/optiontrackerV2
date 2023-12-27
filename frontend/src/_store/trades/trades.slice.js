@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import {
-  createUserProfileAction,
-  editUserProfileAction,
-  getUserProfileAction,
-} from "../userprofile/userprofile.actions";
+  createNewTradeAction,
+  deleteMultipleTradesAction,
+  deleteTradeAction,
+  editTradeAction,
+  getTradesAction,
+} from "./trades.actions";
 
 const name = "trades";
 const initialState = createInitialState();
@@ -33,12 +35,13 @@ function createReducers() {
 }
 
 function createExtraActions() {
-  const baseUrl = `${process.env.REACT_APP_API_URL}/trades`;
+  const baseUrl = `${process.env.REACT_APP_API_URL}/trade`;
 
   return {
+    //note page and limit need to be sent to get trades action
     getTrades: getTradesAction(baseUrl),
     createNewTrade: createNewTradeAction(baseUrl),
-    editTrade: editTradection(baseUrl),
+    editTrade: editTradeAction(baseUrl),
     deleteTrade: deleteTradeAction(baseUrl),
     deleteMultipleTrades: deleteMultipleTradesAction(baseUrl),
   };
@@ -49,7 +52,72 @@ function defaultPending(state) {
   state.error = null;
 }
 
+function defaultFulfilled(state) {
+  state.loading = false;
+  state.error = null;
+}
+
 function defaultRejected(state, action) {
   state.loading = false;
   state.error = action.payload || "Failed to fetch data";
+}
+
+function createExtraReducers() {
+  return (builder) => {
+    getTradesReducer();
+    createNewTradeReducer();
+    editTradeReducer();
+    deleteTradeReducer();
+    deleteMultipleTradesReducer();
+
+    function getTradesReducer() {
+      const { pending, fulfilled, rejected } = extraActions.getTrades;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, (state, action) => {
+          const tradeData = action.payload;
+
+          state.items = tradeData.trades;
+          state.page = tradeData.page;
+          state.limit = tradeData.limit;
+          state.totalItems = tradeData.total;
+          state.totalPages = Math.ceil(tradeData.total / tradeData.limit);
+          state.loading = false;
+        })
+        .addCase(rejected, defaultRejected);
+    }
+
+    function createNewTradeReducer() {
+      const { pending, fulfilled, rejected } = extraActions.createNewTrade;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, defaultFulfilled)
+        .addCase(rejected, defaultRejected);
+    }
+
+    function editTradeReducer() {
+      const { pending, fulfilled, rejected } = extraActions.editTrade;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, defaultFulfilled)
+        .addCase(rejected, defaultRejected);
+    }
+
+    function deleteTradeReducer() {
+      const { pending, fulfilled, rejected } = extraActions.deleteTrade;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, defaultFulfilled)
+        .addCase(rejected, defaultRejected);
+    }
+
+    function deleteMultipleTradesReducer() {
+      const { pending, fulfilled, rejected } =
+        extraActions.deleteMultipleTrades;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, defaultFulfilled)
+        .addCase(rejected, defaultRejected);
+    }
+  };
 }

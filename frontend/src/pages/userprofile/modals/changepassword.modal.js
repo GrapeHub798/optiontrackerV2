@@ -58,7 +58,6 @@ const ChangePasswordModal = ({ show, onHide }) => {
     setIsSaving(true);
     setBackdropValue("static");
     setEnableKeyboard(false);
-    await dispatch(userActions.resetStatus());
     await dispatch(
       userActions.changePassword({
         oldPassword: currentPassword,
@@ -75,7 +74,6 @@ const ChangePasswordModal = ({ show, onHide }) => {
 
   const hideResetForm = () => {
     setIsSaved(false);
-    dispatch(userActions.resetStatus());
     onHide();
   };
 

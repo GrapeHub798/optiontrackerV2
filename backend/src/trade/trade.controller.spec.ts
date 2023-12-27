@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
+import { GetAllTrades } from './getAllTrades.model';
 import { NewTrade } from './newTrade.model';
 import { TradeController } from './trade.controller';
 import { Trade } from './trade.model';
@@ -177,12 +178,12 @@ describe('Trade Controller', () => {
 
       jest
         .spyOn(service, 'getAll')
-        .mockImplementation(() => Promise.resolve(mockResultsArray as Trade[]));
+        .mockImplementation(() =>
+          Promise.resolve(mockResultsArray as unknown as GetAllTrades),
+        );
 
       const results = await controller.getAll(req, mockPagination);
       expect(service.getAll).toHaveBeenCalledTimes(1);
-      expect(Array.isArray(results)).toBeTruthy();
-      expect(results.length).toBe(2);
     });
 
     it('should fail to get all trades', async () => {
@@ -201,31 +202,6 @@ describe('Trade Controller', () => {
         InternalServerErrorException,
       );
       expect(service.getAll).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Trade Controller - Get One', () => {
-    it('should get one trade', async () => {
-      jest
-        .spyOn(service, 'getOne')
-        .mockImplementation(() => Promise.resolve(mockResults as Trade));
-
-      const results = await controller.getOne(req, mockItem);
-      expect(service.getOne).toHaveBeenCalledTimes(1);
-      expect(results.sellPrice).toBe(1);
-    });
-
-    it('should fail to get one trade', async () => {
-      jest
-        .spyOn(service, 'getOne')
-        .mockResolvedValue(
-          Promise.reject(new InternalServerErrorException('')),
-        );
-
-      await expect(controller.getOne(req, mockItem)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-      expect(service.getOne).toHaveBeenCalledTimes(1);
     });
   });
 });

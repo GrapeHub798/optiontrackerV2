@@ -6,6 +6,7 @@ import { UserHelpers } from '../helpers/userHelpers';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
+import { GetAllTrades } from './getAllTrades.model';
 import { NewTrade } from './newTrade.model';
 import { Trade } from './trade.model';
 
@@ -81,28 +82,31 @@ export class TradeService {
     }
   }
 
-  async getAll(req: any, getAllPaginated: GetAllPaginated): Promise<Trade[]> {
+  async getAll(
+    req: any,
+    getAllPaginated: GetAllPaginated,
+  ): Promise<GetAllTrades> {
     try {
+      //we need 2 queries one for the limited data and on for the count
       const offset = getAllPaginated.limit * (getAllPaginated.page - 1);
-      return await this.tradeModel.findAll({
+      const trades = await this.tradeModel.findAll({
         limit: getAllPaginated.limit,
         offset: offset,
         where: {
           userId: UserHelpers.getUserIdFromRequest(req),
         },
       });
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
 
-  async getOne(req: any, getOneItem: GetOneItem): Promise<Trade> {
-    try {
-      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        Trade,
-        UserHelpers.getUserIdFromRequest(req),
-        getOneItem.itemId,
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { count, rows } = await this.tradeModel.findAndCountAll({
+        where: {
+          userId: UserHelpers.getUserIdFromRequest(req),
+        },
+      });
+      return <GetAllTrades>{
+        total: count,
+        trades,
+      };
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

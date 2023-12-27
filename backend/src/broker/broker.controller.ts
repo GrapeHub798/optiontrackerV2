@@ -38,7 +38,7 @@ export class BrokerController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('/multiple')
+  @Post('/multiple')
   @HttpCode(HttpStatus.OK)
   deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
     return this.brokerService.deleteMultiple(req, itemIds);

@@ -38,7 +38,7 @@ export class OptionsController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('/multiple')
+  @Post('/multiple')
   @HttpCode(HttpStatus.OK)
   deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
     return this.optionsService.deleteMultiple(req, itemIds);

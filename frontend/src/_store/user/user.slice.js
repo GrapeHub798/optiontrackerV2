@@ -45,13 +45,7 @@ function createInitialState() {
 function createReducers() {
   return {
     logout,
-    resetStatus,
   };
-
-  function resetStatus(state) {
-    state.success = false;
-    state.error = null;
-  }
 
   function logout(state) {
     state.user = null;
@@ -74,16 +68,19 @@ function createExtraActions() {
 
 function userPendingReducer(state) {
   state.error = null;
+  state.success = false;
 }
 
 function userRejectedReducer(state, action) {
   state.error = action.payload;
+  state.success = false;
 }
 
 function loginRegisterFulfilledReducer(state, action) {
   const user = action.payload;
   localStorage.setItem("user", JSON.stringify(user));
   state.user = user;
+  state.success = true;
 }
 
 function createExtraReducers() {
@@ -114,6 +111,7 @@ function createExtraReducers() {
 
           localStorage.setItem("user", JSON.stringify(updatedUser));
           state.user = updatedUser;
+          state.success = true;
         })
         .addCase(rejected, userRejectedReducer);
     }

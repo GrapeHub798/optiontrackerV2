@@ -39,16 +39,14 @@ export const PaginatedTable = ({ data, onPageChange, onRowsPerPageChange }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
-                <TableRow key={index}>
-                  {/* Replace with your row rendering logic */}
-                  <TableCell>{row.column1}</TableCell>
-                  <TableCell>{row.column2}</TableCell>
-                  <TableCell>{row.column3}</TableCell>
-                </TableRow>
-              ))}
+            {data.map((row, index) => (
+              <TableRow key={index}>
+                {/* Replace with your row rendering logic */}
+                <TableCell>{row.column1}</TableCell>
+                <TableCell>{row.column2}</TableCell>
+                <TableCell>{row.column3}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

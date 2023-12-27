@@ -82,7 +82,6 @@ const ChangePreferencesModal = ({ show, onHide }) => {
     setBackdropValue("static");
     setEnableKeyboard(false);
 
-    await dispatch(userprofileActions.resetStatus());
     await dispatch(
       userprofileActions.editUserProfile({
         preferredExchange,
