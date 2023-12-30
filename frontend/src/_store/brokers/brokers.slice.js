@@ -35,7 +35,14 @@ function createInitialState() {
 }
 
 function createReducers() {
-  return {};
+  return {
+    resetStatus,
+  };
+
+  function resetStatus(state) {
+    state.success = false;
+    state.error = null;
+  }
 }
 
 function createExtraActions() {
@@ -63,13 +70,6 @@ function defaultRejected(state, action) {
   state.success = false;
 }
 
-/*
-getAllBroker: getAllBrokerAction(baseUrl),
-    createBroker: createBrokerAction(baseUrl),
-    deleteBroker: deleteBrokerAction(baseUrl),
-    editBroker: editBrokerAction(baseUrl),
-    deleteMultipleBroker: deleteMultipleBrokerAction(baseUrl),
- */
 function createExtraReducers() {
   return (builder) => {
     getAllBrokerReducer();
@@ -79,7 +79,7 @@ function createExtraReducers() {
     deleteMultipleBrokerReducer();
 
     function getAllBrokerReducer() {
-      const { pending, fulfilled, rejected } = extraActions.createBroker;
+      const { pending, fulfilled, rejected } = extraActions.getAllBroker;
       builder
         .addCase(pending, defaultPending)
         .addCase(fulfilled, (state, action) => {

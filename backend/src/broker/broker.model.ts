@@ -13,10 +13,12 @@ export class Broker extends Model<Broker> {
   @Column
   brokerName: string;
   @Column({
+    defaultValue: 0.0,
     type: DataTypes.DECIMAL(10, 2),
   })
   brokerOptionFee: number;
   @Column({
+    defaultValue: 0.0,
     type: DataTypes.DECIMAL(10, 2),
   })
   brokerStockFee: number;

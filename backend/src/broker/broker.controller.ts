@@ -31,7 +31,7 @@ export class BrokerController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete()
+  @Delete(':itemId')
   @HttpCode(HttpStatus.OK)
   delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
     return this.brokerService.delete(req, getOneItem);
