@@ -45,8 +45,9 @@ const ChangePreferencesModal = ({ show, onHide }) => {
       fetchExchanges();
     }
 
-    //get the user profile
-    fetchUserProfile();
+    if (!userProfile && !gettingProfile) {
+      fetchUserProfile();
+    }
   }, []);
 
   useEffect(() => {

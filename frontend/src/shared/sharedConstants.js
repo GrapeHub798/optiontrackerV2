@@ -5,4 +5,5 @@ export const APP_URL_PATHS = {
   REGISTER: "/register",
   USERPROFILE: "/userprofile",
   DASHBOARD: "/dashboard",
+  WELCOME: "/welcome",
 };

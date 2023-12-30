@@ -4,7 +4,7 @@ import { take } from 'rxjs';
 
 import { EodhdService } from '../eodhdapi/eodhd.service';
 import { DbHelpers } from '../helpers/dbHelpers';
-import { ExchangeCode } from '../stocks/exchangeCode.model';
+import { GetOneItem } from '../universal/getSingle.model';
 import { Exchange } from './exchange.model';
 
 @Injectable()
@@ -28,11 +28,11 @@ export class ExchangesService {
     }
   }
 
-  async getSingleExchange(exchangeCode: ExchangeCode) {
+  async getSingleExchange(getOneItem: GetOneItem) {
     try {
       return this.exchangeModel.findOne({
         where: {
-          code: exchangeCode.exchangeCode,
+          code: getOneItem.itemId,
         },
       });
     } catch (e) {

@@ -6,6 +6,7 @@ import { EodhdService } from '../eodhdapi/eodhd.service';
 import { Exchange } from '../exchanges/exchange.model';
 import { ExchangesService } from '../exchanges/exchanges.service';
 import { DbHelpers } from '../helpers/dbHelpers';
+import { GetOneItem } from '../universal/getSingle.model';
 import { ExchangeCode } from './exchangeCode.model';
 import { Stock } from './stock.model';
 
@@ -22,13 +23,13 @@ export class StocksService {
     return exchange.country;
   }
 
-  private async getExchangeFromExchangeCode(exchangeCode: ExchangeCode) {
-    return this.exchangeService.getSingleExchange(exchangeCode);
+  private async getExchangeFromExchangeCode(getOneItem: GetOneItem) {
+    return this.exchangeService.getSingleExchange(getOneItem);
   }
 
-  async getAll(exchangeCode: ExchangeCode): Promise<Stock[]> {
+  async getAll(getOneItem: GetOneItem): Promise<Stock[]> {
     try {
-      const exchange = await this.getExchangeFromExchangeCode(exchangeCode);
+      const exchange = await this.getExchangeFromExchangeCode(getOneItem);
       const exchangeCountry = this.getCountryFromExchange(exchange);
       return await this.stockModel.findAll({
         where: {

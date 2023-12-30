@@ -12,6 +12,7 @@ import * as Yup from "yup";
 
 import { displayError } from "../../_helpers/errorhelper";
 import { userActions } from "../../_store";
+import { APP_URL_PATHS } from "../../shared/sharedConstants";
 
 export const Register = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ export const Register = () => {
     if (!authUser?.userId) {
       return;
     }
-    if (authUser?.userId) navigate("/dashboard");
+    if (authUser?.userId) navigate(APP_URL_PATHS.WELCOME);
   }, [authUser]);
 
   const validationSchema = Yup.object().shape({

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
-import { PaginatedTable } from "../../../components/paginatedTable";
+import { PaginatedTable } from "../../../../components/paginatedTable";
 
 export const TradeLog = () => {
   // eslint-disable-next-line no-unused-vars

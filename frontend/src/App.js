@@ -20,6 +20,7 @@ import { Login } from "./pages/login/login";
 import { Logout } from "./pages/logout/logout";
 import { Register } from "./pages/register/register";
 import { UserProfile } from "./pages/userprofile/userprofile";
+import { Welcome } from "./pages/welcome/welcome";
 import { APP_URL_PATHS } from "./shared/sharedConstants";
 
 const App = () => {
@@ -32,6 +33,14 @@ const App = () => {
       <Container fluid className="py-4">
         <Routes>
           <Route path={APP_URL_PATHS.HOME} element={<Home />} />
+          <Route
+            path={APP_URL_PATHS.WELCOME}
+            element={
+              <AuthRoute>
+                <Welcome />
+              </AuthRoute>
+            }
+          />
           <Route
             path={APP_URL_PATHS.DASHBOARD}
             element={

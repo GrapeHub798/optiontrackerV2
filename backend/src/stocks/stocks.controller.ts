@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '../guards/auth.guard';
+import { GetOneItem } from '../universal/getSingle.model';
 import { ExchangeCode } from './exchangeCode.model';
 import { Stock } from './stock.model';
 import { StocksService } from './stocks.service';
@@ -17,10 +18,10 @@ export class StocksController {
   constructor(private readonly stockService: StocksService) {}
 
   @UseGuards(AuthGuard)
-  @Get()
+  @Get(':itemId')
   @HttpCode(HttpStatus.OK)
-  getAll(@Param() exchangeCode: ExchangeCode): Promise<Stock[]> {
-    return this.stockService.getAll(exchangeCode);
+  getAll(@Param() getOneItem: GetOneItem): Promise<Stock[]> {
+    return this.stockService.getAll(getOneItem);
   }
 
   @UseGuards(AuthGuard)

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 import { userActions } from "../../_store";
+import { APP_URL_PATHS } from "../../shared/sharedConstants";
 
 export const Login = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ export const Login = () => {
     if (!authUser?.userId) {
       return;
     }
-    if (authUser?.userId) navigate("/dashboard");
+    if (authUser?.userId) navigate(APP_URL_PATHS.WELCOME);
   }, [authUser]);
 
   const validationSchema = Yup.object().shape({

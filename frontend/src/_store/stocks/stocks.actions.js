@@ -6,10 +6,14 @@ import * as httpService from "../../_helpers/httpService";
 export const getStocksAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/getStocks`,
-    async (_, { rejectWithValue }) => {
+    async ({ userPreferredExchange }, { rejectWithValue }) => {
       try {
         const bearerToken = await getBearerToken();
-        const { data, error } = await httpService.get(baseUrl, bearerToken);
+        const getStocksUrl = `${baseUrl}/${userPreferredExchange}`;
+        const { data, error } = await httpService.get(
+          getStocksUrl,
+          bearerToken,
+        );
         if (error) return rejectWithValue(error);
         return data;
       } catch (e) {
