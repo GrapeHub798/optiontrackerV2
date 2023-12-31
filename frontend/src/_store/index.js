@@ -23,6 +23,11 @@ export const store = configureStore({
     brokers: brokersReducer,
     stocks: stocksReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }),
 });
 
 export default store;

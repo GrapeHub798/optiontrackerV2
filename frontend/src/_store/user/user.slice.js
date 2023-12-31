@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { history } from "../../_helpers/history";
+import { isValidUser } from "../../_helpers/validateUser";
 import { APP_URL_PATHS } from "../../shared/sharedConstants";
 import {
   changePasswordAction,
@@ -23,19 +24,20 @@ const slice = createSlice({ extraReducers, initialState, name, reducers });
 export const userActions = { ...slice.actions, ...extraActions };
 export const userReducer = slice.reducer;
 
-// implementation
-
 function createInitialState() {
   let defaultUser = "";
   try {
     const localUserStorageData = localStorage.getItem("user");
-    defaultUser = JSON.parse(localUserStorageData);
+    const invalidatedUser = JSON.parse(localUserStorageData);
+    const userIsValid = isValidUser(invalidatedUser);
+
+    if (!userIsValid) localStorage.removeItem("user");
+    defaultUser = userIsValid ? invalidatedUser : defaultUser;
   } catch (e) {
     console.log(e);
   }
 
   return {
-    // initialize state from local storage to enable user to stay logged in
     user: defaultUser,
     error: null,
     success: false,

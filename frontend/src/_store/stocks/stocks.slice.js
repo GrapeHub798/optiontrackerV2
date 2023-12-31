@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { IndexedDBManager } from "../indexedDb.class";
-import { getStocksAction } from "./stocks.actions";
+import {
+  getStocksAction,
+  loadLocalStocksAction,
+  updateLocalStocksAction,
+} from "./stocks.actions";
 
 const name = "stocks";
-const dbManager = new IndexedDBManager("osStockJournal", "osStockStore");
+
 const initialState = await createInitialState();
 const reducers = createReducers();
 const extraActions = createExtraActions();
@@ -13,44 +16,13 @@ const slice = createSlice({ extraReducers, initialState, name, reducers });
 export const stocksActions = { ...slice.actions, ...extraActions };
 export const stocksReducer = slice.reducer;
 
-async function loadData(key) {
-  try {
-    const data = await dbManager.readArray(key);
-    return { key, data };
-  } catch (error) {
-    console.error("Error loading data:", error);
-    return { key, data: null };
-  }
-}
-
-// Function to update data in IndexedDB
-// eslint-disable-next-line no-unused-vars
-async function updateData(key, array) {
-  try {
-    await dbManager.writeArray(key, array);
-    return { key, array };
-  } catch (error) {
-    console.error("Error updating data:", error);
-  }
-}
-
 async function createInitialState() {
-  try {
-    // eslint-disable-next-line no-unused-vars
-    const { key, data } = await loadData("stocks");
-    return {
-      stocks: data ?? "",
-      error: null,
-      success: false,
-    };
-  } catch (e) {
-    console.log(e);
-    return {
-      stocks: "",
-      error: null,
-      success: false,
-    };
-  }
+  return {
+    stocks: "",
+    error: null,
+    success: false,
+    isPopulated: false,
+  };
 }
 
 function createReducers() {
@@ -69,30 +41,62 @@ function createExtraActions() {
 
   return {
     getStocks: getStocksAction(baseUrl),
+    loadLocalStocks: loadLocalStocksAction(),
+    updateLocalStocks: updateLocalStocksAction(),
   };
+}
+
+function defaultPendingReducer(state) {
+  state.error = null;
+  state.success = false;
+}
+
+function defaultRejectedReducer(state, action) {
+  state.error = action.payload;
+  state.success = false;
 }
 
 function createExtraReducers() {
   return (builder) => {
     getStocksReducer();
+    loadLocalStocksReducer();
+    updateLocalStocksReducer();
     function getStocksReducer() {
       const { pending, fulfilled, rejected } = extraActions.getStocks;
       builder
-        .addCase(pending, (state) => {
-          state.error = null;
-          state.success = false;
-        })
-        .addCase(fulfilled, async (state, action) => {
+        .addCase(pending, defaultPendingReducer)
+        .addCase(fulfilled, (state, action) => {
           const stocks = action.payload;
           // store user details and jwt token in local storage to keep user logged in between page refreshes
-          await updateData("stocks", stocks);
+          //await updateData("stocks", stocks);
           state.stocks = stocks;
           state.success = true;
         })
-        .addCase(rejected, (state, action) => {
-          state.error = action.payload;
-          state.success = false;
-        });
+        .addCase(rejected, defaultRejectedReducer);
+    }
+
+    function loadLocalStocksReducer() {
+      const { pending, fulfilled, rejected } = extraActions.loadLocalStocks;
+      builder
+        .addCase(pending, defaultPendingReducer)
+        .addCase(fulfilled, (state, action) => {
+          const stocks = action.payload;
+          state.isPopulated = true;
+          state.stocks = stocks;
+          state.success = true;
+        })
+        .addCase(rejected, defaultRejectedReducer);
+    }
+
+    function updateLocalStocksReducer() {
+      const { pending, fulfilled, rejected } = extraActions.updateLocalStocks;
+      builder
+        .addCase(pending, defaultPendingReducer)
+        .addCase(fulfilled, (state) => {
+          state.success = true;
+          state.isPopulated = true;
+        })
+        .addCase(rejected, defaultRejectedReducer);
     }
   };
 }

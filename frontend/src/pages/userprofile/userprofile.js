@@ -18,7 +18,7 @@ export const UserProfile = () => {
   const [showPreferencesModal, setShowPreferencesModal] = useState(false);
   const [showBrokersModal, setShowBrokersModal] = useState(false);
 
-  const lockIcon = <FontAwesomeIcon icon={faLock} size="6x" />;
+  const lockIcon = <FontAwesomeIcon icon={faLock} size={"6x"} />;
   const languageIcon = <FontAwesomeIcon icon={faLanguage} size={"6x"} />;
   const buildingIcon = <FontAwesomeIcon icon={faBuildingColumns} size={"6x"} />;
 
@@ -26,7 +26,7 @@ export const UserProfile = () => {
     <Container>
       <h1>User Profile</h1>
       <Row>
-        <Col md={{ span: 4 }} className="mt-4">
+        <Col md={{ span: 4 }} className="mt-4 d-flex justify-content-center">
           <Card
             className="pointer-class profile-cards"
             onClick={() => setShowPasswordModal(true)}
@@ -37,7 +37,7 @@ export const UserProfile = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={{ span: 4 }} className="mt-4">
+        <Col md={{ span: 4 }} className="mt-4 d-flex justify-content-center">
           <Card
             className="pointer-class profile-cards"
             onClick={() => setShowPreferencesModal(true)}
@@ -50,7 +50,7 @@ export const UserProfile = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={{ span: 4 }} className="mt-4">
+        <Col md={{ span: 4 }} className="mt-4 d-flex justify-content-center">
           <Card
             className="pointer-class profile-cards"
             onClick={() => setShowBrokersModal(true)}

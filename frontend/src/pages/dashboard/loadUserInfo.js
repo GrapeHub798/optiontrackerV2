@@ -4,8 +4,11 @@ import { Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { displayError } from "../../_helpers/errorhelper";
-import { brokersActions, userprofileActions } from "../../_store";
-import { stocksActions } from "../../_store/stocks/stocks.slice";
+import {
+  brokersActions,
+  stocksActions,
+  userprofileActions,
+} from "../../_store";
 
 export const LoadUserInfo = ({
   isLoading,
@@ -25,6 +28,8 @@ export const LoadUserInfo = ({
 
   const stocks = useSelector((x) => x.stocks.stocks);
   const stocksError = useSelector((x) => x.stocks.error);
+  const stocksSuccess = useSelector((x) => x.stocks.success);
+  const stocksIsPopulated = useSelector((x) => x.stocks.isPopulated);
 
   //load in user preferences, brokers, stocks and exchanges
 
@@ -41,11 +46,36 @@ export const LoadUserInfo = ({
     await dispatch(brokersActions.getAllBroker());
   };
 
-  const fetchStocks = async () => {
+  const fetchLocalStocks = async () => {
     setGettingStocks(true);
+    //try to get the stocks from indexedDb first
+    await fetchStockLocal();
+
+    if (!stocksSuccess && !stocks) {
+      await fetchStockAPI();
+    }
+  };
+
+  const fetchStockLocal = async () => {
+    await dispatch(
+      stocksActions.loadLocalStocks({
+        key: "stocks",
+      }),
+    );
+  };
+  const fetchStockAPI = async () => {
     await dispatch(
       stocksActions.getStocks({
         userPreferredExchange: userProfile.preferredExchange,
+      }),
+    );
+  };
+
+  const updateStocks = async () => {
+    await dispatch(
+      stocksActions.updateLocalStocks({
+        key: "stocks",
+        array: stocks,
       }),
     );
   };
@@ -61,17 +91,21 @@ export const LoadUserInfo = ({
     }
 
     if (!stocks && !gettingStocks) {
-      fetchStocks();
+      fetchLocalStocks();
     }
   }, [userProfile]);
 
   useEffect(() => {
-    if (!brokers && !stocks) {
+    if (!brokers || !stocks) {
       return;
     }
 
-    setGettingBrokers(false);
+    if (stocks && stocks.length > 0 && !stocksIsPopulated) {
+      updateStocks();
+    }
+
     setGettingStocks(false);
+    setGettingBrokers(false);
     changeLoadingStatus(false);
   }, [brokers, stocks]);
 
