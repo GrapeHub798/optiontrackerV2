@@ -17,14 +17,12 @@ describe('controller', () => {
   let controller: OptionsController;
   let service: OptionsService;
 
-  // mock request object
   const req = {
     user: {
       userId: 'testUserId',
     },
   };
 
-  // mock NewOption object
   const newOption: NewOption = {
     expirationDate: new Date(),
     optionType: 1,
@@ -32,17 +30,14 @@ describe('controller', () => {
     ticker: 'AAPL',
   };
 
-  // mock GetOneItem object
   const getOneItem: GetOneItem = {
     itemId: 'testItemId',
   };
 
-  // mock DeleteMultiple object
   const itemIds: DeleteMultiple = {
     itemIds: ['1', '2', '3'],
   };
 
-  // mock GetAllPaginated object
   const getAllPaginated: GetAllPaginated = {
     limit: 2,
     page: 1,

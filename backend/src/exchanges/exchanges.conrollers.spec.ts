@@ -28,7 +28,6 @@ describe('ExchangesController', () => {
     jest.clearAllMocks();
   });
 
-  // Test for 'getAll' method of 'ExchangesController'
   it('should return all exchanges', async () => {
     const result: Exchange[] = [];
     jest

@@ -27,7 +27,6 @@ function createInitialState() {
   }
 
   return {
-    // initialize state from local storage to enable user to stay logged in
     userprofile: defaultUserProfile,
     error: null,
     success: false,
@@ -50,7 +49,6 @@ function createExtraActions() {
 
 function defaultFulfilled(state, action) {
   const userprofile = action.payload;
-  // store user details and jwt token in local storage to keep user logged in between page refreshes
   localStorage.setItem("userprofile", JSON.stringify(userprofile));
   state.userprofile = userprofile;
   state.success = true;

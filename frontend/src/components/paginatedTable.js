@@ -22,7 +22,7 @@ export const PaginatedTable = ({ data, onPageChange, onRowsPerPageChange }) => {
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to the first page
+    setPage(0);
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 

@@ -32,7 +32,6 @@ export const data = {
 };
 
 export const Performance = () => {
-  // eslint-disable-next-line no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setTimeout(() => {

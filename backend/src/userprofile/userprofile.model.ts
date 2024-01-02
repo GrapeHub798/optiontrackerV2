@@ -5,13 +5,6 @@ import { Column, Model, Table } from 'sequelize-typescript';
 export class UserProfile extends Model<UserProfile> {
   @Column({
     allowNull: false,
-    defaultValue: UUIDV4,
-    primaryKey: true,
-    type: UUID,
-  })
-  brokerId: string;
-  @Column({
-    allowNull: false,
     defaultValue: 'US',
   })
   preferredExchange: string;
@@ -21,4 +14,11 @@ export class UserProfile extends Model<UserProfile> {
     unique: true,
   })
   userId: string;
+  @Column({
+    allowNull: false,
+    defaultValue: UUIDV4,
+    primaryKey: true,
+    type: UUID,
+  })
+  userProfileId: string;
 }

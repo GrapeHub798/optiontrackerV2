@@ -51,7 +51,6 @@ const BrokersModal = ({ show, onHide }) => {
   };
 
   useEffect(() => {
-    //get the exchanges if we don't have them
     if (!brokers && !gettingBrokers) {
       fetchBrokers();
     }

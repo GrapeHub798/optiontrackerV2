@@ -45,9 +45,7 @@ export class ExchangesService {
       return new Promise((resolve) => {
         this.eodhdService
           .getAllExchanges()
-          .pipe(
-            take(1), //useful if you need the data once and don't want to manually cancel the subscription again
-          )
+          .pipe(take(1))
           .subscribe({
             complete: () =>
               console.info('Successfully Retrieved Exchange info'),

@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { EodhdService } from './eodhd.service';
 
 @Module({
-  exports: [EodhdService], // Export the service
+  exports: [EodhdService],
   imports: [HttpModule],
   providers: [EodhdService],
 })

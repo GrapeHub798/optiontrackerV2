@@ -2,13 +2,31 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getBearerToken } from "../../_helpers/getBearerToken";
 import * as httpService from "../../_helpers/httpService";
+import store from "../index";
 import { IndexedDBManager } from "../indexedDb.class";
 
 const dbManager = new IndexedDBManager("osStockJournal", "osStockStore");
-export const getStocksAction = (baseUrl) => {
+const stockIndexedDbKey = "stocks";
+const getStockState = () => {
+  const state = store.getState();
+  return state.stocks;
+};
+export const loadDataAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/getStocks`,
     async ({ userPreferredExchange }, { rejectWithValue }) => {
+      let { stocks } = getStockState();
+      //try from redux first
+      if (stocks && stocks.length > 0) {
+        return stocks;
+      }
+
+      //try to read from indexeddb
+      stocks = await dbManager.readArray(stockIndexedDbKey);
+      if (stocks && stocks.length > 0) {
+        return stocks;
+      }
+
       try {
         const bearerToken = await getBearerToken();
         const getStocksUrl = `${baseUrl}/${userPreferredExchange}`;
@@ -17,40 +35,10 @@ export const getStocksAction = (baseUrl) => {
           bearerToken,
         );
         if (error) return rejectWithValue(error);
+        await dbManager.writeArray(stockIndexedDbKey, data);
         return data;
       } catch (e) {
         return rejectWithValue(e.message);
-      }
-    },
-  );
-};
-
-export const loadLocalStocksAction = () => {
-  return createAsyncThunk(
-    `${name}/loadLocalStocks`,
-    async (key, { rejectWithValue }) => {
-      try {
-        const data = await dbManager.readArray(key);
-        if (!data.data) {
-          rejectWithValue("no stocks");
-        }
-        return { data };
-      } catch (error) {
-        return rejectWithValue(error.toString());
-      }
-    },
-  );
-};
-
-export const updateLocalStocksAction = () => {
-  return createAsyncThunk(
-    `${name}/updateLocalStocks`,
-    async ({ key, array }, { rejectWithValue }) => {
-      try {
-        await dbManager.writeArray(key, array);
-        return true;
-      } catch (error) {
-        return rejectWithValue(error.toString());
       }
     },
   );

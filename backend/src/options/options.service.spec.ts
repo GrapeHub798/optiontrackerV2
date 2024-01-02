@@ -42,7 +42,7 @@ describe('OptionsService', () => {
   };
 
   const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
-  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1);
 
   const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 

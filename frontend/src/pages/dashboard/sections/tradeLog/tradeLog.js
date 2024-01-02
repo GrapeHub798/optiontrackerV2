@@ -1,11 +1,17 @@
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import { Col, Row, Spinner } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 import { PaginatedTable } from "../../../../components/paginatedTable";
+import { AddTradeModal } from "./addTrade.modal";
 
 export const TradeLog = () => {
-  // eslint-disable-next-line no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddTradeModal, setShowAddTradeModal] = useState(false);
+  const [hasOption, setHasOption] = useState(false);
+  const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
 
   const handlePageChange = (page) => {
     console.log(`Page changed to: ${page + 1}`);
@@ -13,6 +19,18 @@ export const TradeLog = () => {
 
   const handleRowsPerPageChange = (rowsPerPage) => {
     console.log(`Rows per page changed to: ${rowsPerPage}`);
+  };
+
+  const showTradeWithOption = () => {
+    setHasOption(true);
+    setShowAddTradeModal(true);
+  };
+
+  const hideTradeWithOption = () => {
+    if (hasOption) {
+      setHasOption(false);
+    }
+    setShowAddTradeModal(false);
   };
 
   useEffect(() => {
@@ -24,10 +42,33 @@ export const TradeLog = () => {
   return isLoading ? (
     <Spinner animation="border" />
   ) : (
-    <PaginatedTable
-      data={[]}
-      onPageChange={handlePageChange}
-      onRowsPerPageChange={handleRowsPerPageChange}
-    />
+    <>
+      <Row>
+        <Col>
+          <Button onClick={() => setShowAddTradeModal(true)}>
+            {plusIcon} Add Trade
+          </Button>
+          <Button
+            variant="success"
+            className="ms-2"
+            onClick={() => showTradeWithOption()}
+          >
+            {plusIcon} Add Option Trade
+          </Button>
+        </Col>
+      </Row>
+      <PaginatedTable
+        data={[]}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
+      {showAddTradeModal && (
+        <AddTradeModal
+          show={showAddTradeModal}
+          onHide={() => hideTradeWithOption()}
+          isOption={hasOption}
+        />
+      )}
+    </>
   );
 };

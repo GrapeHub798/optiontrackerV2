@@ -44,7 +44,6 @@ export class StocksService {
   async refreshStocks(exchangeCode: ExchangeCode) {
     try {
       const refreshComplete = new Subject<boolean>();
-      //reach out to api
       this.eodhdService
         .getTickersForCountry(exchangeCode.exchangeCode)
         .subscribe((data) => {

@@ -20,7 +20,6 @@ function createInitialState() {
     console.log(e);
   }
   return {
-    // initialize state from local storage to enable user to stay logged in
     exchanges: defaultExchanges,
     error: null,
   };
@@ -49,7 +48,6 @@ function createExtraReducers() {
         })
         .addCase(fulfilled, (state, action) => {
           const exchanges = action.payload;
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem("exchanges", JSON.stringify(exchanges));
           state.exchanges = exchanges;
         })

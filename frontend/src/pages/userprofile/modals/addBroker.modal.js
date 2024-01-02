@@ -11,7 +11,6 @@ import * as Yup from "yup";
 import { displayError } from "../../../_helpers/errorhelper";
 import { brokersActions } from "../../../_store";
 
-// eslint-disable-next-line no-unused-vars
 const AddBrokerModal = ({ show, onHideParent }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);

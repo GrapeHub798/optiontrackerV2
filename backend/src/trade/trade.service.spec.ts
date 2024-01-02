@@ -23,7 +23,7 @@ describe('TradeService', () => {
   };
 
   const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
-  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1);
 
   const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
@@ -64,7 +64,7 @@ describe('TradeService', () => {
 
   describe('delete', () => {
     it('should successfully delete a trade', async () => {
-      mockTradeModel.destroy.mockResolvedValue(1 as any); // assuming 1 is the number of rows affected
+      mockTradeModel.destroy.mockResolvedValue(1 as any);
 
       const result = await service.delete(req, { itemId: 'tradeId' } as any);
       expect(result).toBeTruthy();
@@ -81,7 +81,7 @@ describe('TradeService', () => {
 
   describe('deleteMultiple', () => {
     it('should successfully delete multiple trades', async () => {
-      mockTradeModel.destroy.mockResolvedValue(1 as any); // assuming 1 is the number of rows affected
+      mockTradeModel.destroy.mockResolvedValue(1 as any);
 
       const result = await service.deleteMultiple(req, {
         itemIds: ['tradeId1', 'tradeId2'],
@@ -151,7 +151,7 @@ describe('TradeService', () => {
 
   describe('getOne', () => {
     it('should return a single trade', async () => {
-      const mockTrade = {}; // Single trade object
+      const mockTrade = {};
 
       dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
         Promise.resolve(mockTrade as Trade),

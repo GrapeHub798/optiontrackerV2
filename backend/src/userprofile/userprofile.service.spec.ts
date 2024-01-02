@@ -24,7 +24,7 @@ describe('TradeService', () => {
   };
 
   const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
-  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1);
 
   const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
@@ -105,14 +105,14 @@ describe('TradeService', () => {
 
   describe('get', () => {
     it('should return a user profile', async () => {
-      const mockTrade = {}; // Single trade object
+      const mockUserProfile = {};
 
       dbHelpersMock.findRecordByPrimaryKeyAndUserId.mockReturnValue(
-        Promise.resolve(mockTrade as unknown as Broker),
+        Promise.resolve(mockUserProfile as unknown as Broker),
       );
 
       const result = await service.get(req);
-      expect(result).toEqual(mockTrade);
+      expect(result).toEqual(mockUserProfile);
     });
 
     it('should throw an error if findOne fails', async () => {

@@ -1,9 +1,7 @@
-// Test suite
 import { EodhdStock } from '../eodhdapi/eodhdStock.model';
 import { EodhdHelpers } from './eodhdHelpers';
 
 describe('EodhdHelpers Class', () => {
-  // Test for transformEodhdStockToStock function
   describe('transformEodhdStockToStock function', () => {
     test('Should correctly transform EodhdStock to Stock', () => {
       const sampleEodhdStock: EodhdStock = {
@@ -30,7 +28,6 @@ describe('EodhdHelpers Class', () => {
     });
   });
 
-  // Test for transformKeysToLowercase function
   describe('transformKeysToLowercase function', () => {
     test('Should correctly transform keys to lowercase', () => {
       const sampleData = {

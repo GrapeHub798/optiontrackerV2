@@ -6,13 +6,10 @@ import { Alert, Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { displayError } from "../../../_helpers/errorhelper";
-import { exchangesActions } from "../../../_store";
-import { userprofileActions } from "../../../_store/userprofile/userprofile.slice";
+import { exchangesActions, userprofileActions } from "../../../_store";
 
 const ChangePreferencesModal = ({ show, onHide }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [gettingExchange, setGettingExchanges] = useState(false);
-  const [gettingProfile, setGettingProfile] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [backdropValue, setBackdropValue] = useState("false");
@@ -29,54 +26,37 @@ const ChangePreferencesModal = ({ show, onHide }) => {
 
   const fetchExchanges = async () => {
     setIsLoading(true);
-    setGettingExchanges(true);
     await dispatch(exchangesActions.getExchanges());
   };
 
   const fetchUserProfile = async () => {
     setIsLoading(true);
-    setGettingProfile(true);
     await dispatch(userprofileActions.getUserProfile());
   };
 
   useEffect(() => {
-    //get the exchanges if we don't have them
-    if (!exchanges && !gettingExchange) {
+    if (!exchanges || !userProfile) {
+      setIsLoading(true);
+    }
+    if (!exchanges) {
       fetchExchanges();
     }
 
-    if (!userProfile && !gettingProfile) {
+    if (!userProfile) {
       fetchUserProfile();
     }
-  }, []);
+  }, [exchanges, userProfile]);
 
   useEffect(() => {
-    if (!exchanges) {
-      return;
-    }
-    setGettingExchanges(false);
-  }, [exchanges]);
-
-  useEffect(() => {
-    if (!userProfile) {
-      return;
-    }
-
     if (userProfile) {
       setPreferredExchange(userProfile.preferredExchange || "US");
       setPreferredLanguage(userProfile.preferredLanguage || "en-US");
     }
-
-    setGettingProfile(false);
-  }, [userProfile]);
-
-  useEffect(() => {
-    if (!gettingProfile && !gettingExchange) {
+    if (userProfile && exchanges) {
       setIsLoading(false);
     }
-  }, [gettingProfile, gettingExchange]);
+  }, [exchanges, userProfile]);
 
-  useEffect(() => {}, []);
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSaving(true);

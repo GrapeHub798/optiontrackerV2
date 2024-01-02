@@ -31,7 +31,7 @@ export const createNewTradeAction = (baseUrl) => {
       try {
         const bearerToken = await getBearerToken();
         const tradeUrl = `${baseUrl}`;
-        const { data, error } = await httpService.put(
+        const { data, error } = await httpService.post(
           tradeUrl,
           newTrade,
           bearerToken,

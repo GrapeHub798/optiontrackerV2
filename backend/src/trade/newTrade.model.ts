@@ -1,12 +1,16 @@
 import { IsNotEmpty } from 'class-validator';
 
 export class NewTrade {
+  brokerId: string;
   buyDate: Date;
   buyPrice: number;
-  optionId: string;
+  expirationDate?: Date;
+  isOption?: boolean;
+  optionType?: number;
   @IsNotEmpty()
   quantity: number;
   sellDate: Date;
   sellPrice: number;
-  stockId: string;
+  strikePrice?: number;
+  ticker: string;
 }

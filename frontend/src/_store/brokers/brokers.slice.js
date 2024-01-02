@@ -30,7 +30,7 @@ function createInitialState() {
   return {
     brokers: defaultBrokers,
     success: false,
-    error: null, // holds
+    error: null,
   };
 }
 

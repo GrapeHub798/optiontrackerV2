@@ -10,16 +10,12 @@ import {
   registerAction,
 } from "./user.actions";
 
-// create slice
-
 const name = "user";
 const initialState = createInitialState();
 const reducers = createReducers();
 const extraActions = createExtraActions();
 const extraReducers = createExtraReducers();
 const slice = createSlice({ extraReducers, initialState, name, reducers });
-
-// exports
 
 export const userActions = { ...slice.actions, ...extraActions };
 export const userReducer = slice.reducer;
@@ -28,11 +24,8 @@ function createInitialState() {
   let defaultUser = "";
   try {
     const localUserStorageData = localStorage.getItem("user");
-    const invalidatedUser = JSON.parse(localUserStorageData);
-    const userIsValid = isValidUser(invalidatedUser);
-
-    if (!userIsValid) localStorage.removeItem("user");
-    defaultUser = userIsValid ? invalidatedUser : defaultUser;
+    defaultUser = JSON.parse(localUserStorageData);
+    // TODO investigate how we can log a person out but not? maybe monitor refresh token expiration
   } catch (e) {
     console.log(e);
   }

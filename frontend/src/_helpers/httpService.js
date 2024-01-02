@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
-  // You can set common config here, like baseURL, headers, etc.
-});
+const axiosInstance = axios.create({});
 
 const getArrayFromErrorMessage = (errorMessages) => {
   if (!errorMessages) {
@@ -11,12 +9,9 @@ const getArrayFromErrorMessage = (errorMessages) => {
   return Array.isArray(errorMessages) ? errorMessages : [errorMessages];
 };
 
-// Function to handle errors and convert them into an array of strings
 const handleErrors = (error) => {
   let errorMessages = [];
   if (error.response) {
-    // Request made and server responded with a status code
-    // that falls out of the range of 2xx
     const errors = getArrayFromErrorMessage(error.response.data.error);
     const messages = getArrayFromErrorMessage(error.response.data.message);
     const combinedErrors = [...errors, ...messages];
@@ -24,16 +19,13 @@ const handleErrors = (error) => {
       (err) => (err?.message ? err?.message : err) || "Unknown server error",
     );
   } else if (error.request) {
-    // The request was made but no response was received
     errorMessages = ["No response was received from the server"];
   } else {
-    // Something happened in setting up the request that triggered an error
     errorMessages = [error.message];
   }
   return errorMessages;
 };
 
-// Generic function to make HTTP requests
 const makeRequest = async (method, url, data, token) => {
   try {
     const headers = {};

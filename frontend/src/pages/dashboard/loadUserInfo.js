@@ -15,10 +15,6 @@ export const LoadUserInfo = ({
   changeLoadingStatus,
   changeLoadingText,
 }) => {
-  const [gettingProfile, setGettingProfile] = useState(false);
-  const [gettingBrokers, setGettingBrokers] = useState(false);
-  const [gettingStocks, setGettingStocks] = useState(false);
-
   const dispatch = useDispatch();
   const userProfile = useSelector((x) => x.userprofile.userprofile);
   const userProfileError = useSelector((x) => x.userprofile.error);
@@ -28,93 +24,48 @@ export const LoadUserInfo = ({
 
   const stocks = useSelector((x) => x.stocks.stocks);
   const stocksError = useSelector((x) => x.stocks.error);
-  const stocksSuccess = useSelector((x) => x.stocks.success);
-  const stocksIsPopulated = useSelector((x) => x.stocks.isPopulated);
 
-  //load in user preferences, brokers, stocks and exchanges
-
-  //user profile first to get preferred exchange
   const fetchUserProfile = async () => {
     changeLoadingText("User Profile");
-    setGettingProfile(true);
     await dispatch(userprofileActions.getUserProfile());
   };
 
-  const fetchBrokers = async () => {
-    changeLoadingText("Brokers & Stocks");
-    setGettingBrokers(true);
-    await dispatch(brokersActions.getAllBroker());
-  };
-
-  const fetchLocalStocks = async () => {
-    setGettingStocks(true);
+  const fetchStocks = async () => {
     //try to get the stocks from indexedDb first
-    await fetchStockLocal();
-
-    if (!stocksSuccess && !stocks) {
-      await fetchStockAPI();
-    }
-  };
-
-  const fetchStockLocal = async () => {
     await dispatch(
-      stocksActions.loadLocalStocks({
-        key: "stocks",
-      }),
-    );
-  };
-  const fetchStockAPI = async () => {
-    await dispatch(
-      stocksActions.getStocks({
+      stocksActions.loadData({
         userPreferredExchange: userProfile.preferredExchange,
       }),
     );
   };
 
-  const updateStocks = async () => {
-    await dispatch(
-      stocksActions.updateLocalStocks({
-        key: "stocks",
-        array: stocks,
-      }),
-    );
+  const fetchBrokers = async () => {
+    changeLoadingText("Brokers & Stocks");
+    await dispatch(brokersActions.getAllBroker());
   };
 
   useEffect(() => {
+    //check user profile
     if (!userProfile) {
-      return;
-    }
-    setGettingProfile(false);
-    //once we get the user profile we need the brokers and stocks
-    if (!brokers && !gettingBrokers) {
-      fetchBrokers();
-    }
-
-    if (!stocks && !gettingStocks) {
-      fetchLocalStocks();
+      fetchUserProfile();
     }
   }, [userProfile]);
 
   useEffect(() => {
-    if (!brokers || !stocks) {
-      return;
+    if (userProfile && !stocks) {
+      fetchStocks();
     }
 
-    if (stocks && stocks.length > 0 && !stocksIsPopulated) {
-      updateStocks();
+    if (userProfile && !brokers) {
+      fetchBrokers();
     }
-
-    setGettingStocks(false);
-    setGettingBrokers(false);
-    changeLoadingStatus(false);
-  }, [brokers, stocks]);
+  }, [userProfile, stocks, brokers]);
 
   useEffect(() => {
-    //check user profile
-    if (!userProfile && !gettingProfile) {
-      fetchUserProfile();
+    if (userProfile && stocks && brokers) {
+      changeLoadingStatus(false);
     }
-  }, []);
+  }, [userProfile, stocks, brokers]);
 
   return (
     <>

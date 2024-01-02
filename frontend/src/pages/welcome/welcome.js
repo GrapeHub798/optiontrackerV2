@@ -4,7 +4,6 @@ import { history } from "../../_helpers/history";
 import { APP_URL_PATHS } from "../../shared/sharedConstants";
 
 export const Welcome = () => {
-  //load in post login pieces from back
   const [hasPostLogin, setHasPostLogin] = useState(true);
   useEffect(() => {
     setTimeout(() => setHasPostLogin(false), 2000);

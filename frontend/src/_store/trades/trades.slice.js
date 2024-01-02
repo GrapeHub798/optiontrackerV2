@@ -20,13 +20,13 @@ export const tradesReducer = slice.reducer;
 
 function createInitialState() {
   return {
-    items: [], // array to hold the data items
-    page: 1, // current page
-    limit: 10, // items per page
-    totalItems: 0, // total number of items
-    totalPages: 0, // total number of pages
-    loading: false, // indicates loading state
-    error: null, // holds
+    items: [],
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 0,
+    loading: false,
+    error: null,
   };
 }
 
@@ -38,7 +38,6 @@ function createExtraActions() {
   const baseUrl = `${process.env.REACT_APP_API_URL}/trade`;
 
   return {
-    //note page and limit need to be sent to get trades action
     getTrades: getTradesAction(baseUrl),
     createNewTrade: createNewTradeAction(baseUrl),
     editTrade: editTradeAction(baseUrl),

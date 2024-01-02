@@ -5,7 +5,6 @@ export class EodhdHelpers {
   static transformEodhdStockToStock(eodhdStockArray: EodhdStock[]): Stock[] {
     return eodhdStockArray.map((eodhdStock) => {
       return <Stock>{
-        // map all the properties from EodhdStock to Stock
         country: eodhdStock.Country,
         currency: eodhdStock.Currency,
         exchange: eodhdStock.Exchange,

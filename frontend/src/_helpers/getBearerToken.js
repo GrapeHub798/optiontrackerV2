@@ -2,7 +2,7 @@ import { store, userActions } from "../_store";
 
 const getUserState = () => {
   const state = store.getState();
-  return state.user; // Access the user slice
+  return state.user;
 };
 
 export const getBearerToken = async () => {
@@ -12,11 +12,9 @@ export const getBearerToken = async () => {
   if (jwt) {
     return jwt;
   }
-  //we need to get a new token
   const refreshToken = user.refreshToken;
   await store.dispatch(userActions.refreshTokens({ refreshToken }));
 
-  //try once more
   const updatedUser = getUserState();
   const updatedJWT = getJWTFromUser(updatedUser?.user);
   if (!updatedJWT) {

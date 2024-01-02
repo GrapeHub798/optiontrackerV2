@@ -62,7 +62,7 @@ describe('UserService', () => {
           password: 'wrongpassword',
         }),
       ).rejects.toThrow(NotFoundException);
-    }); // Additional tests for success case and incorrect password
+    });
   });
 
   describe('register', () => {

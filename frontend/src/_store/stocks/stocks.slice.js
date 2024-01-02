@@ -1,10 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import {
-  getStocksAction,
-  loadLocalStocksAction,
-  updateLocalStocksAction,
-} from "./stocks.actions";
+import { loadDataAction } from "./stocks.actions";
 
 const name = "stocks";
 
@@ -40,9 +36,7 @@ function createExtraActions() {
   const baseUrl = `${process.env.REACT_APP_API_URL}/stocks`;
 
   return {
-    getStocks: getStocksAction(baseUrl),
-    loadLocalStocks: loadLocalStocksAction(),
-    updateLocalStocks: updateLocalStocksAction(),
+    loadData: loadDataAction(baseUrl),
   };
 }
 
@@ -58,43 +52,15 @@ function defaultRejectedReducer(state, action) {
 
 function createExtraReducers() {
   return (builder) => {
-    getStocksReducer();
-    loadLocalStocksReducer();
-    updateLocalStocksReducer();
-    function getStocksReducer() {
-      const { pending, fulfilled, rejected } = extraActions.getStocks;
+    loadDataReducer();
+    function loadDataReducer() {
+      const { pending, fulfilled, rejected } = extraActions.loadData;
       builder
         .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           const stocks = action.payload;
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          //await updateData("stocks", stocks);
           state.stocks = stocks;
           state.success = true;
-        })
-        .addCase(rejected, defaultRejectedReducer);
-    }
-
-    function loadLocalStocksReducer() {
-      const { pending, fulfilled, rejected } = extraActions.loadLocalStocks;
-      builder
-        .addCase(pending, defaultPendingReducer)
-        .addCase(fulfilled, (state, action) => {
-          const stocks = action.payload;
-          state.isPopulated = true;
-          state.stocks = stocks;
-          state.success = true;
-        })
-        .addCase(rejected, defaultRejectedReducer);
-    }
-
-    function updateLocalStocksReducer() {
-      const { pending, fulfilled, rejected } = extraActions.updateLocalStocks;
-      builder
-        .addCase(pending, defaultPendingReducer)
-        .addCase(fulfilled, (state) => {
-          state.success = true;
-          state.isPopulated = true;
         })
         .addCase(rejected, defaultRejectedReducer);
     }

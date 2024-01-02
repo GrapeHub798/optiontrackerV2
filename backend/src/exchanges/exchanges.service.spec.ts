@@ -1,4 +1,3 @@
-// exchanges.service.spec.ts
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
@@ -28,14 +27,12 @@ describe('ExchangesService', () => {
       findOne: jest.fn(),
     };
 
-    // Mock HttpService
     httpServiceMock = {
       get: jest.fn(),
       post: jest.fn(),
-      // ... other methods if necessary
     };
 
-    eodhdServiceMock = new EodhdService(httpServiceMock); // Mock EodhdService
+    eodhdServiceMock = new EodhdService(httpServiceMock);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -103,7 +100,7 @@ describe('ExchangesService', () => {
     it('should complete the refresh of exchanges', async () => {
       eodhdServiceMock.getAllExchanges.mockReturnValue(
         of([{ code: 'US', name: 'Exchange1' }]),
-      ); // using 'of' from rxjs
+      );
       dbHelpersMock.chunkArray.mockReturnValue([]);
 
       mockExchangeModel.bulkCreate.mockRejectedValue(true);

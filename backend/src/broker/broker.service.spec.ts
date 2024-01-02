@@ -32,8 +32,7 @@ describe('Broker Service', () => {
   };
 
   const userHelpersMock = UserHelpers as jest.Mocked<typeof UserHelpers>;
-  userHelpersMock.getUserIdFromRequest.mockReturnValue(1); // assuming userId 1 for testing
-
+  userHelpersMock.getUserIdFromRequest.mockReturnValue(1);
   const dbHelpersMock = DbHelpers as jest.Mocked<typeof DbHelpers>;
 
   beforeEach(async () => {
@@ -101,7 +100,7 @@ describe('Broker Service', () => {
 
   describe('delete', () => {
     it('should successfully delete a broker', async () => {
-      mockBrokerModel.destroy.mockResolvedValue(1 as any); // assuming 1 is the number of rows affected
+      mockBrokerModel.destroy.mockResolvedValue(1 as any);
 
       const result = await service.delete(req, { itemId: 'brokerId' } as any);
       expect(result).toBeTruthy();
@@ -118,7 +117,7 @@ describe('Broker Service', () => {
 
   describe('getAll', () => {
     it('should return an array of trades', async () => {
-      const mockTrades = [{}, {}]; // Array of trades
+      const mockTrades = [{}, {}];
       mockBrokerModel.findAll.mockResolvedValue(mockTrades as any);
 
       const result = await service.getAll(req);

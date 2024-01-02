@@ -16,8 +16,6 @@ describe('UserController', () => {
       register: jest.fn(),
     };
 
-    // Please replace UserModelMock and jwtServiceMock with actual instances
-    // or working mock instances of UserModel and JwtService
     const UserModelMock = {};
     const jwtServiceMock = {};
 
@@ -48,15 +46,12 @@ describe('UserController', () => {
 
   describe('#create', () => {
     it('should register a User and return a UserWithJWTModel', async () => {
-      // Arrange
       const registerResult = new UserWithJWTModel();
       const userLogin = new UserLogin();
       jest.spyOn(userService, 'register').mockResolvedValue(registerResult);
 
-      // Act
       const result = await userController.create(userLogin);
 
-      // Assert
       expect(result).toBe(registerResult);
       expect(userService.register).toHaveBeenCalledWith(userLogin);
     });
@@ -64,15 +59,12 @@ describe('UserController', () => {
 
   describe('#login', () => {
     it('should login a User and return a UserWithJWTModel', async () => {
-      // Arrange
       const loginResult = new UserWithJWTModel();
       const userLogin = new UserLogin();
       jest.spyOn(userService, 'login').mockResolvedValue(loginResult);
 
-      // Act
       const result = await userController.login(userLogin);
 
-      // Assert
       expect(result).toBe(loginResult);
       expect(userService.login).toHaveBeenCalledWith(userLogin);
     });

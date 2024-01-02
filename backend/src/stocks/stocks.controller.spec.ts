@@ -6,7 +6,6 @@ import { Stock } from './stock.model';
 import { StocksController } from './stocks.controller';
 import { StocksService } from './stocks.service';
 
-// Mocks
 jest.mock('./stocks.service');
 jest.mock('../guards/auth.guard');
 

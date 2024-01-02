@@ -26,8 +26,7 @@ export const createUserProfileAction = (baseUrl) => {
       try {
         const bearerToken = await getBearerToken();
         const userProfileData = { preferredExchange, preferredLanguage };
-        // eslint-disable-next-line no-unused-vars
-        const { data, error } = await httpService.post(
+        const { error } = await httpService.post(
           baseUrl,
           userProfileData,
           bearerToken,
@@ -48,8 +47,7 @@ export const editUserProfileAction = (baseUrl) => {
       try {
         const bearerToken = await getBearerToken();
         const userProfileData = { preferredExchange, preferredLanguage };
-        // eslint-disable-next-line no-unused-vars
-        const { data, error } = await httpService.put(
+        const { error } = await httpService.put(
           baseUrl,
           userProfileData,
           bearerToken,
