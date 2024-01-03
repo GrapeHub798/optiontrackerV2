@@ -1,9 +1,25 @@
 import { DataTypes, UUID, UUIDV4 } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+
+import { Broker } from '../broker/broker.model';
+import { Journal } from '../journal/journal.model';
+import { Option } from '../options/option.model';
 
 @Table
 export class Trade extends Model<Trade> {
-  @Column
+  @BelongsTo(() => Broker)
+  broker: Broker;
+
+  @ForeignKey(() => Broker)
+  @Column({
+    type: UUID,
+  })
   brokerId: string;
 
   @Column({
@@ -14,7 +30,25 @@ export class Trade extends Model<Trade> {
     type: DataTypes.DECIMAL(10, 2),
   })
   buyPrice: number;
-  @Column
+
+  @BelongsTo(() => Journal)
+  journal: Journal;
+
+  @ForeignKey(() => Journal)
+  @Column({
+    allowNull: true, // This makes the association optional
+    type: UUID,
+  })
+  journalId: string;
+
+  @BelongsTo(() => Option)
+  option: Option;
+
+  @ForeignKey(() => Option)
+  @Column({
+    allowNull: true, // This makes the association optional
+    type: UUID,
+  })
   optionId: string;
 
   @Column

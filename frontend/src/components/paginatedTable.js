@@ -11,7 +11,12 @@ import {
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 
-export const PaginatedTable = ({ data, onPageChange, onRowsPerPageChange }) => {
+export const PaginatedTable = ({
+  data,
+  onPageChange,
+  onRowsPerPageChange,
+  columns,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -26,26 +31,37 @@ export const PaginatedTable = ({ data, onPageChange, onRowsPerPageChange }) => {
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 
+  const getNestedProperty = (path, obj) => {
+    return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  };
+
+  const renderRow = (row) => {
+    return columns.map(({ dataProperty }, index) => {
+      const cellValue = getNestedProperty(dataProperty, row);
+      return (
+        <TableCell key={index}>
+          {cellValue !== undefined ? cellValue : ""}
+        </TableCell>
+      );
+    });
+  };
+
   return (
     <Paper>
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              {/* Replace with your table headers */}
-              <TableCell>Column 1</TableCell>
-              <TableCell>Column 2</TableCell>
-              <TableCell>Column 3</TableCell>
+              {columns.map(({ header }, index) => (
+                <TableCell className="fw-bold" key={index}>
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {data.map((row, index) => (
-              <TableRow key={index}>
-                {/* Replace with your row rendering logic */}
-                <TableCell>{row.column1}</TableCell>
-                <TableCell>{row.column2}</TableCell>
-                <TableCell>{row.column3}</TableCell>
-              </TableRow>
+              <TableRow key={index}>{renderRow(row)}</TableRow>
             ))}
           </TableBody>
         </Table>
@@ -64,6 +80,7 @@ export const PaginatedTable = ({ data, onPageChange, onRowsPerPageChange }) => {
 };
 
 PaginatedTable.propTypes = {
+  columns: PropTypes.array,
   data: PropTypes.array,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,

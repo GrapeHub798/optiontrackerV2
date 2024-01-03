@@ -20,7 +20,7 @@ export const tradesReducer = slice.reducer;
 
 function createInitialState() {
   return {
-    items: [],
+    trades: "",
     page: 1,
     limit: 10,
     totalItems: 0,
@@ -31,7 +31,18 @@ function createInitialState() {
 }
 
 function createReducers() {
-  return {};
+  return {
+    setPage,
+    setLimit,
+  };
+
+  function setPage(page, state) {
+    state.page = page;
+  }
+
+  function setLimit(limit, state) {
+    state.limit = limit;
+  }
 }
 
 function createExtraActions() {
@@ -76,7 +87,7 @@ function createExtraReducers() {
         .addCase(fulfilled, (state, action) => {
           const tradeData = action.payload;
 
-          state.items = tradeData.trades;
+          state.trades = tradeData.trades;
           state.page = tradeData.page;
           state.limit = tradeData.limit;
           state.totalItems = tradeData.total;

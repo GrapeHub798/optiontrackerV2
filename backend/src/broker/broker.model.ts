@@ -1,5 +1,7 @@
 import { DataTypes, UUID, UUIDV4 } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, HasOne, Model, Table } from 'sequelize-typescript';
+
+import { Trade } from '../trade/trade.model';
 
 @Table
 export class Broker extends Model<Broker> {
@@ -10,6 +12,7 @@ export class Broker extends Model<Broker> {
     type: UUID,
   })
   brokerId: string;
+
   @Column
   brokerName: string;
   @Column({
@@ -22,6 +25,10 @@ export class Broker extends Model<Broker> {
     type: DataTypes.DECIMAL(10, 2),
   })
   brokerStockFee: number;
+
+  @HasOne(() => Trade)
+  trade: Trade;
+
   @Column({
     allowNull: false,
   })

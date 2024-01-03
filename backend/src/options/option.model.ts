@@ -1,5 +1,7 @@
 import { DataTypes, UUID, UUIDV4 } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, HasOne, Model, Table } from 'sequelize-typescript';
+
+import { Trade } from '../trade/trade.model';
 
 @Table
 export class Option extends Model<Option> {
@@ -26,6 +28,9 @@ export class Option extends Model<Option> {
     type: DataTypes.STRING,
   })
   ticker: string;
+
+  @HasOne(() => Trade)
+  trade: Trade;
 
   @Column({
     allowNull: false,

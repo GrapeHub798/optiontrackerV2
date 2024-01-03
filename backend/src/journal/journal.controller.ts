@@ -18,7 +18,6 @@ import { GetOneItem } from '../universal/getSingle.model';
 import { Journal } from './journal.model';
 import { JournalService } from './journal.service';
 import { JournalEntry } from './journalEntry.model';
-import { JournalTradeId } from './journalTradeId.model';
 
 @Controller('journal')
 export class JournalController {
@@ -61,23 +60,5 @@ export class JournalController {
   @HttpCode(HttpStatus.OK)
   getAll(@Request() req: any): Promise<Journal[]> {
     return this.journalService.getAll(req);
-  }
-
-  @UseGuards(AuthGuard)
-  @Patch('linkTrade/:journalId')
-  @HttpCode(HttpStatus.OK)
-  linkTrade(
-    @Request() req: any,
-    @Param() getOneItem: GetOneItem,
-    @Body() journalTradeId: JournalTradeId,
-  ) {
-    return this.journalService.linkTrade(req, getOneItem, journalTradeId);
-  }
-
-  @UseGuards(AuthGuard)
-  @Patch('unlinkTrade/:journalId')
-  @HttpCode(HttpStatus.OK)
-  unlinkTrade(@Request() req: any, @Param() getOneItem: GetOneItem) {
-    return this.journalService.unlinkTrade(req, getOneItem);
   }
 }

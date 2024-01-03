@@ -92,6 +92,7 @@ export const AddTradeModal = ({ show, onHide, isOption }) => {
 
     setIsSaving(false);
     setIsSaved(true);
+    await dispatch(tradesActions.getTrades());
     setBackdropValue("false");
     setEnableKeyboard(true);
     setTimeout(() => onHide(), 2000);

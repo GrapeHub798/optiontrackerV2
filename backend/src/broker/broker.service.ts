@@ -80,4 +80,16 @@ export class BrokerService {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
+
+  async getOne(userId: string, brokerId: string) {
+    try {
+      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Broker,
+        userId,
+        brokerId,
+      );
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
 }

@@ -1,5 +1,7 @@
 import { DataTypes, NOW, UUID, UUIDV4 } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, HasOne, Model, Table } from 'sequelize-typescript';
+
+import { Trade } from '../trade/trade.model';
 
 @Table
 export class Journal extends Model<Journal> {
@@ -23,10 +25,8 @@ export class Journal extends Model<Journal> {
   })
   journalId: string;
 
-  @Column({
-    type: UUID,
-  })
-  tradeId: string;
+  @HasOne(() => Trade)
+  trade: Trade;
 
   @Column({
     allowNull: false,

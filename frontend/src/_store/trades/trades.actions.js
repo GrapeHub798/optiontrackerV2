@@ -2,12 +2,25 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getBearerToken } from "../../_helpers/getBearerToken";
 import * as httpService from "../../_helpers/httpService";
+import store from "../index";
+
+const getTradeState = () => {
+  const state = store.getState();
+  return state.trades;
+};
 
 export const getTradesAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/getTrades`,
-    async ({ page, limit }, { rejectWithValue }) => {
+    async ({ page = null, limit = null }, { rejectWithValue }) => {
       try {
+        //if page and limit is null, get it from the state
+        if (!page || !limit) {
+          const tradeState = getTradeState;
+          page = page || tradeState.page;
+          limit = limit || tradeState.limit;
+        }
+
         const bearerToken = await getBearerToken();
         const tradeUrl = `${baseUrl}/${limit}/${page}`;
         const { data, error } = await httpService.get(tradeUrl, bearerToken);
