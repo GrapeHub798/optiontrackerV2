@@ -147,7 +147,7 @@ export class TradeService {
     getAllPaginated: GetAllPaginated,
   ): Promise<GetAllTrades> {
     try {
-      const offset = getAllPaginated.limit * (getAllPaginated.page - 1);
+      const offset = getAllPaginated.limit * getAllPaginated.page;
       const trades = await this.tradeModel.findAll({
         include: [
           {

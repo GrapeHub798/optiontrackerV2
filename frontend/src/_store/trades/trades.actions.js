@@ -16,7 +16,7 @@ export const getTradesAction = (baseUrl) => {
       try {
         //if page and limit is null, get it from the state
         if (!page || !limit) {
-          const tradeState = getTradeState;
+          const tradeState = getTradeState();
           page = page || tradeState.page;
           limit = limit || tradeState.limit;
         }

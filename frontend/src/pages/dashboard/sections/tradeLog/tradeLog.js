@@ -15,6 +15,8 @@ export const TradeLog = () => {
   const [hasOption, setHasOption] = useState(false);
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
 
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const dispatch = useDispatch();
   const trades = useSelector((x) => x.trades.trades);
   const page = useSelector((x) => x.trades.page);
@@ -33,6 +35,9 @@ export const TradeLog = () => {
   const handleRowsPerPageChange = async (limit) => {
     await dispatch(tradesActions.setLimit(limit));
   };
+  const handleRowSelectionChange = (selectedRows) => {
+    setSelectedRows(selectedRows);
+  };
 
   const columns = () => {
     return [
@@ -46,13 +51,6 @@ export const TradeLog = () => {
       { header: "Profit/Loss", dataProperty: "tradeTotal" },
     ];
   };
-
-  useEffect(() => {
-    if (!trades) {
-      fetchTrades();
-    }
-    setIsLoading(false);
-  }, [trades]);
 
   useEffect(() => {
     fetchTrades();
@@ -75,8 +73,8 @@ export const TradeLog = () => {
       {isLoading && !trades && <Spinner animation="border" />}
       {!isLoading && trades && (
         <>
-          <Row>
-            <Col>
+          <Row className="mb-2">
+            <Col md={{ span: 4 }}>
               <Button onClick={() => setShowAddTradeModal(true)}>
                 {plusIcon} Add Trade
               </Button>
@@ -88,6 +86,11 @@ export const TradeLog = () => {
                 {plusIcon} Add Option Trade
               </Button>
             </Col>
+            {trades && trades.length > 0 && (
+              <Col md={{ span: 4, offset: 4 }} className="text-end">
+                <Button disabled={selectedRows.length === 0}>Delete</Button>
+              </Col>
+            )}
           </Row>
           {trades && trades.length === 0 && (
             <>
@@ -101,10 +104,13 @@ export const TradeLog = () => {
           )}
           {trades && trades.length > 0 && (
             <PaginatedTable
+              initialPage={page}
+              initialRowCount={limit}
               data={trades}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               columns={columns()}
+              onRowSelectionChange={handleRowSelectionChange}
             />
           )}
           {showAddTradeModal && (

@@ -21,7 +21,7 @@ export const tradesReducer = slice.reducer;
 function createInitialState() {
   return {
     trades: "",
-    page: 1,
+    page: 0,
     limit: 10,
     totalItems: 0,
     totalPages: 0,
