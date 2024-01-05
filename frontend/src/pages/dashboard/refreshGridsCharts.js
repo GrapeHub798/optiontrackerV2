@@ -8,6 +8,9 @@ export const refreshGridsAndCharts = async () => {
   await store.dispatch(analysisActions.getTradesLast7({}));
   await store.dispatch(analysisActions.getTradesLast7Amount({}));
 
+  //win loss chart
+  await store.dispatch(analysisActions.getWinLossesByStock({}));
+
   //refresh Performance By Trade
   await store.dispatch(analysisActions.getPerformanceByTradeData({}));
   //refresh Performance by Amount
@@ -20,4 +23,7 @@ export const refreshGridsAndCharts = async () => {
   await store.dispatch(analysisActions.getMostTradedByTrades({}));
   //By Amout
   await store.dispatch(analysisActions.getMostTradedByAmount({}));
+
+  //account values
+  await store.dispatch(analysisActions.getAccountValue({}));
 };
