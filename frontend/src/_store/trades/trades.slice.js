@@ -36,12 +36,12 @@ function createReducers() {
     setLimit,
   };
 
-  function setPage(page, state) {
-    state.page = page;
+  function setPage(state, action) {
+    state.page = action.payload;
   }
 
-  function setLimit(limit, state) {
-    state.limit = limit;
+  function setLimit(state, action) {
+    state.limit = action.payload;
   }
 }
 

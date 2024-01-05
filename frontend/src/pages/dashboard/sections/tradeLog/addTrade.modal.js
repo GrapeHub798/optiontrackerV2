@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
-import { Alert, Modal, Spinner } from "react-bootstrap";
+import { Alert, Col, Modal, Row, Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { FormProvider, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 
+import { displayError } from "../../../../_helpers/errorhelper";
 import { tradesActions } from "../../../../_store";
+import { refreshGridsAndCharts } from "../../refreshGridsCharts";
 import { StockSearchForm } from "./tradeForms/stockSearch.form";
 import { TradeForm } from "./tradeForms/trade.form";
 import { TradeOptionForm } from "./tradeForms/tradeOption.form";
@@ -92,7 +94,7 @@ export const AddTradeModal = ({ show, onHide, isOption }) => {
 
     setIsSaving(false);
     setIsSaved(true);
-    await dispatch(tradesActions.getTrades({}));
+    await refreshGridsAndCharts();
     setBackdropValue("false");
     setEnableKeyboard(true);
     setTimeout(() => onHide(), 2000);
@@ -138,7 +140,16 @@ export const AddTradeModal = ({ show, onHide, isOption }) => {
                     Please select a stock
                   </Alert>
                 )}
-                <Button type="submit">Save Trade</Button>
+                {tradesError && (
+                  <Alert variant="danger" className="my-3" dismissible>
+                    {displayError(tradesError)}
+                  </Alert>
+                )}
+                <Row className="mt-2">
+                  <Col className="text-end">
+                    <Button type="submit">Save Trade</Button>
+                  </Col>
+                </Row>
               </form>
             </FormProvider>
           </>

@@ -2,11 +2,10 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getBearerToken } from "../../_helpers/getBearerToken";
 import * as httpService from "../../_helpers/httpService";
+import { INDEXEDDB_STOCK_KEY } from "../../shared/sharedConstants";
 import store from "../index";
-import { IndexedDBManager } from "../indexedDb.class";
+import { readArray, writeArray } from "../indexedDb";
 
-const dbManager = new IndexedDBManager("osStockJournal", "osStockStore");
-const stockIndexedDbKey = "stocks";
 const getStockState = () => {
   const state = store.getState();
   return state.stocks;
@@ -22,7 +21,7 @@ export const loadDataAction = (baseUrl) => {
       }
 
       //try to read from indexeddb
-      stocks = await dbManager.readArray(stockIndexedDbKey);
+      stocks = await readArray(INDEXEDDB_STOCK_KEY);
       if (stocks && stocks.length > 0) {
         return stocks;
       }
@@ -35,7 +34,7 @@ export const loadDataAction = (baseUrl) => {
           bearerToken,
         );
         if (error) return rejectWithValue(error);
-        await dbManager.writeArray(stockIndexedDbKey, data);
+        await writeArray(INDEXEDDB_STOCK_KEY, data);
         return data;
       } catch (e) {
         return rejectWithValue(e.message);

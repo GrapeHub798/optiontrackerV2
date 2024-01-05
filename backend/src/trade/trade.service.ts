@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { literal } from 'sequelize';
+import sequelize, { literal } from 'sequelize';
 
 import { Broker } from '../broker/broker.model';
 import { BrokerService } from '../broker/broker.service';
@@ -25,14 +25,12 @@ export class TradeService {
     const brokerFee = trade.optionId
       ? broker.brokerOptionFee
       : broker.brokerStockFee;
-    const totalBuyPrice =
-      trade.buyPrice * trade.quantity * optionCalc -
-      trade.quantity * 2 * brokerFee;
-    const totalSellPrice =
-      trade.sellPrice * trade.quantity * optionCalc -
-      trade.quantity * 2 * brokerFee;
+    console.log(brokerFee);
+    const calculatedBrokerFee = trade.quantity * 2 * brokerFee;
+    const totalBuyPrice = trade.buyPrice * trade.quantity * optionCalc;
+    const totalSellPrice = trade.sellPrice * trade.quantity * optionCalc;
 
-    return totalSellPrice - totalBuyPrice;
+    return totalSellPrice - totalBuyPrice - calculatedBrokerFee;
   };
   constructor(
     @InjectModel(Trade)
@@ -73,19 +71,6 @@ export class TradeService {
       return true;
     } catch (e) {
       throw new InternalServerErrorException(e.message);
-    }
-  }
-  async delete(req: any, getOneItem: GetOneItem) {
-    try {
-      await this.tradeModel.destroy({
-        where: {
-          tradeId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      return true;
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
 
@@ -149,6 +134,34 @@ export class TradeService {
     try {
       const offset = getAllPaginated.limit * getAllPaginated.page;
       const trades = await this.tradeModel.findAll({
+        attributes: {
+          include: [
+            [
+              sequelize.fn(
+                'DATE_FORMAT',
+                sequelize.col('Trade.createdAt'),
+                '%d-%m-%Y',
+              ),
+              'createdAt',
+            ],
+            [
+              sequelize.fn(
+                'DATE_FORMAT',
+                sequelize.col('Trade.buyDate'),
+                '%d-%m-%Y',
+              ),
+              'buyDate',
+            ],
+            [
+              sequelize.fn(
+                'DATE_FORMAT',
+                sequelize.col('Trade.sellDate'),
+                '%d-%m-%Y',
+              ),
+              'sellDate',
+            ],
+          ],
+        },
         include: [
           {
             model: Broker,
@@ -172,6 +185,7 @@ export class TradeService {
         ],
         limit: +getAllPaginated.limit,
         offset: +offset,
+        order: [['createdAt', 'DESC']],
         where: {
           userId: UserHelpers.getUserIdFromRequest(req),
         },

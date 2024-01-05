@@ -2,7 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { history } from "../../_helpers/history";
 import { isValidUser } from "../../_helpers/validateUser";
-import { APP_URL_PATHS } from "../../shared/sharedConstants";
+import {
+  APP_URL_PATHS,
+  INDEXEDDB_STOCK_KEY,
+} from "../../shared/sharedConstants";
+import { deleteArray } from "../indexedDb";
 import {
   changePasswordAction,
   loginAction,
@@ -45,7 +49,14 @@ function createReducers() {
   function logout(state) {
     state.user = null;
     localStorage.removeItem("user");
-    history.navigate(APP_URL_PATHS.HOME);
+    //clean up the other local storage info
+    localStorage.removeItem("userprofile");
+    localStorage.removeItem("exchanges");
+    localStorage.removeItem("brokers");
+    //remove stocks
+    deleteArray(INDEXEDDB_STOCK_KEY).then(() =>
+      history.navigate(APP_URL_PATHS.HOME),
+    );
   }
 }
 

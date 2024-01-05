@@ -14,25 +14,21 @@ import React, { useEffect, useState } from "react";
 
 export const PaginatedTable = ({
   data,
-  initialPage,
-  initialRowCount,
+  totalRows,
   onPageChange,
   onRowsPerPageChange,
   columns,
   onRowSelectionChange,
+  page,
+  limit,
+  selectedRows,
 }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRows, setSelectedRows] = useState([]);
-
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
     onPageChange(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    onPageChange(0);
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 
@@ -44,7 +40,6 @@ export const PaginatedTable = ({
       newSelected = data;
     }
 
-    setSelectedRows(newSelected);
     onRowSelectionChange(newSelected);
   };
 
@@ -65,7 +60,6 @@ export const PaginatedTable = ({
       );
     }
 
-    setSelectedRows(newSelected);
     onRowSelectionChange(newSelected);
   };
   const isSelected = (row) => selectedRows.indexOf(row) !== -1;
@@ -84,14 +78,6 @@ export const PaginatedTable = ({
       );
     });
   };
-
-  useEffect(() => {
-    if (!initialPage || !initialRowCount) {
-      return;
-    }
-    setPage(initialPage);
-    setRowsPerPage(initialRowCount);
-  }, [initialPage, initialRowCount]);
 
   return (
     <>
@@ -140,10 +126,10 @@ export const PaginatedTable = ({
           </TableContainer>
           <TablePagination
             component="div"
-            count={data.length}
+            count={totalRows}
             page={page}
             onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
+            rowsPerPage={limit}
             onRowsPerPageChange={handleChangeRowsPerPage}
             rowsPerPageOptions={[10, 20, 30, 50]}
           />
@@ -158,7 +144,11 @@ PaginatedTable.propTypes = {
   initialRowCount: PropTypes.number,
   columns: PropTypes.array,
   data: PropTypes.array,
+  page: PropTypes.number,
+  limit: PropTypes.number,
+  totalRows: PropTypes.number,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,
   onRowSelectionChange: PropTypes.func,
+  selectedRows: PropTypes.array,
 };

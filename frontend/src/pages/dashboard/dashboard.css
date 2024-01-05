@@ -1,0 +1,10 @@
+.card-dashboard-font-size {
+    font-size: 14px !important;
+}
+
+.bar-chart-height {
+    height: 30vh;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}

@@ -8,17 +8,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { tradesActions } from "../../../../_store";
 import { PaginatedTable } from "../../../../components/paginatedTable";
 import { AddTradeModal } from "./addTrade.modal";
+import { DeleteTradeModal } from "./deleteTrade.modal";
 
 export const TradeLog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAddTradeModal, setShowAddTradeModal] = useState(false);
+  const [showDeleteTradeModal, setShowDeleteTradeModal] = useState(false);
   const [hasOption, setHasOption] = useState(false);
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
 
   const [selectedRows, setSelectedRows] = useState([]);
 
   const dispatch = useDispatch();
+
   const trades = useSelector((x) => x.trades.trades);
+  const totalTrades = useSelector((x) => x.trades.totalItems);
   const page = useSelector((x) => x.trades.page);
   const limit = useSelector((x) => x.trades.limit);
 
@@ -41,12 +45,15 @@ export const TradeLog = () => {
 
   const columns = () => {
     return [
+      { header: "Created", dataProperty: "createdAt" },
       { header: "Broker", dataProperty: "broker.brokerName" },
       { header: "Symbol", dataProperty: "ticker" },
       { header: "CALL/PUT", dataProperty: "option.optionType" },
       { header: "Strike Price", dataProperty: "option.strikePrice" },
       { header: "Buy Price", dataProperty: "buyPrice" },
       { header: "Sell Price", dataProperty: "sellPrice" },
+      { header: "Buy Date", dataProperty: "buyDate" },
+      { header: "Sell Date", dataProperty: "sellDate" },
       { header: "Quantity", dataProperty: "quantity" },
       { header: "Profit/Loss", dataProperty: "tradeTotal" },
     ];
@@ -66,6 +73,20 @@ export const TradeLog = () => {
       setHasOption(false);
     }
     setShowAddTradeModal(false);
+  };
+
+  const showDeleteModal = () => {
+    if (!selectedRows || selectedRows.length === 0) {
+      return;
+    }
+    setShowDeleteTradeModal(true);
+  };
+
+  const hideDeleteModal = (clearSelected) => {
+    if (clearSelected) {
+      setSelectedRows([]);
+    }
+    setShowDeleteTradeModal(false);
   };
 
   return (
@@ -88,7 +109,12 @@ export const TradeLog = () => {
             </Col>
             {trades && trades.length > 0 && (
               <Col md={{ span: 4, offset: 4 }} className="text-end">
-                <Button disabled={selectedRows.length === 0}>Delete</Button>
+                <Button
+                  onClick={showDeleteModal}
+                  disabled={selectedRows.length === 0}
+                >
+                  Delete
+                </Button>
               </Col>
             )}
           </Row>
@@ -104,20 +130,29 @@ export const TradeLog = () => {
           )}
           {trades && trades.length > 0 && (
             <PaginatedTable
-              initialPage={page}
-              initialRowCount={limit}
+              page={page}
+              limit={limit}
+              totalRows={totalTrades}
               data={trades}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               columns={columns()}
+              selectedRows={selectedRows}
               onRowSelectionChange={handleRowSelectionChange}
             />
           )}
           {showAddTradeModal && (
             <AddTradeModal
               show={showAddTradeModal}
-              onHide={() => hideTradeWithOption()}
+              onHide={hideTradeWithOption}
               isOption={hasOption}
+            />
+          )}
+          {showDeleteTradeModal && (
+            <DeleteTradeModal
+              show={showDeleteTradeModal}
+              onHide={hideDeleteModal}
+              listOfTrades={selectedRows}
             />
           )}
         </>

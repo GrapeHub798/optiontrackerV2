@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
-import * as process from 'process';
 
+import { AnalysisModule } from './analysis/analysis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -39,6 +39,7 @@ import { UserprofileModule } from './userprofile/userprofile.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRATION },
     }),
+    AnalysisModule,
     AuthModule,
     BrokerModule,
     UserModule,

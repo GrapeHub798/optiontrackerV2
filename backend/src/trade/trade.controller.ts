@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -29,13 +28,6 @@ export class TradeController {
   @HttpCode(HttpStatus.OK)
   create(@Request() req: any, @Body() newTrade: NewTrade) {
     return this.tradeService.create(req, newTrade);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete(':itemId')
-  @HttpCode(HttpStatus.OK)
-  delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
-    return this.tradeService.delete(req, getOneItem);
   }
 
   @UseGuards(AuthGuard)
