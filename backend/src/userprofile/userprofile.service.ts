@@ -60,4 +60,15 @@ export class UserProfileService {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
+
+  async getUserProfile(userId: string) {
+    try {
+      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        UserProfile,
+        userId,
+      );
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
 }

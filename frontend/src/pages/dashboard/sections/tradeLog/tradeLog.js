@@ -1,4 +1,8 @@
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCirclePlus,
+  faComment,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Alert, Col, Row, Spinner } from "react-bootstrap";
@@ -17,6 +21,9 @@ export const TradeLog = () => {
   const [showDeleteTradeModal, setShowDeleteTradeModal] = useState(false);
   const [hasOption, setHasOption] = useState(false);
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
+
+  const addJournalIcon = <FontAwesomeIcon icon={faComment} size="1x" />;
+  const editJournalIcon = <FontAwesomeIcon icon={faPenToSquare} size="1x" />;
 
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -98,6 +105,22 @@ export const TradeLog = () => {
     setShowDeleteTradeModal(true);
   };
 
+  const getCustomColumnIcon = (row) => {
+    // Determine which icon to return based on a property of the row
+    if (row.journalId) {
+      return editJournalIcon;
+    }
+    return addJournalIcon;
+  };
+
+  const handleCustomColumnClick = (row) => {
+    if (row?.journalId) {
+      //show edit Journal
+      return;
+    }
+    //show Add journal
+  };
+
   const hideDeleteModal = (clearSelected) => {
     if (clearSelected) {
       setSelectedRows([]);
@@ -162,6 +185,9 @@ export const TradeLog = () => {
               onRowSelectionChange={handleRowSelectionChange}
               sortConfig={sortConfig}
               onColumnSort={handleColumnSort}
+              getCustomColumnIcon={getCustomColumnIcon}
+              customColumnTooltip="Add/Edit Journal"
+              onCustomColumnClick={handleCustomColumnClick}
             />
           )}
           {showAddTradeModal && (

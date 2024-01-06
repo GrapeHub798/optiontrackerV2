@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
+import { Tooltip } from "chart.js";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 
@@ -28,6 +30,9 @@ export const PaginatedTable = ({
   selectedRows,
   sortConfig,
   onColumnSort,
+  getCustomColumnIcon,
+  customColumnTooltip,
+  onCustomColumnClick,
 }) => {
   const handleChangePage = (event, newPage) => {
     onPageChange(newPage);
@@ -115,6 +120,7 @@ export const PaginatedTable = ({
                       onChange={handleSelectAllClick}
                     />
                   </TableCell>
+                  <TableCell> Add/Edit Journal </TableCell>
                   {columns.map(({ header, dataProperty }, index) => (
                     <TableCell
                       className="fw-bold pointer-class"
@@ -141,6 +147,13 @@ export const PaginatedTable = ({
                           checked={isItemSelected}
                           onChange={(event) => handleClick(event, row)}
                         />
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip title={customColumnTooltip}>
+                          <IconButton onClick={() => onCustomColumnClick(row)}>
+                            {getCustomColumnIcon(row)}
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                       {renderRow(row)}
                     </TableRow>
@@ -178,4 +191,7 @@ PaginatedTable.propTypes = {
   selectedRows: PropTypes.array,
   sortConfig: PropTypes.object,
   onColumnSort: PropTypes.func,
+  getCustomColumnIcon: PropTypes.func,
+  customColumnTooltip: PropTypes.string,
+  onCustomColumnClick: PropTypes.func,
 };

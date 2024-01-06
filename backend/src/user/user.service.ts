@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { AuthUser } from '../auth/authUser.model';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
+import { UserProfileService } from '../userprofile/userprofile.service';
 import { ChangePassword } from './changePassword.model';
 import { User } from './user.model';
 import { UserLogin } from './userLogin.model';
@@ -20,6 +21,7 @@ export class UserService {
     @InjectModel(User)
     private readonly userModel: typeof User,
     private jwtService: JwtService,
+    private userProfileService: UserProfileService,
   ) {}
 
   async changePassword(
@@ -45,7 +47,10 @@ export class UserService {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
-  async generateUserWithJWT(user: User): Promise<UserWithJWTModel> {
+  async generateUserWithJWT(
+    user: User,
+    hasProfile: boolean,
+  ): Promise<UserWithJWTModel> {
     const token = await UserHelpers.generateJWTToken(
       this.jwtService,
       user.userId,
@@ -58,7 +63,14 @@ export class UserService {
 
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 2);
-    return new UserWithJWTModel(user, token, refreshToken, expirationDate);
+
+    return new UserWithJWTModel(
+      user,
+      token,
+      refreshToken,
+      expirationDate,
+      hasProfile,
+    );
   }
 
   async getAuthUser(authUser: AuthUser): Promise<boolean> {
@@ -93,7 +105,15 @@ export class UserService {
         );
       }
 
-      return this.generateUserWithJWT(foundUser);
+      //check if the user profile exists
+      const userProfile = await this.userProfileService.getUserProfile(
+        foundUser.userId,
+      );
+      const profileExists = Boolean(
+        userProfile.preferredExchange && userProfile.preferredLanguage,
+      );
+
+      return this.generateUserWithJWT(foundUser, profileExists);
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
@@ -102,7 +122,7 @@ export class UserService {
   async register(userData: UserLogin): Promise<UserWithJWTModel> {
     try {
       const newUser = await this.userModel.create(userData);
-      return this.generateUserWithJWT(newUser);
+      return this.generateUserWithJWT(newUser, false);
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
