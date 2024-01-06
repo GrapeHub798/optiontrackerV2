@@ -1,8 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
-  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -15,7 +13,6 @@ import {
 import { AuthGuard } from '../guards/auth.guard';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
-import { Journal } from './journal.model';
 import { JournalService } from './journal.service';
 import { JournalEntry } from './journalEntry.model';
 
@@ -28,13 +25,6 @@ export class JournalController {
   @HttpCode(HttpStatus.OK)
   create(@Request() req: any, @Body() journalEntry: JournalEntry) {
     return this.journalService.create(req, journalEntry);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete(':itemId')
-  @HttpCode(HttpStatus.OK)
-  delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
-    return this.journalService.delete(req, getOneItem);
   }
 
   @UseGuards(AuthGuard)
@@ -53,12 +43,5 @@ export class JournalController {
     @Body() journalEntry: JournalEntry,
   ) {
     return this.journalService.edit(req, getOneItem, journalEntry);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  getAll(@Request() req: any): Promise<Journal[]> {
-    return this.journalService.getAll(req);
   }
 }

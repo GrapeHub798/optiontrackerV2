@@ -9,10 +9,10 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
 } from "@mui/material";
-import { Tooltip } from "chart.js";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const SORT_DIRECTION = {
   ASC: "ASC",
@@ -90,13 +90,15 @@ export const PaginatedTable = ({
   };
 
   const renderRow = (row) => {
-    return columns.map(({ dataProperty }, index) => {
+    return columns.map(({ dataProperty, formatFunction }, index) => {
       const cellValue = getNestedProperty(dataProperty, row);
-      return (
-        <TableCell key={index}>
-          {cellValue !== undefined ? cellValue : ""}
-        </TableCell>
-      );
+      const formattedCellValue =
+        formatFunction && cellValue
+          ? formatFunction(cellValue)
+          : cellValue
+            ? cellValue
+            : "";
+      return <TableCell key={index}>{formattedCellValue}</TableCell>;
     });
   };
 
@@ -120,7 +122,12 @@ export const PaginatedTable = ({
                       onChange={handleSelectAllClick}
                     />
                   </TableCell>
-                  <TableCell> Add/Edit Journal </TableCell>
+                  <TableCell className="ps-1 pe-0">
+                    <span className="fw-bold">
+                      Add/Edit
+                      <br /> Journal
+                    </span>
+                  </TableCell>
                   {columns.map(({ header, dataProperty }, index) => (
                     <TableCell
                       className="fw-bold pointer-class"

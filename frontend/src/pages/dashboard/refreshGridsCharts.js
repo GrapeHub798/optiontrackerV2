@@ -26,4 +26,5 @@ export const refreshGridsAndCharts = async () => {
 
   //account values
   await store.dispatch(analysisActions.getAccountValue({}));
+  await store.dispatch(analysisActions.getWinLossPercentage({}));
 };

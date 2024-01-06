@@ -33,7 +33,7 @@ module.exports = {
   },
   plugins: ["react", "simple-import-sort", "import"],
   rules: {
-    "no-unused-vars": "off",
+    "no-unused-vars": 2,
     "no-debugger": 0,
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",

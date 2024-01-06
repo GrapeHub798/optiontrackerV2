@@ -21,25 +21,20 @@ export class JournalService {
     try {
       const trade = await this.tradeService.getOne(req, journalEntry.tradeId);
 
-      await this.journalModel.create({
+      const userId = UserHelpers.getUserIdFromRequest(req);
+      const newJournalEntry = await this.journalModel.create({
         journalEntry: journalEntry.entry,
         trade,
-        userId: UserHelpers.getUserIdFromRequest(req),
+        userId,
       });
-      return true;
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
 
-  async delete(req: any, getOneItem: GetOneItem) {
-    try {
-      await this.journalModel.destroy({
-        where: {
-          journalId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
+      //update the trade too
+      await this.tradeService.attachJournalEntry(
+        userId,
+        trade.tradeId,
+        newJournalEntry.journalId,
+      );
+
       return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
@@ -74,18 +69,6 @@ export class JournalService {
       await journal.save();
 
       return true;
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
-
-  async getAll(req: any): Promise<Journal[]> {
-    try {
-      return this.journalModel.findAll({
-        where: {
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

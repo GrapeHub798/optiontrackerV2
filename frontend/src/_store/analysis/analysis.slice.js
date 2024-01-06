@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getAccountValueAction,
   getAccountValueByBrokerAction,
+  getBiggestLossByStockAction,
   getMostTradedByAmountAction,
   getMostTradedByQuantityAction,
   getMostTradedByTradesAction,
@@ -10,11 +11,12 @@ import {
   getPerformanceByTradeDataAction,
   getTradesLast7Action,
   getTradesLast7AmountAction,
-  getWinLossesByStockAction,
+  getWinLossByStockAction,
+  getWinLossPercentageAction,
 } from "./analysis.actions";
 import { performanceChartTransformer } from "./dataTransformers/performanceChartTransformer";
 import { tradesLast7Transformer } from "./dataTransformers/tradesLast7Transformer";
-import { winLossesByStockTransformer } from "./dataTransformers/winLossesByStockTransformer";
+import { winLossByStockTransformer } from "./dataTransformers/winLossByStockTransformer";
 
 const name = "analysis";
 const initialState = createInitialState();
@@ -35,10 +37,12 @@ function createInitialState() {
     tradesLast7Amount: "",
     performanceByTradeData: "",
     performanceByAmountData: "",
-    winLossesByStock: "",
+    winLossByStock: "",
     accountValueByBroker: "",
     accountValue: "",
     riskAnalysis: "",
+    winLossPercentage: "",
+    biggestLossByStock: "",
     success: false,
     error: null,
   };
@@ -58,10 +62,12 @@ function createExtraActions() {
     getTradesLast7: getTradesLast7Action(baseUrl),
     getTradesLast7Amount: getTradesLast7AmountAction(baseUrl),
     getPerformanceByTradeData: getPerformanceByTradeDataAction(baseUrl),
-    getWinLossesByStock: getWinLossesByStockAction(baseUrl),
+    getWinLossByStock: getWinLossByStockAction(baseUrl),
     getAccountValueByBroker: getAccountValueByBrokerAction(baseUrl),
     getAccountValue: getAccountValueAction(baseUrl),
     getPerformanceByAmountData: getPerformanceByAmountDataAction(baseUrl),
+    getWinLossPercentage: getWinLossPercentageAction(baseUrl),
+    getBiggestLossByStock: getBiggestLossByStockAction(baseUrl),
   };
 }
 
@@ -83,11 +89,38 @@ function createExtraReducers() {
     getTradesLast7Reducer();
     getTradesLast7AmountReducer();
     getPerformanceByTradeDataReducer();
-    getWinLossesByStockReducer();
+    getWinLossByStockReducer();
     getAccountValueByBrokerReducer();
     getAccountValueReducer();
     getPerformanceByAmountDataReducer();
+    getWinLossPercentageReducer();
+    getBiggestLossByStockReducer();
 
+    function getBiggestLossByStockReducer() {
+      const { pending, fulfilled, rejected } =
+        extraActions.getBiggestLossByStock;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, (state, action) => {
+          state.biggestLossByStock = action.payload;
+          state.error = null;
+          state.success = false;
+        })
+        .addCase(rejected, defaultRejected);
+    }
+
+    function getWinLossPercentageReducer() {
+      const { pending, fulfilled, rejected } =
+        extraActions.getWinLossPercentage;
+      builder
+        .addCase(pending, defaultPending)
+        .addCase(fulfilled, (state, action) => {
+          state.winLossPercentage = action.payload;
+          state.error = null;
+          state.success = false;
+        })
+        .addCase(rejected, defaultRejected);
+    }
     function getMostTradedByAmountReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getMostTradedByAmount;
@@ -186,12 +219,12 @@ function createExtraReducers() {
         .addCase(rejected, defaultRejected);
     }
 
-    function getWinLossesByStockReducer() {
-      const { pending, fulfilled, rejected } = extraActions.getWinLossesByStock;
+    function getWinLossByStockReducer() {
+      const { pending, fulfilled, rejected } = extraActions.getWinLossByStock;
       builder
         .addCase(pending, defaultPending)
         .addCase(fulfilled, (state, action) => {
-          state.winLossesByStock = winLossesByStockTransformer(action.payload);
+          state.winLossByStock = winLossByStockTransformer(action.payload);
           state.error = null;
           state.success = false;
         })

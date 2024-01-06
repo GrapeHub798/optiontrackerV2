@@ -1,8 +1,5 @@
-import {
-  faCirclePlus,
-  faComment,
-  faPenToSquare,
-} from "@fortawesome/free-solid-svg-icons";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faCirclePlus, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Alert, Col, Row, Spinner } from "react-bootstrap";
@@ -35,6 +32,11 @@ export const TradeLog = () => {
   const page = useSelector((x) => x.trades.page);
   const limit = useSelector((x) => x.trades.limit);
   const sortConfig = useSelector((x) => x.trades.sortConfig);
+
+  const USDollar = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 
   const fetchTrades = async () => {
     setIsLoading(true);
@@ -72,14 +74,34 @@ export const TradeLog = () => {
       { header: "Broker", dataProperty: "broker.brokerName" },
       { header: "Symbol", dataProperty: "ticker" },
       { header: "CALL/PUT", dataProperty: "stockoption.optionType" },
-      { header: "Strike Price", dataProperty: "stockoption.strikePrice" },
-      { header: "Buy Price", dataProperty: "buyPrice" },
-      { header: "Sell Price", dataProperty: "sellPrice" },
+      {
+        header: "Strike Price",
+        dataProperty: "stockoption.strikePrice",
+        formatFunction: dollarFormatFunction,
+      },
+      {
+        header: "Buy Price",
+        dataProperty: "buyPrice",
+        formatFunction: dollarFormatFunction,
+      },
+      {
+        header: "Sell Price",
+        dataProperty: "sellPrice",
+        formatFunction: dollarFormatFunction,
+      },
       { header: "Buy Date", dataProperty: "buyDate" },
       { header: "Sell Date", dataProperty: "sellDate" },
       { header: "Quantity", dataProperty: "quantity" },
-      { header: "Profit/Loss", dataProperty: "tradeTotal" },
+      {
+        header: "Profit/Loss",
+        dataProperty: "tradeTotal",
+        formatFunction: dollarFormatFunction,
+      },
     ];
+  };
+
+  const dollarFormatFunction = (data) => {
+    return USDollar.format(data);
   };
 
   useEffect(() => {
@@ -186,7 +208,7 @@ export const TradeLog = () => {
               sortConfig={sortConfig}
               onColumnSort={handleColumnSort}
               getCustomColumnIcon={getCustomColumnIcon}
-              customColumnTooltip="Add/Edit Journal"
+              customColumnTooltip={"Add/Edit Journal"}
               onCustomColumnClick={handleCustomColumnClick}
             />
           )}

@@ -9,6 +9,7 @@ import { MostTradedStock } from './mostTradedStock.model';
 import { PerformanceData } from './performanceData.model';
 import { SingleTradeDay } from './singleTradeDay.model';
 import { WinLossesByStock } from './winLossesByStock.model';
+import { WinLossPercentage } from './winLossPercentage.model';
 
 @Injectable()
 export class AnalysisService {
@@ -45,10 +46,9 @@ export class AnalysisService {
     }
   }
 
-  async getBiggestLossesByStock(req: any) {
+  async getBiggestLossByStock(req: any) {
     try {
       const userId = UserHelpers.getUserIdFromRequest(req);
-      //let's the most traded and the total trades with it
       const [data] = await this.sequelize.query(
         `SELECT ticker, SUM(tradeTotal) AS total_losses, SUM(quantity) AS total_quantity FROM trades WHERE userId = :userId AND tradeTotal < 0 GROUP BY ticker ORDER BY total_losses ASC LIMIT 1;`,
         { replacements: { userId: userId }, type: sequelize.QueryTypes.SELECT },
@@ -159,7 +159,7 @@ export class AnalysisService {
     }
   }
 
-  async getWinsLossesByStock(req: any) {
+  async getWinLossByStock(req: any) {
     try {
       const userId = UserHelpers.getUserIdFromRequest(req);
       const data = await this.sequelize.query(
@@ -170,6 +170,22 @@ export class AnalysisService {
         },
       );
       return data as WinLossesByStock[];
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  async getWinLossPercentage(req: any) {
+    try {
+      const userId = UserHelpers.getUserIdFromRequest(req);
+      const [data] = await this.sequelize.query(
+        'SELECT ROUND((SUM(CASE WHEN tradeTotal > 0 THEN 1 ELSE 0 END) / COUNT(*)) * 100,2) AS win_rate FROM trades WHERE userId = :userId',
+        {
+          replacements: { userId: userId },
+          type: sequelize.QueryTypes.SELECT,
+        },
+      );
+      return data as WinLossPercentage;
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

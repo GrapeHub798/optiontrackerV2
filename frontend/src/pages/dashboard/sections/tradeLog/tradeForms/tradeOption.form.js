@@ -37,7 +37,7 @@ export const TradeOptionForm = () => {
               name="expirationDate"
               control={control}
               defaultValue={null}
-              render={({ field: { ref, ...restField } }) => (
+              render={({ field: { ...restField } }) => (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     slotProps={{

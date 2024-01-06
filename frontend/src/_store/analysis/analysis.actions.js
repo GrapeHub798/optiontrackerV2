@@ -49,17 +49,22 @@ export const getTradesLast7AmountAction = (baseUrl) => {
 
 export const getPerformanceByTradeDataAction = (baseUrl) => {
   const urlEndpoint = "performanceByTradeData";
-  return baseAnalysisThunk("performanceByTradeData", baseUrl, urlEndpoint);
+  return baseAnalysisThunk("getPerformanceByTradeData", baseUrl, urlEndpoint);
 };
 
 export const getPerformanceByAmountDataAction = (baseUrl) => {
   const urlEndpoint = "performanceByAmountData";
-  return baseAnalysisThunk("performanceByAmountData", baseUrl, urlEndpoint);
+  return baseAnalysisThunk("getPerformanceByAmountData", baseUrl, urlEndpoint);
 };
 
-export const getWinLossesByStockAction = (baseUrl) => {
-  const urlEndpoint = "winslossesByStock";
-  return baseAnalysisThunk("getWinLossesByStock", baseUrl, urlEndpoint);
+export const getBiggestLossByStockAction = (baseUrl) => {
+  const urlEndpoint = "biggestLossByStock";
+  return baseAnalysisThunk("getBiggestLossByStock", baseUrl, urlEndpoint);
+};
+
+export const getWinLossByStockAction = (baseUrl) => {
+  const urlEndpoint = "winLossByStock";
+  return baseAnalysisThunk("getWinLossByStock", baseUrl, urlEndpoint);
 };
 
 export const getAccountValueByBrokerAction = (baseUrl) => {
@@ -67,6 +72,10 @@ export const getAccountValueByBrokerAction = (baseUrl) => {
   return baseAnalysisThunk("getAccountValueByBroker", baseUrl, urlEndpoint);
 };
 
+export const getWinLossPercentageAction = (baseUrl) => {
+  const urlEndpoint = "winLossPercentage";
+  return baseAnalysisThunk("getWinLossPercentage", baseUrl, urlEndpoint);
+};
 export const getAccountValueAction = (baseUrl) => {
   const urlEndpoint = "accountValue";
   return baseAnalysisThunk("getAccountValue", baseUrl, urlEndpoint);

@@ -2,7 +2,7 @@ import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Spinner } from "react-bootstrap";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { useDispatch, useSelector } from "react-redux";
 
 import { analysisActions } from "../../../_store";
@@ -13,28 +13,28 @@ export const WinLossesByStock = () => {
   const refreshIcon = <FontAwesomeIcon icon={faArrowsRotate} size="1x" />;
 
   const dispatch = useDispatch();
-  const winLossesByStock = useSelector((x) => x.analysis.winLossesByStock);
+  const winLossByStock = useSelector((x) => x.analysis.winLossByStock);
 
   const USDollar = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   });
 
-  const fetchWinLossesByStock = async () => {
+  const fetchWinLossByStock = async () => {
     setIsLoading(true);
-    await dispatch(analysisActions.getWinLossesByStock({}));
+    await dispatch(analysisActions.getWinLossByStock({}));
   };
 
   const refreshData = async () => {
-    await fetchWinLossesByStock();
+    await fetchWinLossByStock();
   };
 
   useEffect(() => {
-    if (!winLossesByStock) {
-      fetchWinLossesByStock();
+    if (!winLossByStock) {
+      fetchWinLossByStock();
     }
     setIsLoading(false);
-  }, [winLossesByStock]);
+  }, [winLossByStock]);
 
   const options = {
     responsive: true,
@@ -56,9 +56,6 @@ export const WinLossesByStock = () => {
           title: function (context) {
             return USDollar.format(parseFloat(context[0].raw));
           },
-          label: function (context) {
-            return "";
-          },
         },
       },
     },
@@ -75,8 +72,8 @@ export const WinLossesByStock = () => {
       <Card.Body className="bar-chart-height">
         <>
           {isLoading && <Spinner animation="border" />}
-          {!isLoading && winLossesByStock && (
-            <Bar options={options} data={winLossesByStock} />
+          {!isLoading && winLossByStock && (
+            <Bar options={options} data={winLossByStock} />
           )}
         </>
       </Card.Body>

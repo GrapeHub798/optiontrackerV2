@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { history } from "../../_helpers/history";
-import { isValidUser } from "../../_helpers/validateUser";
 import {
   APP_URL_PATHS,
   INDEXEDDB_STOCK_KEY,

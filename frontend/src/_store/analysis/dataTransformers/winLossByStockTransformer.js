@@ -1,4 +1,4 @@
-export const winLossesByStockTransformer = (dataObject) => {
+export const winLossByStockTransformer = (dataObject) => {
   if (!dataObject || !Array.isArray(dataObject)) {
     return {};
   }

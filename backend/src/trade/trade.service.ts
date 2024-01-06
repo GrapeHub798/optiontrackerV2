@@ -39,6 +39,23 @@ export class TradeService {
     private readonly brokerService: BrokerService,
   ) {}
 
+  async attachJournalEntry(userId: string, tradeId: string, journalId: string) {
+    try {
+      const trade = await DbHelpers.findRecordByPrimaryKeyAndUserId(
+        Trade,
+        userId,
+        tradeId,
+      );
+
+      //add the journal entry
+      await trade.update({
+        journalId,
+      });
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
   async create(req: any, newTrade: NewTrade) {
     try {
       //get our user early

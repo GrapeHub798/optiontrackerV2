@@ -5,6 +5,7 @@ import { Col, Container, Row, Spinner } from "react-bootstrap";
 
 import { LoadUserInfo } from "./loadUserInfo";
 import { AccountValue } from "./sections/accountValue";
+import { BiggestLossByStock } from "./sections/biggestLossByStock";
 import { MostTradedByAmount } from "./sections/mostTradedByAmount";
 import { MostTradedByQuantity } from "./sections/mostTradedByQuantity";
 import { MostTradedByTrades } from "./sections/mostTradedByTrades";
@@ -14,6 +15,7 @@ import { TradeLog } from "./sections/tradeLog/tradeLog";
 import { TradesLast7 } from "./sections/tradesLast7";
 import { TradesLast7Amount } from "./sections/tradesLast7Amount";
 import { WinLossesByStock } from "./sections/winLossesByStock";
+import { WinLossPercentage } from "./sections/winLossPercentage";
 
 export const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +63,7 @@ export const Dashboard = () => {
                   <MostTradedByAmount />
                 </Col>
               </Row>
-              <Row>
+              <Row className="mt-2">
                 <hr />
                 <Col className="text-center">
                   <h4>Account Value</h4>
@@ -71,7 +73,12 @@ export const Dashboard = () => {
                 <Col md={4}>
                   <AccountValue />
                 </Col>
-                <Col md={8}></Col>
+                <Col md={4}>
+                  <WinLossPercentage />
+                </Col>
+                <Col md={4}>
+                  <BiggestLossByStock />
+                </Col>
               </Row>
             </Col>
             <Col md={6}>

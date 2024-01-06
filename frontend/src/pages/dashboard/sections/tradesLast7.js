@@ -59,9 +59,6 @@ export const TradesLast7 = () => {
           title: function (context) {
             return `${context[0].formattedValue} Trades`;
           },
-          label: function (context) {
-            return "";
-          },
         },
       },
     },

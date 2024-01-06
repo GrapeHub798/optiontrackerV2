@@ -53,7 +53,7 @@ export const TradeForm = () => {
               name="buyDate"
               control={control}
               defaultValue={null}
-              render={({ field: { ref, ...restField } }) => (
+              render={({ field: { ...restField } }) => (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     slotProps={{
@@ -89,7 +89,7 @@ export const TradeForm = () => {
               name="sellDate"
               control={control}
               defaultValue={null}
-              render={({ field: { ref, ...restField } }) => (
+              render={({ field: { ...restField } }) => (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     slotProps={{

@@ -38,6 +38,13 @@ export const Welcome = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!exchanges) {
+      fetchExchanges();
+    }
+    setIsLoading(false);
+  }, [exchanges]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSaving(true);
