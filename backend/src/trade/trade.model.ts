@@ -9,7 +9,7 @@ import {
 
 import { Broker } from '../broker/broker.model';
 import { Journal } from '../journal/journal.model';
-import { Option } from '../options/option.model';
+import { StockOption } from '../stockoptions/stockoption.model';
 
 @Table
 export class Trade extends Model<Trade> {
@@ -41,10 +41,7 @@ export class Trade extends Model<Trade> {
   })
   journalId: string;
 
-  @BelongsTo(() => Option)
-  option: Option;
-
-  @ForeignKey(() => Option)
+  @ForeignKey(() => StockOption)
   @Column({
     allowNull: true, // This makes the association optional
     type: UUID,
@@ -53,6 +50,7 @@ export class Trade extends Model<Trade> {
 
   @Column
   quantity: number;
+
   @Column({
     type: DataTypes.DATE,
   })
@@ -61,6 +59,8 @@ export class Trade extends Model<Trade> {
     type: DataTypes.DECIMAL(10, 2),
   })
   sellPrice: number;
+  @BelongsTo(() => StockOption)
+  stockoption: StockOption;
   @Column
   ticker: string;
   @Column({

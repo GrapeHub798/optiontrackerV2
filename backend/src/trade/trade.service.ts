@@ -1,14 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import sequelize, { literal } from 'sequelize';
+import sequelize, { literal, Order } from 'sequelize';
 
 import { Broker } from '../broker/broker.model';
 import { BrokerService } from '../broker/broker.service';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
 import { Journal } from '../journal/journal.model';
-import { Option } from '../options/option.model';
-import { OptionsService } from '../options/options.service';
+import { StockOption } from '../stockoptions/stockoption.model';
+import { StockOptionsService } from '../stockoptions/stockoptions.service';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
@@ -35,7 +35,7 @@ export class TradeService {
   constructor(
     @InjectModel(Trade)
     private readonly tradeModel: typeof Trade,
-    private readonly optionService: OptionsService,
+    private readonly optionService: StockOptionsService,
     private readonly brokerService: BrokerService,
   ) {}
 
@@ -132,6 +132,35 @@ export class TradeService {
     getAllPaginated: GetAllPaginated,
   ): Promise<GetAllTrades> {
     try {
+      const sortDirection = getAllPaginated.sortDirection || 'DESC';
+      const sortColumn = getAllPaginated.sortColumn || 'createdAt';
+
+      const tableToModel = {
+        broker: Broker,
+        journal: Journal,
+        stockoption: StockOption,
+      };
+
+      const defaultOrderBy: ({ as: string; model: any } | string)[][] = [
+        [sortColumn, sortDirection],
+      ];
+      let customOrderBy: ({ as: string; model: any } | string)[][] = [];
+      if (sortColumn.includes('.')) {
+        //split it up and determine the model
+        const sortColumnPieces = sortColumn.split('.');
+        const neededModel = tableToModel[sortColumnPieces[0]];
+        customOrderBy = [
+          [
+            { as: sortColumnPieces[0], model: neededModel },
+            sortColumnPieces[1],
+            sortDirection,
+          ],
+        ];
+      }
+
+      const orderBy: ({ as: string; model: any } | string)[][] =
+        customOrderBy?.length > 0 ? customOrderBy : defaultOrderBy;
+
       const offset = getAllPaginated.limit * getAllPaginated.page;
       const trades = await this.tradeModel.findAll({
         attributes: {
@@ -177,15 +206,16 @@ export class TradeService {
                 ],
               ],
             },
-            model: Option,
+            model: StockOption,
           },
           {
+            as: 'journal',
             model: Journal,
           },
         ],
         limit: +getAllPaginated.limit,
         offset: +offset,
-        order: [['createdAt', 'DESC']],
+        order: orderBy as Order,
         where: {
           userId: UserHelpers.getUserIdFromRequest(req),
         },

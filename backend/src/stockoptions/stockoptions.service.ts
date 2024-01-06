@@ -4,17 +4,17 @@ import { InjectModel } from '@nestjs/sequelize';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
 import { GetOneItem } from '../universal/getSingle.model';
-import { NewOption } from './newOption.model';
-import { Option } from './option.model';
+import { NewStockOption } from './newOption.model';
+import { StockOption } from './stockoption.model';
 
 @Injectable()
-export class OptionsService {
+export class StockOptionsService {
   constructor(
-    @InjectModel(Option)
-    private readonly optionModel: typeof Option,
+    @InjectModel(StockOption)
+    private readonly optionModel: typeof StockOption,
   ) {}
 
-  async create(userId: string, newOption: NewOption) {
+  async create(userId: string, newOption: NewStockOption) {
     try {
       return await this.optionModel.create({
         ...newOption,
@@ -39,10 +39,10 @@ export class OptionsService {
     }
   }
 
-  async edit(req: any, getOneItem: GetOneItem, newOption: NewOption) {
+  async edit(req: any, getOneItem: GetOneItem, newOption: NewStockOption) {
     try {
       const option = await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        Option,
+        StockOption,
         UserHelpers.getUserIdFromRequest(req),
         getOneItem.itemId,
       );
@@ -53,10 +53,10 @@ export class OptionsService {
     }
   }
 
-  async getOne(req: any, getOneItem: GetOneItem): Promise<Option> {
+  async getOne(req: any, getOneItem: GetOneItem): Promise<StockOption> {
     try {
       return await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        Option,
+        StockOption,
         UserHelpers.getUserIdFromRequest(req),
         getOneItem.itemId,
       );

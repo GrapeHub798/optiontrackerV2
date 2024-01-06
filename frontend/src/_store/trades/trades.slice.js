@@ -21,6 +21,7 @@ export const tradesReducer = slice.reducer;
 function createInitialState() {
   return {
     trades: "",
+    sortConfig: null,
     page: 0,
     limit: 10,
     totalItems: 0,
@@ -34,6 +35,7 @@ function createReducers() {
   return {
     setPage,
     setLimit,
+    setSortConfig,
   };
 
   function setPage(state, action) {
@@ -42,6 +44,10 @@ function createReducers() {
 
   function setLimit(state, action) {
     state.limit = action.payload;
+  }
+
+  function setSortConfig(state, action) {
+    state.sortConfig = action.payload;
   }
 }
 

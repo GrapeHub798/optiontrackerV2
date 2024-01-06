@@ -4,7 +4,7 @@ import { Column, HasOne, Model, Table } from 'sequelize-typescript';
 import { Trade } from '../trade/trade.model';
 
 @Table
-export class Option extends Model<Option> {
+export class StockOption extends Model<StockOption> {
   @Column
   expirationDate: Date;
   @Column({

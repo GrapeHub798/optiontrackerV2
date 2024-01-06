@@ -12,14 +12,14 @@ import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
 import { NewOption } from './newOption.model';
-import { Option } from './option.model';
-import { OptionsService } from './options.service';
+import { Option } from './stockoption.model';
+import { StockoptionsService } from './stockoptions.service';
 
 jest.mock('../helpers/dbHelpers');
 jest.mock('../helpers/userHelpers');
 
 describe('OptionsService', () => {
-  let service: OptionsService;
+  let service: StockoptionsService;
 
   const req = { user: { userId: 10 } } as any;
 
@@ -49,7 +49,7 @@ describe('OptionsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        OptionsService,
+        StockoptionsService,
         {
           provide: getModelToken(Option),
           useValue: mockOptionModel,
@@ -57,7 +57,7 @@ describe('OptionsService', () => {
       ],
     }).compile();
 
-    service = module.get<OptionsService>(OptionsService);
+    service = module.get<StockoptionsService>(StockoptionsService);
   });
 
   it('should be defined', () => {

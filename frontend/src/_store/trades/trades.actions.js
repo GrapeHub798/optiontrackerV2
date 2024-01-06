@@ -12,17 +12,24 @@ const getTradeState = () => {
 export const getTradesAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/getTrades`,
-    async ({ page = null, limit = null }, { rejectWithValue }) => {
+    async (
+      { page = null, limit = null, sortColumn = null, sortDirection = null },
+      { rejectWithValue },
+    ) => {
       try {
         //if page and limit is null, get it from the state
-        if (!page || !limit) {
-          const tradeState = getTradeState();
-          page = page || tradeState.page;
-          limit = limit || tradeState.limit;
-        }
+        const tradeState = getTradeState();
+        page = page || tradeState.page;
+        limit = limit || tradeState.limit;
+
+        sortColumn = sortColumn || tradeState?.sortConfig?.key;
+        sortDirection = sortDirection || tradeState?.sortConfig?.direction;
+
+        const sortString =
+          sortColumn && sortDirection ? `/${sortColumn}/${sortDirection}` : "";
 
         const bearerToken = await getBearerToken();
-        const tradeUrl = `${baseUrl}/${limit}/${page}`;
+        const tradeUrl = `${baseUrl}/${limit}/${page}${sortString}`;
         const { data, error } = await httpService.get(tradeUrl, bearerToken);
         if (error) return rejectWithValue(error);
         return {

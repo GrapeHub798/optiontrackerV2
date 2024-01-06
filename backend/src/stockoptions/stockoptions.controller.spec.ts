@@ -5,17 +5,17 @@ import { Test } from '@nestjs/testing';
 import { GetAllPaginated } from '../universal/getAllPaginated.model';
 import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
-import { NewOption } from './newOption.model';
-import { Option } from './option.model';
-import { OptionsController } from './options.controller';
-import { OptionsService } from './options.service';
+import { NewStockOption } from './newOption.model';
+import { StockOption } from './stockoption.model';
+import { StockoptionsController } from './stockoptions.controller';
+import { StockoptionsService } from './stockoptions.service';
 
-jest.mock('./options.service');
+jest.mock('./stockoptions.service');
 jest.mock('../guards/auth.guard');
 
 describe('controller', () => {
-  let controller: OptionsController;
-  let service: OptionsService;
+  let controller: StockoptionsController;
+  let service: StockoptionsService;
 
   const req = {
     user: {
@@ -23,7 +23,7 @@ describe('controller', () => {
     },
   };
 
-  const newOption: NewOption = {
+  const newOption: NewStockOption = {
     expirationDate: new Date(),
     optionType: 1,
     strikePrice: 150,
@@ -45,12 +45,12 @@ describe('controller', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      controllers: [OptionsController],
-      providers: [OptionsService],
+      controllers: [StockoptionsController],
+      providers: [StockoptionsService],
     }).compile();
 
-    service = module.get<OptionsService>(OptionsService);
-    controller = module.get<OptionsController>(OptionsController);
+    service = module.get<StockoptionsService>(StockoptionsService);
+    controller = module.get<StockoptionsController>(StockoptionsController);
     jest.clearAllMocks();
   });
 
@@ -183,7 +183,7 @@ describe('controller', () => {
 
   describe('Option Controller - getOne', () => {
     it('should call the get one with the correct parameters', async () => {
-      const expectedResult: Partial<Option> = {
+      const expectedResult: Partial<StockOption> = {
         expirationDate: new Date(),
         optionId: 'optionId',
         optionType: 1,

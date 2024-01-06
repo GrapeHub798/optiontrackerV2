@@ -1,10 +1,11 @@
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Col, Row, Spinner } from "react-bootstrap";
+import { Alert, Col, Row, Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { useDispatch, useSelector } from "react-redux";
 
+import { displayError } from "../../../../_helpers/errorhelper";
 import { tradesActions } from "../../../../_store";
 import { PaginatedTable } from "../../../../components/paginatedTable";
 import { AddTradeModal } from "./addTrade.modal";
@@ -22,13 +23,24 @@ export const TradeLog = () => {
   const dispatch = useDispatch();
 
   const trades = useSelector((x) => x.trades.trades);
+  const tradesError = useSelector((x) => x.trades.error);
   const totalTrades = useSelector((x) => x.trades.totalItems);
   const page = useSelector((x) => x.trades.page);
   const limit = useSelector((x) => x.trades.limit);
+  const sortConfig = useSelector((x) => x.trades.sortConfig);
 
   const fetchTrades = async () => {
     setIsLoading(true);
-    await dispatch(tradesActions.getTrades({ limit, page }));
+    const tradeObj = {
+      page,
+      limit,
+    };
+    if (sortConfig && sortConfig.key && sortConfig.direction) {
+      tradeObj.sortColumn = sortConfig.key;
+      tradeObj.sortDirection = sortConfig.direction;
+    }
+
+    await dispatch(tradesActions.getTrades(tradeObj));
     setIsLoading(false);
   };
 
@@ -43,13 +55,17 @@ export const TradeLog = () => {
     setSelectedRows(selectedRows);
   };
 
+  const handleColumnSort = async (sortConfig) => {
+    await dispatch(tradesActions.setSortConfig(sortConfig));
+  };
+
   const columns = () => {
     return [
       { header: "Created", dataProperty: "createdAt" },
       { header: "Broker", dataProperty: "broker.brokerName" },
       { header: "Symbol", dataProperty: "ticker" },
-      { header: "CALL/PUT", dataProperty: "option.optionType" },
-      { header: "Strike Price", dataProperty: "option.strikePrice" },
+      { header: "CALL/PUT", dataProperty: "stockoption.optionType" },
+      { header: "Strike Price", dataProperty: "stockoption.strikePrice" },
       { header: "Buy Price", dataProperty: "buyPrice" },
       { header: "Sell Price", dataProperty: "sellPrice" },
       { header: "Buy Date", dataProperty: "buyDate" },
@@ -61,7 +77,7 @@ export const TradeLog = () => {
 
   useEffect(() => {
     fetchTrades();
-  }, [page, limit]);
+  }, [page, limit, sortConfig]);
 
   const showTradeWithOption = () => {
     setHasOption(true);
@@ -94,6 +110,11 @@ export const TradeLog = () => {
       {isLoading && !trades && <Spinner animation="border" />}
       {!isLoading && trades && (
         <>
+          {tradesError && (
+            <Alert variant="danger" className="my-3" dismissible>
+              {displayError(tradesError)}
+            </Alert>
+          )}
           <Row className="mb-2">
             <Col md={{ span: 4 }}>
               <Button onClick={() => setShowAddTradeModal(true)}>
@@ -139,6 +160,8 @@ export const TradeLog = () => {
               columns={columns()}
               selectedRows={selectedRows}
               onRowSelectionChange={handleRowSelectionChange}
+              sortConfig={sortConfig}
+              onColumnSort={handleColumnSort}
             />
           )}
           {showAddTradeModal && (

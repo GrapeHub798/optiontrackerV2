@@ -13,18 +13,21 @@ import {
 
 import { AuthGuard } from '../guards/auth.guard';
 import { GetOneItem } from '../universal/getSingle.model';
-import { NewOption } from './newOption.model';
-import { Option } from './option.model';
-import { OptionsService } from './options.service';
+import { NewStockOption } from './newOption.model';
+import { StockOption } from './stockoption.model';
+import { StockOptionsService } from './stockoptions.service';
 
 @Controller('options')
-export class OptionsController {
-  constructor(private readonly optionsService: OptionsService) {}
+export class StockOptionsController {
+  constructor(private readonly optionsService: StockOptionsService) {}
 
   @UseGuards(AuthGuard)
   @Delete(':itemId')
   @HttpCode(HttpStatus.OK)
-  delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
+  delete(
+    @Request() req: any,
+    @Param() getOneItem: GetOneItem,
+  ): Promise<boolean> {
     return this.optionsService.delete(req, getOneItem);
   }
 
@@ -34,8 +37,8 @@ export class OptionsController {
   edit(
     @Request() req: any,
     @Param() getOneItem: GetOneItem,
-    @Body() newOption: NewOption,
-  ) {
+    @Body() newOption: NewStockOption,
+  ): Promise<boolean> {
     return this.optionsService.edit(req, getOneItem, newOption);
   }
 
@@ -45,7 +48,7 @@ export class OptionsController {
   getOne(
     @Request() req: any,
     @Param() getOneItem: GetOneItem,
-  ): Promise<Option> {
+  ): Promise<StockOption> {
     return this.optionsService.getOne(req, getOneItem);
   }
 }

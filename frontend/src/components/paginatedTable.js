@@ -12,6 +12,10 @@ import {
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 
+const SORT_DIRECTION = {
+  ASC: "ASC",
+  DESC: "DESC",
+};
 export const PaginatedTable = ({
   data,
   totalRows,
@@ -22,6 +26,8 @@ export const PaginatedTable = ({
   page,
   limit,
   selectedRows,
+  sortConfig,
+  onColumnSort,
 }) => {
   const handleChangePage = (event, newPage) => {
     onPageChange(newPage);
@@ -36,7 +42,6 @@ export const PaginatedTable = ({
     let newSelected = [];
 
     if (event.target.checked) {
-      // Select all rows on the current page
       newSelected = data;
     }
 
@@ -66,6 +71,17 @@ export const PaginatedTable = ({
 
   const getNestedProperty = (path, obj) => {
     return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  };
+
+  const requestSort = (key) => {
+    let direction = SORT_DIRECTION.ASC;
+    if (
+      sortConfig?.key === key &&
+      sortConfig?.direction === SORT_DIRECTION.ASC
+    ) {
+      direction = SORT_DIRECTION.DESC;
+    }
+    onColumnSort({ key, direction });
   };
 
   const renderRow = (row) => {
@@ -99,9 +115,18 @@ export const PaginatedTable = ({
                       onChange={handleSelectAllClick}
                     />
                   </TableCell>
-                  {columns.map(({ header }, index) => (
-                    <TableCell className="fw-bold" key={index}>
+                  {columns.map(({ header, dataProperty }, index) => (
+                    <TableCell
+                      className="fw-bold pointer-class"
+                      key={index}
+                      onClick={() => requestSort(dataProperty)}
+                    >
                       {header}
+                      {sortConfig?.key === dataProperty
+                        ? sortConfig?.direction === SORT_DIRECTION.ASC
+                          ? " 🔼"
+                          : " 🔽"
+                        : null}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -151,4 +176,6 @@ PaginatedTable.propTypes = {
   onRowsPerPageChange: PropTypes.func,
   onRowSelectionChange: PropTypes.func,
   selectedRows: PropTypes.array,
+  sortConfig: PropTypes.object,
+  onColumnSort: PropTypes.func,
 };

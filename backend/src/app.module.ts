@@ -12,7 +12,7 @@ import { BrokerModule } from './broker/broker.module';
 import { EodhdModule } from './eodhdapi/eodhd.module';
 import { ExchangesModule } from './exchanges/exchanges.module';
 import { JournalModule } from './journal/journal.module';
-import { OptionsModule } from './options/options.module';
+import { StockOptionsModule } from './stockoptions/stockoptions.module';
 import { StocksModule } from './stocks/stocks.module';
 import { TradeModule } from './trade/trade.module';
 import { UserModule } from './user/user.module';
@@ -48,7 +48,7 @@ import { UserprofileModule } from './userprofile/userprofile.module';
     ExchangesModule,
     StocksModule,
     EodhdModule,
-    OptionsModule,
+    StockOptionsModule,
     TradeModule,
     HttpModule.register({
       maxRedirects: 5,

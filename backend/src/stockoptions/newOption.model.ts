@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class NewOption {
+export class NewStockOption {
   @IsNotEmpty()
   expirationDate: Date;
   @IsNotEmpty()

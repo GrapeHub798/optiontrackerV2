@@ -49,7 +49,7 @@ export class TradeController {
   }
 
   @UseGuards(AuthGuard)
-  @Get(':limit/:page')
+  @Get(':limit/:page/:sortColumn?/:sortDirection?')
   @HttpCode(HttpStatus.OK)
   getAll(
     @Request() req: any,
