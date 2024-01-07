@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayError } from "../../../_helpers/errorhelper";
 import { exchangesActions, userprofileActions } from "../../../_store";
 
-const ChangePreferencesModal = ({ show, onHide }) => {
+export const ChangePreferencesModal = ({ show, onHide }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -187,5 +187,3 @@ ChangePreferencesModal.propTypes = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
 };
-
-export default ChangePreferencesModal;

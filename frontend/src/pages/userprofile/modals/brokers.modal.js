@@ -1,6 +1,7 @@
 import {
   faArrowsRotate,
   faCirclePlus,
+  faPenToSquare,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,16 +20,18 @@ import { Button, Col, Modal, Row, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { brokersActions } from "../../../_store";
-import AddBrokerModal from "./addBroker.modal";
-import DeleteBrokerModal from "./deleteBroker.modal";
+import { AddBrokerModal } from "./addBroker.modal";
+import { DeleteBrokerModal } from "./deleteBroker.modal";
+import { EditBrokerModal } from "./editBroker.modal";
 
-const BrokersModal = ({ show, onHide }) => {
+export const BrokersModal = ({ show, onHide }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [gettingBrokers, setGettingBrokers] = useState(false);
 
   const [showAddBrokerModal, setShowAddBrokerModal] = useState(false);
   const [showDeleteBrokerModal, setShowDeleteBrokerModal] = useState(false);
-  const [currentDeleteBroker, setCurrentDeleteBroker] = useState(null);
+  const [showEditBrokerModal, setShowEditBrokerModal] = useState(false);
+  const [currentBroker, setCurrentBroker] = useState(null);
 
   const [showParent, setShowParent] = useState(true);
 
@@ -36,6 +39,7 @@ const BrokersModal = ({ show, onHide }) => {
   const brokers = useSelector((x) => x.brokers.brokers);
 
   const trashIcon = <FontAwesomeIcon icon={faTrashCan} size="1x" />;
+  const editIcon = <FontAwesomeIcon icon={faPenToSquare} size="1x" />;
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
   const refreshIcon = <FontAwesomeIcon icon={faArrowsRotate} size="1x" />;
 
@@ -79,13 +83,25 @@ const BrokersModal = ({ show, onHide }) => {
   };
 
   const setupAndShowDeleteBrokeModal = (brokerObj) => {
-    setCurrentDeleteBroker(brokerObj);
+    setCurrentBroker(brokerObj);
     setShowDeleteBrokerModal(true);
   };
 
+  const setupAndShowEditBrokeModal = (brokerObj) => {
+    setCurrentBroker(brokerObj);
+    setShowEditBrokerModal(true);
+    setShowParent(false);
+  };
+
   const hideAndCleanupDeleteBrokerModal = () => {
-    setCurrentDeleteBroker(null);
+    setCurrentBroker(null);
     setShowDeleteBrokerModal(false);
+  };
+
+  const hideAndCleanupEditBrokerModal = () => {
+    setCurrentBroker(null);
+    setShowEditBrokerModal(false);
+    setShowParent(true);
   };
 
   return (
@@ -129,6 +145,7 @@ const BrokersModal = ({ show, onHide }) => {
                           <TableCell>Broker Name</TableCell>
                           <TableCell>Broker Option Fee</TableCell>
                           <TableCell>Broker Stock Fee</TableCell>
+                          <TableCell className="text-center">Edit</TableCell>
                           <TableCell className="text-center">Delete</TableCell>
                         </TableRow>
                       </TableHead>
@@ -139,6 +156,12 @@ const BrokersModal = ({ show, onHide }) => {
                               <TableCell>{row.brokerName}</TableCell>
                               <TableCell>{row.brokerOptionFee}</TableCell>
                               <TableCell>{row.brokerStockFee}</TableCell>
+                              <TableCell
+                                className="text-center pointer-class"
+                                onClick={() => setupAndShowEditBrokeModal(row)}
+                              >
+                                {editIcon}
+                              </TableCell>
                               <TableCell
                                 className="text-center pointer-class"
                                 onClick={() =>
@@ -178,7 +201,14 @@ const BrokersModal = ({ show, onHide }) => {
         <DeleteBrokerModal
           show={showDeleteBrokerModal}
           onHideParent={() => hideAndCleanupDeleteBrokerModal()}
-          broker={currentDeleteBroker}
+          broker={currentBroker}
+        />
+      )}
+      {showEditBrokerModal && (
+        <EditBrokerModal
+          show={showEditBrokerModal}
+          onHideParent={() => hideAndCleanupEditBrokerModal()}
+          broker={currentBroker}
         />
       )}
     </>
@@ -189,5 +219,3 @@ BrokersModal.propTypes = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
 };
-
-export default BrokersModal;

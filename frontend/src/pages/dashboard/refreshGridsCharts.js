@@ -1,15 +1,19 @@
 import store, { analysisActions, tradesActions } from "../../_store";
 
-export const refreshGridsAndCharts = async () => {
+export const refreshTradeTable = async () => {
   //refresh Trade Table
   await store.dispatch(tradesActions.getTrades({}));
+};
+
+export const refreshGridsAndCharts = async () => {
+  await refreshTradeTable();
 
   //Refresh last 7 Charts
   await store.dispatch(analysisActions.getTradesLast7({}));
   await store.dispatch(analysisActions.getTradesLast7Amount({}));
 
   //win loss chart
-  await store.dispatch(analysisActions.getWinLossesByStock({}));
+  await store.dispatch(analysisActions.getWinLossByStock({}));
 
   //refresh Performance By Trade
   await store.dispatch(analysisActions.getPerformanceByTradeData({}));

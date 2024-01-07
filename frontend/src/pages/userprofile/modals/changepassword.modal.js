@@ -11,7 +11,7 @@ import * as Yup from "yup";
 import { displayError } from "../../../_helpers/errorhelper";
 import { userActions } from "../../../_store";
 
-const ChangePasswordModal = ({ show, onHide }) => {
+export const ChangePasswordModal = ({ show, onHide }) => {
   const validationSchema = Yup.object().shape({
     currentPassword: Yup.string().required("Password is required"),
     newPassword: Yup.string()
@@ -171,5 +171,3 @@ ChangePasswordModal.propTypes = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
 };
-
-export default ChangePasswordModal;

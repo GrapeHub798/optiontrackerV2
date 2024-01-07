@@ -9,13 +9,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayError } from "../../../../_helpers/errorhelper";
 import { tradesActions } from "../../../../_store";
 import { PaginatedTable } from "../../../../components/paginatedTable";
+import { AddJournalEntry } from "./addJournalEntry";
 import { AddTradeModal } from "./addTrade.modal";
 import { DeleteTradeModal } from "./deleteTrade.modal";
+import { EditDeleteJournalEntry } from "./editDeleteJournalEntry";
 
 export const TradeLog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAddTradeModal, setShowAddTradeModal] = useState(false);
   const [showDeleteTradeModal, setShowDeleteTradeModal] = useState(false);
+  const [showAddJournalEntryModal, setShowAddJournalEntryModal] =
+    useState(false);
+  const [showEditJournalEntryModal, setShowEditJournalEntryModal] =
+    useState(false);
+  const [currentTradeForJournal, setCurrentTradeForJournal] = useState("");
   const [hasOption, setHasOption] = useState(false);
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
 
@@ -136,11 +143,12 @@ export const TradeLog = () => {
   };
 
   const handleCustomColumnClick = (row) => {
+    setCurrentTradeForJournal(row);
     if (row?.journalId) {
-      //show edit Journal
+      setShowEditJournalEntryModal(true);
       return;
     }
-    //show Add journal
+    setShowAddJournalEntryModal(true);
   };
 
   const hideDeleteModal = (clearSelected) => {
@@ -148,6 +156,16 @@ export const TradeLog = () => {
       setSelectedRows([]);
     }
     setShowDeleteTradeModal(false);
+  };
+
+  const hideAddJournalEntryModal = () => {
+    setCurrentTradeForJournal("");
+    setShowAddJournalEntryModal(false);
+  };
+
+  const hideEditJournalEntryModal = () => {
+    setCurrentTradeForJournal("");
+    setShowEditJournalEntryModal(false);
   };
 
   return (
@@ -224,6 +242,20 @@ export const TradeLog = () => {
               show={showDeleteTradeModal}
               onHide={hideDeleteModal}
               listOfTrades={selectedRows}
+            />
+          )}
+          {showAddJournalEntryModal && (
+            <AddJournalEntry
+              trade={currentTradeForJournal}
+              onHide={hideAddJournalEntryModal}
+              show={showAddJournalEntryModal}
+            />
+          )}
+          {showEditJournalEntryModal && (
+            <EditDeleteJournalEntry
+              trade={currentTradeForJournal}
+              onHide={hideEditJournalEntryModal}
+              show={showEditJournalEntryModal}
             />
           )}
         </>

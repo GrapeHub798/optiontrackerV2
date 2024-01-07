@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import {
+  defaultPendingReducer,
+  defaultRejectedReducer,
+} from "../defaultStoreReducers";
+import {
   createBrokerAction,
   deleteBrokerAction,
   deleteMultipleBrokerAction,
@@ -60,15 +64,6 @@ function defaultFulfilled(state) {
   state.success = true;
   state.error = null;
 }
-function defaultPending(state) {
-  state.error = null;
-  state.success = false;
-}
-
-function defaultRejected(state, action) {
-  state.error = action.payload;
-  state.success = false;
-}
 
 function createExtraReducers() {
   return (builder) => {
@@ -81,7 +76,7 @@ function createExtraReducers() {
     function getAllBrokerReducer() {
       const { pending, fulfilled, rejected } = extraActions.getAllBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           const brokers = action.payload;
           localStorage.setItem("brokers", JSON.stringify(brokers));
@@ -89,40 +84,40 @@ function createExtraReducers() {
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function createBrokerReducer() {
       const { pending, fulfilled, rejected } = extraActions.createBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function deleteBrokerReducer() {
       const { pending, fulfilled, rejected } = extraActions.deleteBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function editBrokerReducer() {
       const { pending, fulfilled, rejected } = extraActions.editBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function deleteMultipleBrokerReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.deleteMultipleBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
   };
 }

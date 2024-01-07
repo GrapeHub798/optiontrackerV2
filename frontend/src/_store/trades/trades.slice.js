@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { defaultFulfilledReducer } from "../defaultStoreReducers";
 import {
   createNewTradeAction,
   deleteMultipleTradesAction,
-  deleteTradeAction,
   editTradeAction,
   getTradesAction,
 } from "./trades.actions";
@@ -58,18 +58,12 @@ function createExtraActions() {
     getTrades: getTradesAction(baseUrl),
     createNewTrade: createNewTradeAction(baseUrl),
     editTrade: editTradeAction(baseUrl),
-    deleteTrade: deleteTradeAction(baseUrl),
     deleteMultipleTrades: deleteMultipleTradesAction(baseUrl),
   };
 }
 
 function defaultPending(state) {
   state.loading = true;
-  state.error = null;
-}
-
-function defaultFulfilled(state) {
-  state.loading = false;
   state.error = null;
 }
 
@@ -83,7 +77,6 @@ function createExtraReducers() {
     getTradesReducer();
     createNewTradeReducer();
     editTradeReducer();
-    deleteTradeReducer();
     deleteMultipleTradesReducer();
 
     function getTradesReducer() {
@@ -107,7 +100,7 @@ function createExtraReducers() {
       const { pending, fulfilled, rejected } = extraActions.createNewTrade;
       builder
         .addCase(pending, defaultPending)
-        .addCase(fulfilled, defaultFulfilled)
+        .addCase(fulfilled, defaultFulfilledReducer)
         .addCase(rejected, defaultRejected);
     }
 
@@ -115,15 +108,7 @@ function createExtraReducers() {
       const { pending, fulfilled, rejected } = extraActions.editTrade;
       builder
         .addCase(pending, defaultPending)
-        .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
-    }
-
-    function deleteTradeReducer() {
-      const { pending, fulfilled, rejected } = extraActions.deleteTrade;
-      builder
-        .addCase(pending, defaultPending)
-        .addCase(fulfilled, defaultFulfilled)
+        .addCase(fulfilled, defaultFulfilledReducer)
         .addCase(rejected, defaultRejected);
     }
 
@@ -132,7 +117,7 @@ function createExtraReducers() {
         extraActions.deleteMultipleTrades;
       builder
         .addCase(pending, defaultPending)
-        .addCase(fulfilled, defaultFulfilled)
+        .addCase(fulfilled, defaultFulfilledReducer)
         .addCase(rejected, defaultRejected);
     }
   };

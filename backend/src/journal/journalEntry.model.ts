@@ -3,5 +3,6 @@ import { IsNotEmpty } from 'class-validator';
 export class JournalEntry {
   @IsNotEmpty()
   entry: string;
-  tradeId?: string;
+  @IsNotEmpty()
+  tradeId: string;
 }

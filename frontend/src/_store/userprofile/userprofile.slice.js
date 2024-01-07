@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import {
+  defaultPendingReducer,
+  defaultRejectedReducer,
+} from "../defaultStoreReducers";
+import {
   createUserProfileAction,
   editUserProfileAction,
   getUserProfileAction,
@@ -54,15 +58,6 @@ function defaultFulfilled(state, action) {
   state.success = true;
 }
 
-function defaultPending(state) {
-  state.error = null;
-  state.success = false;
-}
-
-function defaultRejected(state, action) {
-  state.error = action.payload;
-  state.success = false;
-}
 function createExtraReducers() {
   return (builder) => {
     getUserProfileReducer();
@@ -71,25 +66,25 @@ function createExtraReducers() {
     function getUserProfileReducer() {
       const { pending, fulfilled, rejected } = extraActions.getUserProfile;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function createUserProfileReducer() {
       const { pending, fulfilled, rejected } = extraActions.createUserProfile;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function editUserProfileReducer() {
       const { pending, fulfilled, rejected } = extraActions.editUserProfile;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, defaultFulfilled)
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
   };
 }

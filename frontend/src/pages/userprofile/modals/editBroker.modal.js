@@ -11,7 +11,7 @@ import * as Yup from "yup";
 import { displayError } from "../../../_helpers/errorhelper";
 import { brokersActions } from "../../../_store";
 
-export const AddBrokerModal = ({ show, onHideParent }) => {
+export const EditBrokerModal = ({ show, onHideParent, broker }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [backdropValue, setBackdropValue] = useState("false");
@@ -44,7 +44,8 @@ export const AddBrokerModal = ({ show, onHideParent }) => {
       : parseFloat(brokerStockFee);
 
     await dispatch(
-      brokersActions.createBroker({
+      brokersActions.editBroker({
+        brokerId: broker.brokerId,
         brokerName,
         brokerOptionFee: optionFee,
         brokerStockFee: stockFee,
@@ -91,7 +92,7 @@ export const AddBrokerModal = ({ show, onHideParent }) => {
       backdrop={backdropValue}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Add Broker</Modal.Title>
+        <Modal.Title>Edit Broker</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {isSaving && (
@@ -113,7 +114,9 @@ export const AddBrokerModal = ({ show, onHideParent }) => {
                 <Form.Label>Broker Name</Form.Label>
                 <Form.Control
                   type="text"
-                  {...register("brokerName")}
+                  {...register("brokerName", {
+                    value: broker.brokerName,
+                  })}
                   required
                   className={`form-control ${
                     errors.brokerName ? "is-invalid" : ""
@@ -125,11 +128,21 @@ export const AddBrokerModal = ({ show, onHideParent }) => {
               </Form.Group>
               <Form.Group>
                 <Form.Label>Option Fee</Form.Label>
-                <Form.Control type="text" {...register("brokerOptionFee")} />
+                <Form.Control
+                  type="text"
+                  {...register("brokerOptionFee", {
+                    value: broker.brokerOptionFee,
+                  })}
+                />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Broker Stock Fee</Form.Label>
-                <Form.Control type="text" {...register("brokerStockFee")} />
+                <Form.Control
+                  type="text"
+                  {...register("brokerStockFee", {
+                    value: broker.brokerStockFee,
+                  })}
+                />
               </Form.Group>
               {brokerSaveError && (
                 <Alert variant="danger" className="my-3" dismissible>
@@ -155,7 +168,8 @@ export const AddBrokerModal = ({ show, onHideParent }) => {
   );
 };
 
-AddBrokerModal.propTypes = {
+EditBrokerModal.propTypes = {
   show: PropTypes.bool,
   onHideParent: PropTypes.func,
+  broker: PropTypes.object,
 };

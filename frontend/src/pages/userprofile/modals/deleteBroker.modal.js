@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayError } from "../../../_helpers/errorhelper";
 import { brokersActions } from "../../../_store";
 
-const DeleteBrokerModal = ({ show, onHideParent, broker }) => {
+export const DeleteBrokerModal = ({ show, onHideParent, broker }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [backdropValue, setBackdropValue] = useState("false");
@@ -64,7 +64,7 @@ const DeleteBrokerModal = ({ show, onHideParent, broker }) => {
       backdrop={backdropValue}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Brokers</Modal.Title>
+        <Modal.Title>Delete Broker</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {isDeleting && (
@@ -117,5 +117,3 @@ DeleteBrokerModal.propTypes = {
   onHideParent: PropTypes.func,
   broker: PropTypes.object,
 };
-
-export default DeleteBrokerModal;

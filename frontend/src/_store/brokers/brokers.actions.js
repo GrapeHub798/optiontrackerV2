@@ -86,7 +86,7 @@ export const editBrokerAction = (baseUrl) => {
       try {
         const bearerToken = await getBearerToken();
         const brokerUrl = `${baseUrl}/${editedBroker.brokerId}`;
-        const { data, error } = await httpService.put(
+        const { data, error } = await httpService.patch(
           brokerUrl,
           editedBroker,
           bearerToken,

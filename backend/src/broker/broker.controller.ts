@@ -6,8 +6,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -45,7 +45,7 @@ export class BrokerController {
   }
 
   @UseGuards(AuthGuard)
-  @Put()
+  @Patch('/:itemId')
   @HttpCode(HttpStatus.OK)
   edit(
     @Request() req: any,

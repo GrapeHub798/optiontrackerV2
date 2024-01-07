@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import {
+  defaultPendingReducer,
+  defaultRejectedReducer,
+} from "../defaultStoreReducers";
 import { loadDataAction } from "./stocks.actions";
 
 const name = "stocks";
@@ -38,16 +42,6 @@ function createExtraActions() {
   return {
     loadData: loadDataAction(baseUrl),
   };
-}
-
-function defaultPendingReducer(state) {
-  state.error = null;
-  state.success = false;
-}
-
-function defaultRejectedReducer(state, action) {
-  state.error = action.payload;
-  state.success = false;
 }
 
 function createExtraReducers() {

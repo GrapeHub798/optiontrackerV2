@@ -86,23 +86,6 @@ export const editTradeAction = (baseUrl) => {
   );
 };
 
-export const deleteTradeAction = (baseUrl) => {
-  return createAsyncThunk(
-    `${name}/deleteTrade`,
-    async ({ tradeId }, { rejectWithValue }) => {
-      try {
-        const bearerToken = await getBearerToken();
-        const tradeUrl = `${baseUrl}/${tradeId}`;
-        const { data, error } = await httpService.del(tradeUrl, bearerToken);
-        if (error) return rejectWithValue(error);
-        return data;
-      } catch (e) {
-        return rejectWithValue(e.message);
-      }
-    },
-  );
-};
-
 export const deleteMultipleTradesAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/deleteMultipleTrades`,

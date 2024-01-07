@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import {
+  defaultPendingReducer,
+  defaultRejectedReducer,
+} from "../defaultStoreReducers";
+import {
   getAccountValueAction,
   getAccountValueByBrokerAction,
   getBiggestLossByStockAction,
@@ -14,9 +18,9 @@ import {
   getWinLossByStockAction,
   getWinLossPercentageAction,
 } from "./analysis.actions";
-import { performanceChartTransformer } from "./dataTransformers/performanceChartTransformer";
-import { tradesLast7Transformer } from "./dataTransformers/tradesLast7Transformer";
-import { winLossByStockTransformer } from "./dataTransformers/winLossByStockTransformer";
+import { performanceChartTransformer } from "./dataTransformers/performanceChart.transformer";
+import { tradesLast7Transformer } from "./dataTransformers/tradesLast7.transformer";
+import { winLossByStockTransformer } from "./dataTransformers/winLossByStock.transformer";
 
 const name = "analysis";
 const initialState = createInitialState();
@@ -71,16 +75,6 @@ function createExtraActions() {
   };
 }
 
-function defaultPending(state) {
-  state.error = null;
-  state.success = false;
-}
-
-function defaultRejected(state, action) {
-  state.error = action.payload;
-  state.success = false;
-}
-
 function createExtraReducers() {
   return (builder) => {
     getMostTradedByQuantityReducer();
@@ -100,83 +94,83 @@ function createExtraReducers() {
       const { pending, fulfilled, rejected } =
         extraActions.getBiggestLossByStock;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.biggestLossByStock = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getWinLossPercentageReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getWinLossPercentage;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.winLossPercentage = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
     function getMostTradedByAmountReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getMostTradedByAmount;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.mostTradedByAmount = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getMostTradedByQuantityReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getMostTradedByQuantity;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.mostTradedByQuantity = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getMostTradedByTradesReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getMostTradedByTrades;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.mostTradedByTrades = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getTradesLast7Reducer() {
       const { pending, fulfilled, rejected } = extraActions.getTradesLast7;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.tradesLast7 = tradesLast7Transformer(action.payload);
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getTradesLast7AmountReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getTradesLast7Amount;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.tradesLast7Amount = tradesLast7Transformer(
             action.payload,
@@ -185,14 +179,14 @@ function createExtraReducers() {
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getPerformanceByTradeDataReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getPerformanceByTradeData;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.performanceByTradeData = performanceChartTransformer(
             action.payload,
@@ -200,14 +194,14 @@ function createExtraReducers() {
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getPerformanceByAmountDataReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getPerformanceByAmountData;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.performanceByAmountData = performanceChartTransformer(
             action.payload,
@@ -216,44 +210,44 @@ function createExtraReducers() {
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getWinLossByStockReducer() {
       const { pending, fulfilled, rejected } = extraActions.getWinLossByStock;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.winLossByStock = winLossByStockTransformer(action.payload);
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getAccountValueByBrokerReducer() {
       const { pending, fulfilled, rejected } =
         extraActions.getAccountValueByBroker;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.accountValueByBroker = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function getAccountValueReducer() {
       const { pending, fulfilled, rejected } = extraActions.getAccountValue;
       builder
-        .addCase(pending, defaultPending)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           state.accountValue = action.payload;
           state.error = null;
           state.success = false;
         })
-        .addCase(rejected, defaultRejected);
+        .addCase(rejected, defaultRejectedReducer);
     }
   };
 }

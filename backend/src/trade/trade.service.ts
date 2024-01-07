@@ -91,6 +91,24 @@ export class TradeService {
     }
   }
 
+  async deleteByJournalId(userId: string, journalIds: string[]) {
+    try {
+      await this.tradeModel.update(
+        {
+          journalId: null,
+        },
+        {
+          where: {
+            journalId: journalIds,
+            userId: userId,
+          },
+        },
+      );
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
   async deleteMultiple(req: any, itemIds: DeleteMultiple) {
     try {
       await this.tradeModel.destroy({

@@ -21,7 +21,7 @@ export class JournalController {
   constructor(private readonly journalService: JournalService) {}
 
   @UseGuards(AuthGuard)
-  @Post('add')
+  @Post()
   @HttpCode(HttpStatus.OK)
   create(@Request() req: any, @Body() journalEntry: JournalEntry) {
     return this.journalService.create(req, journalEntry);
@@ -35,7 +35,7 @@ export class JournalController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch('edit/:journalId')
+  @Patch('/:itemId')
   @HttpCode(HttpStatus.OK)
   edit(
     @Request() req: any,

@@ -146,7 +146,12 @@ export const AddTradeModal = ({ show, onHide, isOption }) => {
                   </Alert>
                 )}
                 <Row className="mt-2">
-                  <Col className="text-end">
+                  <Col md={{ span: 2, offset: 8 }} className="text-end mt-2">
+                    <Button type="submit" onClick={onHide}>
+                      Cancel
+                    </Button>
+                  </Col>
+                  <Col className="text-end mt-2">
                     <Button type="submit">Save Trade</Button>
                   </Col>
                 </Row>

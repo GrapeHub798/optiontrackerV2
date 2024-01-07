@@ -9,9 +9,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 
-import BrokersModal from "./modals/brokers.modal";
-import ChangePasswordModal from "./modals/changepassword.modal";
-import ChangePreferencesModal from "./modals/changepreferences.modal";
+import { BrokersModal } from "./modals/brokers.modal";
+import { ChangePasswordModal } from "./modals/changepassword.modal";
+import { ChangePreferencesModal } from "./modals/changepreferences.modal";
 
 export const UserProfile = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);

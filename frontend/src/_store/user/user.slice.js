@@ -5,6 +5,10 @@ import {
   APP_URL_PATHS,
   INDEXEDDB_STOCK_KEY,
 } from "../../shared/sharedConstants";
+import {
+  defaultPendingReducer,
+  defaultRejectedReducer,
+} from "../defaultStoreReducers";
 import { deleteArray } from "../indexedDb";
 import {
   changePasswordAction,
@@ -71,16 +75,6 @@ function createExtraActions() {
   };
 }
 
-function userPendingReducer(state) {
-  state.error = null;
-  state.success = false;
-}
-
-function userRejectedReducer(state, action) {
-  state.error = action.payload;
-  state.success = false;
-}
-
 function loginRegisterFulfilledReducer(state, action) {
   const user = action.payload;
   localStorage.setItem("user", JSON.stringify(user));
@@ -98,16 +92,16 @@ function createExtraReducers() {
     function changePasswordReducer() {
       const { pending, fulfilled, rejected } = extraActions.changePassword;
       builder
-        .addCase(pending, userPendingReducer)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state) => {
           state.success = true;
         })
-        .addCase(rejected, userRejectedReducer);
+        .addCase(rejected, defaultRejectedReducer);
     }
     function refreshTokensReducer() {
       const { pending, fulfilled, rejected } = extraActions.refreshTokens;
       builder
-        .addCase(pending, userPendingReducer)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, (state, action) => {
           const updatedUser = {
             ...state.user,
@@ -118,22 +112,22 @@ function createExtraReducers() {
           state.user = updatedUser;
           state.success = true;
         })
-        .addCase(rejected, userRejectedReducer);
+        .addCase(rejected, defaultRejectedReducer);
     }
     function loginReducer() {
       const { pending, fulfilled, rejected } = extraActions.login;
       builder
-        .addCase(pending, userPendingReducer)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, loginRegisterFulfilledReducer)
-        .addCase(rejected, userRejectedReducer);
+        .addCase(rejected, defaultRejectedReducer);
     }
 
     function registerReducer() {
       const { pending, fulfilled, rejected } = extraActions.register;
       builder
-        .addCase(pending, userPendingReducer)
+        .addCase(pending, defaultPendingReducer)
         .addCase(fulfilled, loginRegisterFulfilledReducer)
-        .addCase(rejected, userRejectedReducer);
+        .addCase(rejected, defaultRejectedReducer);
     }
   };
 }
