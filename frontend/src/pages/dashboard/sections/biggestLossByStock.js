@@ -38,7 +38,7 @@ export const BiggestLossByStock = () => {
   return (
     <Card>
       <Card.Header>
-        <span className="card-dashboard-font-size">Biggest Losser</span>
+        <span className="card-dashboard-font-size">Biggest Loser</span>
         <Button size="sm" variant="info" onClick={refreshData} className="ms-2">
           {refreshIcon}
         </Button>
