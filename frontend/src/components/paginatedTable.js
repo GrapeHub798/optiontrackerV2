@@ -1,4 +1,7 @@
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Checkbox,
@@ -22,6 +25,19 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 const SORT_DIRECTION = {
   ASC: "ASC",
   DESC: "DESC",
+};
+
+const styles = {
+  columnVisibilityIcon: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 1,
+    cursor: "pointer",
+  },
+  tableContainer: {
+    position: "relative",
+  },
 };
 export const PaginatedTable = ({
   data,
@@ -149,6 +165,17 @@ export const PaginatedTable = ({
     <>
       {data && data.length > 0 && (
         <Paper>
+          <div style={styles.tableContainer}>
+            <IconButton
+              style={styles.columnVisibilityIcon}
+              onClick={handleMenuClick}
+            >
+              {menuAnchor && <FontAwesomeIcon icon={faChevronDown} size="xs" />}
+              {!menuAnchor && (
+                <FontAwesomeIcon icon={faChevronLeft} size="xs" />
+              )}
+            </IconButton>
+          </div>
           <TableContainer>
             <Table>
               <DragDropContext onDragEnd={onDragEnd}>
@@ -203,14 +230,6 @@ export const PaginatedTable = ({
                         )}
                         {provided.placeholder}
                       </TableRow>
-                      <IconButton
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        onClick={handleMenuClick}
-                      >
-                        <FontAwesomeIcon icon={faBars} />
-                      </IconButton>
                       <Menu
                         id="long-menu"
                         anchorEl={menuAnchor}

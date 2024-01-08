@@ -8,3 +8,7 @@
     text-align: center;
     justify-content: center;
 }
+
+.MuiTablePagination-root p {
+    margin-bottom: 0px !important;
+}
