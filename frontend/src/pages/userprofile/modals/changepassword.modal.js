@@ -17,13 +17,13 @@ export const ChangePasswordModal = ({ show, onHide }) => {
     newPassword: Yup.string()
       .required("Password is required")
       .min(4, "Password length should be at least 4 characters")
-      .max(12, "Password cannot exceed more than 12 characters"),
+      .max(12, "Password cannot exceed more than 12 characters")
+      .notOneOf([Yup.ref("currentPassword")], "Password must be different"),
     confirmNewPassword: Yup.string()
       .required("Confirm Password is required")
       .min(4, "Password length should be at least 4 characters")
       .max(12, "Password cannot exceed more than 12 characters")
-      .oneOf([Yup.ref("newPassword")], "Passwords do not match")
-      .notOneOf([Yup.ref("currentPassword")], "Password must be different"),
+      .oneOf([Yup.ref("newPassword")], "Passwords do not match"),
   });
   const formOptions = { resolver: yupResolver(validationSchema) };
 

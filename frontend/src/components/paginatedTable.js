@@ -1,3 +1,5 @@
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Checkbox,
   IconButton,
@@ -11,8 +13,11 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import PropTypes from "prop-types";
 import React from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 const SORT_DIRECTION = {
   ASC: "ASC",
@@ -34,6 +39,29 @@ export const PaginatedTable = ({
   customColumnTooltip,
   onCustomColumnClick,
 }) => {
+  const [columnsOrder, setColumnsOrder] = React.useState(columns);
+  const [columnVisibility, setColumnVisibility] = React.useState(
+    columns.reduce((acc, column) => {
+      acc[column.dataProperty] = true;
+      return acc;
+    }, {}),
+  );
+  const [menuAnchor, setMenuAnchor] = React.useState(null);
+
+  const toggleColumnVisibility = (column) => {
+    setColumnVisibility({
+      ...columnVisibility,
+      [column]: !columnVisibility[column],
+    });
+  };
+
+  const handleMenuClick = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
   const handleChangePage = (event, newPage) => {
     onPageChange(newPage);
   };
@@ -90,7 +118,10 @@ export const PaginatedTable = ({
   };
 
   const renderRow = (row) => {
-    return columns.map(({ dataProperty, formatFunction }, index) => {
+    return columnsOrder.map(({ dataProperty, formatFunction }, index) => {
+      if (!columnVisibility[dataProperty]) {
+        return null;
+      }
       const cellValue = getNestedProperty(dataProperty, row);
       const formattedCellValue =
         formatFunction && cellValue
@@ -102,48 +133,109 @@ export const PaginatedTable = ({
     });
   };
 
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const reorderedColumns = Array.from(columnsOrder);
+    const [reorderedColumn] = reorderedColumns.splice(result.source.index, 1);
+    reorderedColumns.splice(result.destination.index, 0, reorderedColumn);
+
+    setColumnsOrder(reorderedColumns);
+  };
+
   return (
     <>
       {data && data.length > 0 && (
         <Paper>
           <TableContainer>
             <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={
-                        selectedRows.length > 0 &&
-                        selectedRows.length < data.length
-                      }
-                      checked={
-                        data.length > 0 && selectedRows.length === data.length
-                      }
-                      onChange={handleSelectAllClick}
-                    />
-                  </TableCell>
-                  <TableCell className="ps-1 pe-0">
-                    <span className="fw-bold">
-                      Add/Edit
-                      <br /> Journal
-                    </span>
-                  </TableCell>
-                  {columns.map(({ header, dataProperty }, index) => (
-                    <TableCell
-                      className="fw-bold pointer-class"
-                      key={index}
-                      onClick={() => requestSort(dataProperty)}
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="droppable" direction="horizontal">
+                  {(provided) => (
+                    <TableHead
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
                     >
-                      {header}
-                      {sortConfig?.key === dataProperty
-                        ? sortConfig?.direction === SORT_DIRECTION.ASC
-                          ? " 🔼"
-                          : " 🔽"
-                        : null}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
+                      <TableRow>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            indeterminate={
+                              selectedRows.length > 0 &&
+                              selectedRows.length < data.length
+                            }
+                            checked={
+                              data.length > 0 &&
+                              selectedRows.length === data.length
+                            }
+                            onChange={handleSelectAllClick}
+                          />
+                        </TableCell>
+                        <TableCell className="ps-1 pe-0">
+                          <span className="fw-bold">
+                            Add/Edit
+                            <br /> Journal
+                          </span>
+                        </TableCell>
+                        {columnsOrder.map(
+                          ({ header, dataProperty }, index) =>
+                            columnVisibility[dataProperty] && (
+                              <Draggable
+                                key={dataProperty}
+                                draggableId={dataProperty}
+                                index={index}
+                              >
+                                {(provided) => (
+                                  <TableCell
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    ref={provided.innerRef}
+                                    className="fw-bold pointer-class"
+                                    onClick={() => requestSort(dataProperty)}
+                                  >
+                                    {header}
+                                    {/* Sort Icons */}
+                                  </TableCell>
+                                )}
+                              </Draggable>
+                            ),
+                        )}
+                        {provided.placeholder}
+                      </TableRow>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleMenuClick}
+                      >
+                        <FontAwesomeIcon icon={faBars} />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        anchorEl={menuAnchor}
+                        keepMounted
+                        open={Boolean(menuAnchor)}
+                        onClose={handleMenuClose}
+                      >
+                        {columns.map((column) => (
+                          <MenuItem
+                            key={column.dataProperty}
+                            onClick={() =>
+                              toggleColumnVisibility(column.dataProperty)
+                            }
+                          >
+                            <Checkbox
+                              checked={columnVisibility[column.dataProperty]}
+                            />
+                            {column.header}
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </TableHead>
+                  )}
+                </Droppable>
+              </DragDropContext>
               <TableBody>
                 {data.map((row, index) => {
                   const isItemSelected = isSelected(row);
