@@ -12,6 +12,7 @@ import { BrokerModule } from './broker/broker.module';
 import { EodhdModule } from './eodhdapi/eodhd.module';
 import { ExchangesModule } from './exchanges/exchanges.module';
 import { JournalModule } from './journal/journal.module';
+import { PaginatedTableConfigModule } from './paginatedtableconfig/paginatedtableconfig.module';
 import { StockOptionsModule } from './stockoptions/stockoptions.module';
 import { StocksModule } from './stocks/stocks.module';
 import { TradeModule } from './trade/trade.module';
@@ -49,6 +50,7 @@ import { UserprofileModule } from './userprofile/userprofile.module';
     StocksModule,
     EodhdModule,
     StockOptionsModule,
+    PaginatedTableConfigModule,
     TradeModule,
     HttpModule.register({
       maxRedirects: 5,

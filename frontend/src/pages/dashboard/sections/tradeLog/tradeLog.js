@@ -39,6 +39,8 @@ export const TradeLog = () => {
   const page = useSelector((x) => x.trades.page);
   const limit = useSelector((x) => x.trades.limit);
   const sortConfig = useSelector((x) => x.trades.sortConfig);
+  const columnsOrder = useSelector((x) => x.trades.columnsOrder);
+  const columnVisibility = useSelector((x) => x.trades.columnVisibility);
 
   const USDollar = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -72,7 +74,31 @@ export const TradeLog = () => {
   };
 
   const handleColumnSort = async (sortConfig) => {
-    await dispatch(tradesActions.setSortConfig(sortConfig));
+    const paginatedTableConfig = {
+      tableName: "tradeLog",
+      sortColumns: sortConfig,
+    };
+    await dispatch(tradesActions.setSortConfig(paginatedTableConfig));
+  };
+
+  const handleColumnsOrder = async (reOrderedColumns) => {
+    const paginatedTableConfig = {
+      tableName: "tradeLog",
+      columnsOrder: reOrderedColumns,
+    };
+    await dispatch(tradesActions.setColumnsOrder(paginatedTableConfig));
+  };
+
+  const handleColumnVisibility = async (column) => {
+    const visibleColumns = {
+      ...columnVisibility,
+      [column]: !columnVisibility[column],
+    };
+    const paginatedTableConfig = {
+      tableName: "tradeLog",
+      columnVisibility: visibleColumns,
+    };
+    await dispatch(tradesActions.setColumnVisibility(paginatedTableConfig));
   };
 
   const columns = () => {
@@ -112,8 +138,30 @@ export const TradeLog = () => {
   };
 
   useEffect(() => {
-    fetchTrades();
+    if (columnsOrder && columnVisibility) {
+      fetchTrades();
+    }
   }, [page, limit, sortConfig]);
+
+  useEffect(() => {
+    if (!columnsOrder || !columnVisibility) {
+      const defaultColumnVisibility = columns().reduce((acc, column) => {
+        acc[column.dataProperty] = true;
+        return acc;
+      }, {});
+
+      const defaultColumnsOrder = columns();
+
+      dispatch(
+        tradesActions.getTableConfig({
+          tableName: "tradeLog",
+          columnsOrder: defaultColumnsOrder,
+          columnVisibility: defaultColumnVisibility,
+        }),
+      );
+      return;
+    }
+  }, [columnVisibility, columnsOrder]);
 
   const showTradeWithOption = () => {
     setHasOption(true);
@@ -228,6 +276,10 @@ export const TradeLog = () => {
               getCustomColumnIcon={getCustomColumnIcon}
               customColumnTooltip={"Add/Edit Journal"}
               onCustomColumnClick={handleCustomColumnClick}
+              columnsOrder={columnsOrder}
+              onChangeColumnsOrder={handleColumnsOrder}
+              columnVisibility={columnVisibility}
+              onChangeColumnVisibility={handleColumnVisibility}
             />
           )}
           {showAddTradeModal && (

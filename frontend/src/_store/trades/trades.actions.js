@@ -9,6 +9,72 @@ const getTradeState = () => {
   return state.trades;
 };
 
+const transformTableConfig = (paginatedTableConfig) => {
+  return {
+    ...paginatedTableConfig,
+    sortColumns: JSON.stringify(paginatedTableConfig?.sortColumns),
+    columnsOrder: JSON.stringify(paginatedTableConfig?.columnsOrder),
+    columnVisibility: JSON.stringify(paginatedTableConfig?.columnVisibility),
+  };
+};
+
+const paginatedTableThunk = (paginatedTableConfigUrl, prefix) => {
+  return createAsyncThunk(
+    `${name}/${prefix}`,
+    async (paginatedTableConfig, { rejectWithValue }) => {
+      const transformedTableConfig = transformTableConfig(paginatedTableConfig);
+
+      try {
+        const bearerToken = await getBearerToken();
+        const { error } = await httpService.post(
+          paginatedTableConfigUrl,
+          transformedTableConfig,
+          bearerToken,
+        );
+        if (error) return rejectWithValue(error);
+        return {
+          paginatedTableConfig,
+        };
+      } catch (e) {
+        return rejectWithValue(e.message);
+      }
+    },
+  );
+};
+
+export const getTableConfigAction = (paginatedTableConfigUrl) => {
+  return createAsyncThunk(
+    `${name}/getTableConfigExchanges`,
+    async (defaultTableConfig, { rejectWithValue }) => {
+      try {
+        const getTableConfigUrl = `${paginatedTableConfigUrl}/${defaultTableConfig?.tableName}`;
+        const bearerToken = await getBearerToken();
+        const { data, error } = await httpService.get(
+          getTableConfigUrl,
+          bearerToken,
+        );
+        if (error) return rejectWithValue(error);
+        return {
+          defaultTableConfig,
+          ...data,
+        };
+      } catch (e) {
+        return rejectWithValue(e.message);
+      }
+    },
+  );
+};
+export const setColumnsOrderAction = (paginatedTableConfigUrl) => {
+  return paginatedTableThunk(paginatedTableConfigUrl, "setColumnsOrder");
+};
+export const setSortConfigAction = (paginatedTableConfigUrl) => {
+  return paginatedTableThunk(paginatedTableConfigUrl, "setSortConfig");
+};
+
+export const setColumnVisibilityAction = (paginatedTableConfigUrl) => {
+  return paginatedTableThunk(paginatedTableConfigUrl, "setColumnVisibility");
+};
+
 export const getTradesAction = (baseUrl) => {
   return createAsyncThunk(
     `${name}/getTrades`,

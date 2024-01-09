@@ -23,14 +23,20 @@ export class JournalController {
   @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.OK)
-  create(@Request() req: any, @Body() journalEntry: JournalEntry) {
+  create(
+    @Request() req: any,
+    @Body() journalEntry: JournalEntry,
+  ): Promise<boolean> {
     return this.journalService.create(req, journalEntry);
   }
 
   @UseGuards(AuthGuard)
   @Post('/multiple')
   @HttpCode(HttpStatus.OK)
-  deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
+  deleteMultiple(
+    @Request() req: any,
+    @Body() itemIds: DeleteMultiple,
+  ): Promise<boolean> {
     return this.journalService.deleteMultiple(req, itemIds);
   }
 
@@ -41,7 +47,7 @@ export class JournalController {
     @Request() req: any,
     @Param() getOneItem: GetOneItem,
     @Body() journalEntry: JournalEntry,
-  ) {
+  ): Promise<boolean> {
     return this.journalService.edit(req, getOneItem, journalEntry);
   }
 }

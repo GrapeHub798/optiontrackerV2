@@ -1,6 +1,7 @@
 import {
   faChevronDown,
   faChevronLeft,
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -54,22 +55,12 @@ export const PaginatedTable = ({
   getCustomColumnIcon,
   customColumnTooltip,
   onCustomColumnClick,
+  columnsOrder,
+  onChangeColumnsOrder,
+  columnVisibility,
+  onChangeColumnVisibility,
 }) => {
-  const [columnsOrder, setColumnsOrder] = React.useState(columns);
-  const [columnVisibility, setColumnVisibility] = React.useState(
-    columns.reduce((acc, column) => {
-      acc[column.dataProperty] = true;
-      return acc;
-    }, {}),
-  );
   const [menuAnchor, setMenuAnchor] = React.useState(null);
-
-  const toggleColumnVisibility = (column) => {
-    setColumnVisibility({
-      ...columnVisibility,
-      [column]: !columnVisibility[column],
-    });
-  };
 
   const handleMenuClick = (event) => {
     setMenuAnchor(event.currentTarget);
@@ -158,7 +149,7 @@ export const PaginatedTable = ({
     const [reorderedColumn] = reorderedColumns.splice(result.source.index, 1);
     reorderedColumns.splice(result.destination.index, 0, reorderedColumn);
 
-    setColumnsOrder(reorderedColumns);
+    onChangeColumnsOrder(reorderedColumns);
   };
 
   return (
@@ -222,7 +213,18 @@ export const PaginatedTable = ({
                                     onClick={() => requestSort(dataProperty)}
                                   >
                                     {header}
-                                    {/* Sort Icons */}
+                                    {sortConfig?.key === dataProperty && (
+                                      <FontAwesomeIcon
+                                        icon={
+                                          sortConfig.direction ===
+                                          SORT_DIRECTION.ASC
+                                            ? faChevronUp
+                                            : faChevronDown
+                                        }
+                                        className="ms-1"
+                                        size="xs"
+                                      />
+                                    )}
                                   </TableCell>
                                 )}
                               </Draggable>
@@ -241,7 +243,7 @@ export const PaginatedTable = ({
                           <MenuItem
                             key={column.dataProperty}
                             onClick={() =>
-                              toggleColumnVisibility(column.dataProperty)
+                              onChangeColumnVisibility(column.dataProperty)
                             }
                           >
                             <Checkbox
@@ -312,4 +314,8 @@ PaginatedTable.propTypes = {
   getCustomColumnIcon: PropTypes.func,
   customColumnTooltip: PropTypes.string,
   onCustomColumnClick: PropTypes.func,
+  columnsOrder: PropTypes.array,
+  onChangeColumnsOrder: PropTypes.func,
+  columnVisibility: PropTypes.any,
+  onChangeColumnVisibility: PropTypes.func,
 };

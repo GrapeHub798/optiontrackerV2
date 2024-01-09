@@ -17,7 +17,7 @@ export class JournalService {
     private readonly tradeService: TradeService,
   ) {}
 
-  async create(req: any, journalEntry: JournalEntry) {
+  async create(req: any, journalEntry: JournalEntry): Promise<boolean> {
     try {
       const trade = await this.tradeService.getOne(req, journalEntry.tradeId);
 
@@ -41,7 +41,7 @@ export class JournalService {
     }
   }
 
-  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
+  async deleteMultiple(req: any, itemIds: DeleteMultiple): Promise<boolean> {
     try {
       const userId = UserHelpers.getUserIdFromRequest(req);
       await this.journalModel.destroy({
@@ -57,7 +57,11 @@ export class JournalService {
     }
   }
 
-  async edit(req: any, getOneItem: GetOneItem, journalEntry: JournalEntry) {
+  async edit(
+    req: any,
+    getOneItem: GetOneItem,
+    journalEntry: JournalEntry,
+  ): Promise<boolean> {
     try {
       const trade = await this.tradeService.getOne(req, journalEntry.tradeId);
       const journal = await DbHelpers.findRecordByPrimaryKeyAndUserId(

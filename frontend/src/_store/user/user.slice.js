@@ -10,6 +10,7 @@ import {
   defaultRejectedReducer,
 } from "../defaultStoreReducers";
 import { deleteArray } from "../indexedDb";
+import { logoutCleanup } from "./logoutCleanup";
 import {
   changePasswordAction,
   loginAction,
@@ -51,12 +52,9 @@ function createReducers() {
 
   function logout(state) {
     state.user = null;
-    localStorage.removeItem("user");
-    //clean up the other local storage info
-    localStorage.removeItem("userprofile");
-    localStorage.removeItem("exchanges");
-    localStorage.removeItem("brokers");
-    //remove stocks
+
+    logoutCleanup();
+    //leave this hear for access to history object
     deleteArray(INDEXEDDB_STOCK_KEY).then(() =>
       history.navigate(APP_URL_PATHS.HOME),
     );
