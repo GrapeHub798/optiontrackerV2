@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '../guards/auth.guard';
-import { DeleteMultiple } from '../universal/getMultiple.model';
 import { GetOneItem } from '../universal/getSingle.model';
 import { Broker } from './broker.model';
 import { BrokerService } from './broker.service';
@@ -35,13 +34,6 @@ export class BrokerController {
   @HttpCode(HttpStatus.OK)
   delete(@Request() req: any, @Param() getOneItem: GetOneItem) {
     return this.brokerService.delete(req, getOneItem);
-  }
-
-  @UseGuards(AuthGuard)
-  @Post('/multiple')
-  @HttpCode(HttpStatus.OK)
-  deleteMultiple(@Request() req: any, @Body() itemIds: DeleteMultiple) {
-    return this.brokerService.deleteMultiple(req, itemIds);
   }
 
   @UseGuards(AuthGuard)

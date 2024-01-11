@@ -43,6 +43,11 @@ export class StocksService {
 
   async refreshStocks(exchangeCode: ExchangeCode) {
     try {
+      await this.stockModel.destroy({
+        truncate: true,
+        where: {},
+      });
+
       const refreshComplete = new Subject<boolean>();
       this.eodhdService
         .getTickersForCountry(exchangeCode.exchangeCode)

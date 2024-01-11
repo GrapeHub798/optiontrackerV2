@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
-import { DeleteMultiple } from '../universal/getMultiple.model';
+import { TradeService } from '../trade/trade.service';
 import { GetOneItem } from '../universal/getSingle.model';
 import { Broker } from './broker.model';
 import { NewBroker } from './newbroker.model';
@@ -13,6 +13,7 @@ export class BrokerService {
   constructor(
     @InjectModel(Broker)
     private readonly brokerModel: typeof Broker,
+    private readonly tradeService: TradeService,
   ) {}
 
   async create(req: any, newBroker: NewBroker) {
@@ -29,24 +30,13 @@ export class BrokerService {
 
   async delete(req: any, getOneItem: GetOneItem) {
     try {
+      //delete the trades associated with the broker
+      const userId = UserHelpers.getUserIdFromRequest(req);
+      await this.tradeService.deleteBrokerTrades(userId, getOneItem.itemId);
       await this.brokerModel.destroy({
         where: {
           brokerId: getOneItem.itemId,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      return true;
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
-
-  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
-    try {
-      await this.brokerModel.destroy({
-        where: {
-          brokerId: itemIds.itemIds,
-          userId: UserHelpers.getUserIdFromRequest(req),
+          userId: userId,
         },
       });
       return true;
@@ -76,18 +66,6 @@ export class BrokerService {
           userId: UserHelpers.getUserIdFromRequest(req),
         },
       });
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
-
-  async getOne(userId: string, brokerId: string) {
-    try {
-      return await DbHelpers.findRecordByPrimaryKeyAndUserId(
-        Broker,
-        userId,
-        brokerId,
-      );
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }

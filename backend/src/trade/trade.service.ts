@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import sequelize, { literal, Order } from 'sequelize';
 
 import { Broker } from '../broker/broker.model';
-import { BrokerService } from '../broker/broker.service';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
 import { Journal } from '../journal/journal.model';
@@ -35,8 +34,11 @@ export class TradeService {
   constructor(
     @InjectModel(Trade)
     private readonly tradeModel: typeof Trade,
+    @InjectModel(Broker)
+    private readonly brokerModel: typeof Broker,
+    @InjectModel(Journal)
+    private readonly journalModel: typeof Journal,
     private readonly optionService: StockOptionsService,
-    private readonly brokerService: BrokerService,
   ) {}
 
   async attachJournalEntry(userId: string, tradeId: string, journalId: string) {
@@ -76,10 +78,12 @@ export class TradeService {
       }
 
       //we need to deal with brokerage fees
-      const broker = await this.brokerService.getOne(
-        userId,
-        adjustedNewTrade.brokerId,
-      );
+      const broker = await this.brokerModel.findOne({
+        where: {
+          brokerId: adjustedNewTrade.brokerId,
+          userId,
+        },
+      });
       await this.tradeModel.create({
         ...adjustedNewTrade,
         tradeTotal: this.calculateTotal(adjustedNewTrade, broker),
@@ -91,7 +95,74 @@ export class TradeService {
     }
   }
 
-  async deleteByJournalId(userId: string, journalIds: string[]) {
+  async deleteBrokerTrades(userId: string, brokerId: string) {
+    try {
+      const foundTrades = await this.tradeModel.findAll({
+        attributes: ['tradeId'],
+        where: {
+          brokerId,
+          userId,
+        },
+      });
+
+      const tradeIds = foundTrades.map((singleTrade) => singleTrade.tradeId);
+      await this.deleteMultipleTrades(userId, tradeIds);
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
+  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
+    return await this.deleteMultipleTrades(
+      UserHelpers.getUserIdFromRequest(req),
+      itemIds.itemIds,
+    );
+  }
+
+  async deleteMultipleTrades(userId: string, tradeIds: string[]) {
+    try {
+      //get all the options for the trades
+      const optionTrades = await this.tradeModel.findAll({
+        attributes: ['optionId'],
+        where: {
+          tradeId: tradeIds,
+          userId,
+        },
+      });
+      const optionIds = optionTrades.map((singleTrade) => singleTrade.optionId);
+      await this.optionService.deleteOptionsForTrades(userId, optionIds);
+
+      //the journals
+      const journalTrades = await this.tradeModel.findAll({
+        attributes: ['journalId'],
+        where: {
+          tradeId: tradeIds,
+          userId,
+        },
+      });
+      const journalIds = journalTrades.map(
+        (singleJournal) => singleJournal.journalId,
+      );
+      await this.journalModel.destroy({
+        where: {
+          journalId: journalIds,
+          userId: userId,
+        },
+      });
+
+      await this.tradeModel.destroy({
+        where: {
+          tradeId: tradeIds,
+          userId,
+        },
+      });
+      return true;
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
+
+  async detachJournalId(userId: string, journalIds: string[]) {
     try {
       await this.tradeModel.update(
         {
@@ -104,20 +175,6 @@ export class TradeService {
           },
         },
       );
-    } catch (e) {
-      return Promise.reject(new InternalServerErrorException(e.message));
-    }
-  }
-
-  async deleteMultiple(req: any, itemIds: DeleteMultiple) {
-    try {
-      await this.tradeModel.destroy({
-        where: {
-          tradeId: itemIds.itemIds,
-          userId: UserHelpers.getUserIdFromRequest(req),
-        },
-      });
-      return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
@@ -142,10 +199,12 @@ export class TradeService {
       }
 
       //we need to deal with brokerage fees
-      const broker = await this.brokerService.getOne(
-        userId,
-        adjustedNewTrade.brokerId,
-      );
+      const broker = await this.brokerModel.findOne({
+        where: {
+          brokerId: adjustedNewTrade.brokerId,
+          userId,
+        },
+      });
 
       const trade = await DbHelpers.findRecordByPrimaryKeyAndUserId(
         Trade,

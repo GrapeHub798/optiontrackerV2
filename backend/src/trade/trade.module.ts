@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { BrokerModule } from '../broker/broker.module';
+import { Broker } from '../broker/broker.model';
+import { Journal } from '../journal/journal.model';
 import { StockOptionsModule } from '../stockoptions/stockoptions.module';
 import { TradeController } from './trade.controller';
 import { Trade } from './trade.model';
@@ -11,9 +12,8 @@ import { TradeService } from './trade.service';
   controllers: [TradeController],
   exports: [TradeService],
   imports: [
-    SequelizeModule.forFeature([Trade]),
+    SequelizeModule.forFeature([Trade, Journal, Broker]),
     StockOptionsModule,
-    BrokerModule,
   ],
   providers: [TradeService],
 })

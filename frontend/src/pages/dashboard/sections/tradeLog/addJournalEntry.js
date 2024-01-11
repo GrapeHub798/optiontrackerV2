@@ -71,7 +71,7 @@ export const AddJournalEntry = ({ show, onHide, trade }) => {
       backdrop={backdropValue}
     >
       <Modal.Header>
-        <Modal.Title>Add Trade</Modal.Title>
+        <Modal.Title>Add Journal Entry</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {isSaving && (

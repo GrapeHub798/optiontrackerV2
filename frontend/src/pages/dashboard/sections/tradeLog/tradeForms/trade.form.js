@@ -2,12 +2,13 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import PropTypes from "prop-types";
 import React from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Controller, useFormContext } from "react-hook-form";
 import { useSelector } from "react-redux";
 
-export const TradeForm = () => {
+export const TradeForm = ({ existingTrade }) => {
   const {
     control,
     register,
@@ -26,7 +27,7 @@ export const TradeForm = () => {
             <Controller
               name="brokerId"
               control={control}
-              defaultValue=""
+              defaultValue={existingTrade?.brokerId}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.brokerId}>
                   <InputLabel>Broker</InputLabel>
@@ -52,7 +53,7 @@ export const TradeForm = () => {
             <Controller
               name="buyDate"
               control={control}
-              defaultValue={null}
+              defaultValue={new Date(existingTrade?.buyDate)}
               render={({ field: { ...restField } }) => (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
@@ -76,7 +77,9 @@ export const TradeForm = () => {
               type="text"
               placeholder="Buy Price"
               name="buyPrice"
-              {...register("buyPrice")}
+              {...register("buyPrice", {
+                value: existingTrade?.buyPrice,
+              })}
               className={`form-control ${errors.buyPrice ? "is-invalid" : ""}`}
             />
             <Form.Control.Feedback type="invalid">
@@ -88,7 +91,7 @@ export const TradeForm = () => {
             <Controller
               name="sellDate"
               control={control}
-              defaultValue={null}
+              defaultValue={new Date(existingTrade?.sellDate)}
               render={({ field: { ...restField } }) => (
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
@@ -112,7 +115,9 @@ export const TradeForm = () => {
               type="text"
               placeholder="Sell Price"
               name="sellPrice"
-              {...register("sellPrice")}
+              {...register("sellPrice", {
+                value: existingTrade?.sellPrice,
+              })}
               className={`form-control ${errors.sellPrice ? "is-invalid" : ""}`}
             />
             <Form.Control.Feedback type="invalid">
@@ -125,7 +130,9 @@ export const TradeForm = () => {
               type="text"
               placeholder="Quantity"
               name="quantity"
-              {...register("quantity")}
+              {...register("quantity", {
+                value: existingTrade?.quantity,
+              })}
               className={`form-control ${errors.quantity ? "is-invalid" : ""}`}
             />
             <Form.Control.Feedback type="invalid">
@@ -136,4 +143,8 @@ export const TradeForm = () => {
       </Row>
     </Container>
   );
+};
+
+TradeForm.propTypes = {
+  existingTrade: PropTypes.object,
 };

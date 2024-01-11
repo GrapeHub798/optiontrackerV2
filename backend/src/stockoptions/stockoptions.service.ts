@@ -38,6 +38,18 @@ export class StockOptionsService {
       return Promise.reject(new InternalServerErrorException(e.message));
     }
   }
+  async deleteOptionsForTrades(userId: string, stockOptionIds: string[]) {
+    try {
+      return await this.optionModel.destroy({
+        where: {
+          optionId: stockOptionIds,
+          userId: userId,
+        },
+      });
+    } catch (e) {
+      return Promise.reject(new InternalServerErrorException(e.message));
+    }
+  }
 
   async edit(req: any, getOneItem: GetOneItem, newOption: NewStockOption) {
     try {

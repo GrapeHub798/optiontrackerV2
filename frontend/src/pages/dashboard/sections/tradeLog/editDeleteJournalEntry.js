@@ -99,7 +99,7 @@ export const EditDeleteJournalEntry = ({ show, onHide, trade }) => {
       backdrop={backdropValue}
     >
       <Modal.Header>
-        <Modal.Title>Edit/Delete Trade</Modal.Title>
+        <Modal.Title>Edit/Delete Journal Entry</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {isSaving && (
@@ -166,7 +166,7 @@ export const EditDeleteJournalEntry = ({ show, onHide, trade }) => {
                     Delete Entry
                   </Button>
                 </Col>
-                <Col className="text-end">
+                <Col className="text-start">
                   <Button disabled={isSubmitting} type="submit">
                     {isSubmitting && (
                       <span className="spinner-border spinner-border-sm mr-1"></span>

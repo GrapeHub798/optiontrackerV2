@@ -44,13 +44,13 @@ export class JournalService {
   async deleteMultiple(req: any, itemIds: DeleteMultiple): Promise<boolean> {
     try {
       const userId = UserHelpers.getUserIdFromRequest(req);
+      await this.tradeService.detachJournalId(userId, itemIds.itemIds);
       await this.journalModel.destroy({
         where: {
           journalId: itemIds.itemIds,
           userId: UserHelpers.getUserIdFromRequest(req),
         },
       });
-      await this.tradeService.deleteByJournalId(userId, itemIds.itemIds);
       return true;
     } catch (e) {
       return Promise.reject(new InternalServerErrorException(e.message));

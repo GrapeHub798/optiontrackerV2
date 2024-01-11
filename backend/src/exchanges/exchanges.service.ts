@@ -42,6 +42,11 @@ export class ExchangesService {
 
   async refreshExchanges(): Promise<boolean> {
     try {
+      await this.exchangeModel.destroy({
+        truncate: true,
+        where: {},
+      });
+
       return new Promise((resolve) => {
         this.eodhdService
           .getAllExchanges()

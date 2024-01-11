@@ -13,9 +13,10 @@ import { AddJournalEntry } from "./addJournalEntry";
 import { AddTradeModal } from "./addTrade.modal";
 import { DeleteTradeModal } from "./deleteTrade.modal";
 import { EditDeleteJournalEntry } from "./editDeleteJournalEntry";
+import { EditTradeModal } from "./editTrade.modal";
 
 export const TradeLog = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showAddTradeModal, setShowAddTradeModal] = useState(false);
   const [showDeleteTradeModal, setShowDeleteTradeModal] = useState(false);
   const [showAddJournalEntryModal, setShowAddJournalEntryModal] =
@@ -23,6 +24,9 @@ export const TradeLog = () => {
   const [showEditJournalEntryModal, setShowEditJournalEntryModal] =
     useState(false);
   const [currentTradeForJournal, setCurrentTradeForJournal] = useState("");
+  const [existingTrade, setExistingTrade] = useState(null);
+  const [showEditTradeModal, setShowEditTradeModal] = useState(false);
+
   const [hasOption, setHasOption] = useState(false);
   const plusIcon = <FontAwesomeIcon icon={faCirclePlus} size="1x" />;
 
@@ -216,6 +220,21 @@ export const TradeLog = () => {
     setShowEditJournalEntryModal(false);
   };
 
+  const showEditTrade = () => {
+    //get the first item from the list
+    setExistingTrade(selectedRows[0]);
+    setShowEditTradeModal(true);
+  };
+
+  const hideEditTrade = (clearSelected) => {
+    if (clearSelected) {
+      setSelectedRows([]);
+    }
+    //get the first item from the list
+    setExistingTrade(null);
+    setShowEditTradeModal(false);
+  };
+
   return (
     <>
       {isLoading && !trades && <Spinner animation="border" />}
@@ -240,14 +259,24 @@ export const TradeLog = () => {
               </Button>
             </Col>
             {trades && trades.length > 0 && (
-              <Col md={{ span: 4, offset: 4 }} className="text-end">
-                <Button
-                  onClick={showDeleteModal}
-                  disabled={selectedRows.length === 0}
-                >
-                  Delete
-                </Button>
-              </Col>
+              <>
+                <Col md={{ span: 2, offset: 4 }} className="text-end">
+                  <Button
+                    onClick={showEditTrade}
+                    disabled={!(selectedRows.length === 1)}
+                  >
+                    Edit
+                  </Button>
+                </Col>
+                <Col md={{ span: 2 }} className="text-end">
+                  <Button
+                    onClick={showDeleteModal}
+                    disabled={selectedRows.length === 0}
+                  >
+                    Delete
+                  </Button>
+                </Col>
+              </>
             )}
           </Row>
           {trades && trades.length === 0 && (
@@ -308,6 +337,14 @@ export const TradeLog = () => {
               trade={currentTradeForJournal}
               onHide={hideEditJournalEntryModal}
               show={showEditJournalEntryModal}
+            />
+          )}
+          {showEditTradeModal && (
+            <EditTradeModal
+              trade={currentTradeForJournal}
+              onHide={hideEditTrade}
+              existingTrade={existingTrade}
+              show={showEditTradeModal}
             />
           )}
         </>

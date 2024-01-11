@@ -8,6 +8,7 @@ import { JournalService } from './journal.service';
 
 @Module({
   controllers: [JournalController],
+  exports: [JournalService],
   imports: [SequelizeModule.forFeature([Journal]), TradeModule],
   providers: [JournalService],
 })

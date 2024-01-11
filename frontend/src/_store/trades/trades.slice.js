@@ -124,12 +124,12 @@ function createExtraReducers() {
           if (sortColumns) {
             localStorage.setItem(
               TRADELOGSORT_LS_KEY,
-              JSON.stringify(action.payload?.sortColumns),
+              action.payload?.sortColumns,
             );
           }
 
           const columnVisibility =
-            action.payload?.columnVisibility ||
+            JSON.parse(action.payload?.columnVisibility) ||
             action.payload.defaultTableConfig.columnVisibility;
 
           localStorage.setItem(
@@ -138,7 +138,7 @@ function createExtraReducers() {
           );
 
           const columnsOrder =
-            action.payload?.columnsOrder ||
+            JSON.parse(action.payload?.columnsOrder) ||
             action.payload.defaultTableConfig.columnsOrder;
           localStorage.setItem(
             TRADELOGCOLUMNORDER_LS_KEY,
