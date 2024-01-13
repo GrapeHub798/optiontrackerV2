@@ -9,6 +9,11 @@
     * [React Redux](https://react-redux.js.org/)
     * [React Router Dom](https://reactrouter.com/en/main)
     * [React Hook Form](https://react-hook-form.com)
+    * [Material UI](https://mui.com/material-ui/)
+    * [React Router](https://reactrouter.com/en/main)
+    * [React Beautiful DnD](https://github.com/atlassian/react-beautiful-dnd)
+    * [lodash](https://lodash.com/)
+    * [react-chartjs-2](https://react-chartjs-2.js.org/)
 
 ### Backend
 
@@ -64,6 +69,7 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 | sellPrice | decimal  |
 | buyDate   | dateTime |
 | sellDate  | dateTime |
+| journalId | guid |
 
 <br/>
 <br/>
@@ -98,15 +104,15 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 <br/>
 <br/>
 
-| Table          | Options |
-|----------------|---------|
-| optionId       | guid    |
-| userId         | guid    |
-| stockCode      | string  |
-| strikePrice    | decimal |
-| optionPrice    | decimal |
-| optionType     | int     |
-| expirationDate | date    |
+| Table          | stockOptions |
+|----------------|--------------|
+| optionId       | guid         |
+| userId         | guid         |
+| stockCode      | string       |
+| strikePrice    | decimal      |
+| optionPrice    | decimal      |
+| optionType     | int          |
+| expirationDate | date         |
 
 <br/>
 <br/>
@@ -131,6 +137,15 @@ To get our list of exchanges and stocks we are using [EODHD](https://eodhd.com)
 
 <br/>
 <br/>
+
+| Table            | PaginatedTableConfigs |
+|------------------|-----------------------|
+| columnsOrder     | text                  |
+| columnVisibility | text                  |
+| configId         | guid                  |
+| sortColumns      | text                  |
+| tableName        | string                |
+| userId| guid                  |
 
 ### Useful Links
 
