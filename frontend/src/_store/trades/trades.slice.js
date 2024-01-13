@@ -128,18 +128,26 @@ function createExtraReducers() {
             );
           }
 
-          const columnVisibility =
-            JSON.parse(action.payload?.columnVisibility) ||
-            action.payload.defaultTableConfig.columnVisibility;
+          let columnVisibility;
+          try {
+            columnVisibility = JSON.parse(action?.payload?.columnVisibility);
+          } catch (e) {
+            columnVisibility =
+              action.payload.defaultTableConfig.columnVisibility;
+          }
 
           localStorage.setItem(
             TRADELOGCOLUMNVISIBILITY_LS_KEY,
             JSON.stringify(columnVisibility),
           );
 
-          const columnsOrder =
-            JSON.parse(action.payload?.columnsOrder) ||
-            action.payload.defaultTableConfig.columnsOrder;
+          let columnsOrder;
+          try {
+            columnsOrder = JSON.parse(action?.payload?.columnsOrder);
+          } catch (e) {
+            columnsOrder = action.payload.defaultTableConfig.columnsOrder;
+          }
+
           localStorage.setItem(
             TRADELOGCOLUMNORDER_LS_KEY,
             JSON.stringify(columnsOrder),
@@ -162,7 +170,7 @@ function createExtraReducers() {
           localStorage.setItem(
             TRADELOGCOLUMNVISIBILITY_LS_KEY,
             JSON.stringify(
-              action.payload?.paginatedTableConfig?.columnVisibility,
+              action?.payload?.paginatedTableConfig?.columnVisibility,
             ),
           );
           state.columnVisibility =

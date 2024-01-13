@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { AuthUser } from '../auth/authUser.model';
 import { DbHelpers } from '../helpers/dbHelpers';
 import { UserHelpers } from '../helpers/userHelpers';
-import { UserProfileService } from '../userprofile/userprofile.service';
+import { UserProfile } from '../userprofile/userprofile.model';
 import { ChangePassword } from './changePassword.model';
 import { User } from './user.model';
 import { UserLogin } from './userLogin.model';
@@ -20,8 +20,9 @@ export class UserService {
   constructor(
     @InjectModel(User)
     private readonly userModel: typeof User,
+    @InjectModel(UserProfile)
+    private readonly userProfileModel: typeof UserProfile,
     private jwtService: JwtService,
-    private userProfileService: UserProfileService,
   ) {}
 
   async changePassword(
@@ -99,18 +100,24 @@ export class UserService {
       }
 
       //try to match the password
-      if (!foundUser.validatePassword(loginData.password)) {
+      const validPassword = await foundUser.validatePassword(
+        loginData.password,
+      );
+      if (!validPassword) {
         return Promise.reject(
           new NotFoundException('Incorrect username or password'),
         );
       }
 
       //check if the user profile exists
-      const userProfile = await this.userProfileService.getUserProfile(
-        foundUser.userId,
-      );
+      const userProfile = await this.userProfileModel.findOne({
+        where: {
+          userId: foundUser.userId,
+        },
+      });
+
       const profileExists = Boolean(
-        userProfile.preferredExchange && userProfile.preferredLanguage,
+        userProfile?.preferredExchange && userProfile?.preferredLanguage,
       );
 
       return this.generateUserWithJWT(foundUser, profileExists);

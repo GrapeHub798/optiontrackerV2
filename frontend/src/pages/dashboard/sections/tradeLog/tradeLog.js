@@ -238,7 +238,7 @@ export const TradeLog = () => {
   return (
     <>
       {isLoading && !trades && <Spinner animation="border" />}
-      {!isLoading && trades && (
+      {!isLoading && (
         <>
           {tradesError && (
             <Alert variant="danger" className="my-3" dismissible>
