@@ -31,6 +31,7 @@ export const AccountValue = () => {
   useEffect(() => {
     if (!accountValue) {
       fetchAccountValue();
+      return;
     }
     setIsLoading(false);
   }, [accountValue]);

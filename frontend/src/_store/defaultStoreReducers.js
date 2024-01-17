@@ -4,7 +4,7 @@ export const defaultPendingReducer = (state) => {
     state.success = false;
   }
   if ("loading" in state) {
-    state.loading = false;
+    state.loading = true;
   }
 };
 
